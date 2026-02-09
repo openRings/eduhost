@@ -11,11 +11,18 @@ pub async fn init_database_pool() -> anyhow::Result<PgPool> {
 
     let url = format!("postgres://{user}:{pass}@{addr}/{name}");
 
-    PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(20)
         .min_connections(1)
         .test_before_acquire(false)
         .connect(&url)
         .await
-        .context("failed to connect")
+        .context("failed to connect")?;
+
+    sqlx::migrate!("../migrations")
+        .run(&pool)
+        .await
+        .context("failed to run database migrations")?;
+
+    Ok(pool)
 }
