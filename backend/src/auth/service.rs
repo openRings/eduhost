@@ -1,12 +1,18 @@
 use anyhow::Context;
-use eduhost::crypto::hash_password;
+use axum::http::StatusCode;
+use axum_cookie::prelude::CookieManager;
+use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use eduhost::crypto::{hash_password, verify_password};
 use eduhost::error::{EndpointError, EndpointResult};
 use eduhost::service::Service;
+use rand::RngExt;
 use sqlx::PgPool;
+use time::Duration;
 
-use crate::auth::commands::UserCreateCommand;
-use crate::auth::dtos::SignupRequest;
-use crate::auth::queries::IsUsernameExistsQuery;
+use crate::auth::commands::{SessionCreateCommand, UserCreateCommand};
+use crate::auth::dtos::{SigninRequest, SigninResponse, SignupRequest};
+use crate::auth::queries::{IsUsernameExistsQuery, UserCredentialsQuery};
 
 pub struct AuthService {
     pool: PgPool,
@@ -51,10 +57,63 @@ impl AuthService {
 
         Ok(())
     }
+
+    pub async fn signin(
+        &self,
+        body: SigninRequest,
+        cookie: CookieManager,
+    ) -> EndpointResult<SigninResponse> {
+        let SigninRequest { username, password } = &body;
+
+        let credentials = UserCredentialsQuery { username }
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("failed to fetch user credentials: {username}"))?
+            .ok_or(StatusCode::FORBIDDEN)?;
+
+        if !verify_password(password, &credentials.password_hash) {
+            return Err(StatusCode::FORBIDDEN.into());
+        }
+
+        let (access_token, refresh_token) = generate_tokens();
+        let access_duration = Duration::minutes(10);
+        let refresh_duration = Duration::days(31);
+
+        SessionCreateCommand {
+            user_id: credentials.id,
+            access_token: &access_token,
+            refresh_token: &refresh_token,
+            access_duration,
+            refresh_duration,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| format!("failed to create session: {username}"))?;
+
+        Ok(SigninResponse {
+            access_token,
+            refresh_token,
+            cookies: cookie,
+        })
+    }
 }
 
 impl Service for AuthService {
     fn from_state(pool: PgPool) -> Self {
         Self { pool }
     }
+}
+
+fn generate_tokens() -> (String, String) {
+    let mut rng = rand::rng();
+    let mut access = [0u8; 128];
+    let mut refresh = [0u8; 128];
+
+    rng.fill(&mut access);
+    rng.fill(&mut refresh);
+
+    let access_token = URL_SAFE_NO_PAD.encode(access);
+    let refresh_token = URL_SAFE_NO_PAD.encode(refresh);
+
+    (access_token, refresh_token)
 }

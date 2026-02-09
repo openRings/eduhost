@@ -1,5 +1,9 @@
+use axum::Json;
+use axum::response::{IntoResponse, Response};
+use axum_cookie::prelude::{Cookie, CookieManager};
 use eduhost::normalize::Normalize;
 use serde::Deserialize;
+use serde_json::json;
 
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -66,5 +70,39 @@ impl Normalize for SignupRequest {
         // TODO: add more verify
 
         Ok(self)
+    }
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SigninRequest {
+    pub username: String,
+    pub password: String,
+}
+
+impl Normalize for SigninRequest {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.username.make_ascii_lowercase();
+
+        Ok(self)
+    }
+}
+
+pub struct SigninResponse {
+    pub access_token: String,
+    pub refresh_token: String,
+    pub cookies: CookieManager,
+}
+
+impl IntoResponse for SigninResponse {
+    fn into_response(self) -> Response {
+        let mut cookie = Cookie::new("refresh-token", self.refresh_token);
+
+        cookie.set_http_only(true);
+        cookie.set_secure(!cfg!(debug_assertions));
+
+        self.cookies.add(cookie);
+
+        Json(json!({ "token": self.access_token })).into_response()
     }
 }

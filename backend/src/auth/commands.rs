@@ -1,6 +1,6 @@
 use anyhow::Context;
 use sqlx::PgExecutor;
-use time::OffsetDateTime;
+use time::{Duration, OffsetDateTime};
 use uuid::Uuid;
 
 pub struct UserCreateCommand<'a> {
@@ -28,6 +28,38 @@ impl<'a> UserCreateCommand<'a> {
         .bind(self.patronymic)
         .bind(false)
         .bind(self.password_hash)
+        .bind(OffsetDateTime::now_utc())
+        .execute(conn)
+        .await
+        .map(|r| r.rows_affected())
+        .context("failed to execute query")
+    }
+}
+
+pub struct SessionCreateCommand<'a> {
+    pub user_id: Uuid,
+    pub access_token: &'a str,
+    pub refresh_token: &'a str,
+    pub access_duration: Duration,
+    pub refresh_duration: Duration,
+}
+
+impl<'a> SessionCreateCommand<'a> {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<u64>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query(
+            "INSERT INTO sessions
+            (id, user_id, access_token, refresh_token, access_duration, refresh_duration, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        )
+        .bind(Uuid::now_v7())
+        .bind(self.user_id)
+        .bind(self.access_token)
+        .bind(self.refresh_token)
+        .bind(self.access_duration)
+        .bind(self.refresh_duration)
         .bind(OffsetDateTime::now_utc())
         .execute(conn)
         .await
