@@ -20,6 +20,15 @@ pub enum EndpointError {
 #[derive(Debug, Clone)]
 struct ErrorMessage(String);
 
+impl EndpointError {
+    pub fn bad_request<M>(message: M) -> Self
+    where
+        M: Into<Cow<'static, str>>,
+    {
+        Self::BadRequest(message.into())
+    }
+}
+
 impl IntoResponse for EndpointError {
     fn into_response(self) -> Response {
         let builder = Response::builder();

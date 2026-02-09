@@ -15,7 +15,7 @@ pub struct SignupRequest {
 impl Normalize for SignupRequest {
     fn normalize(self) -> Result<Self, String> {
         if !(4..=12).contains(&self.username.len()) {
-            return Err("никнейм должен быть длиной от 4 до 12 символов".to_string());
+            return Err("Юзернейм должен быть длиной от 4 до 12 символов".to_string());
         }
 
         let is_username_az09 = self
@@ -24,11 +24,11 @@ impl Normalize for SignupRequest {
             .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit());
 
         if !is_username_az09 {
-            return Err("никнейм должен содержать только символы a-z или 0-9".to_string());
+            return Err("Юзернейм должен содержать только символы a-z, 0-9".to_string());
         }
 
         if self.username.chars().next().unwrap().is_ascii_digit() {
-            return Err("никнейм не может начинаться с цифры".to_string());
+            return Err("Юзернейм не может начинаться с цифры".to_string());
         }
 
         if self.password != self.password_repeat {
@@ -62,6 +62,8 @@ impl Normalize for SignupRequest {
                 "Пароль должен содержать верхний регистр, нижний регистр и цифры".to_string(),
             );
         }
+
+        // TODO: add more verify
 
         Ok(self)
     }

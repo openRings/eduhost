@@ -10,7 +10,9 @@ use sqlx::PgPool;
 use self::dtos::SignupRequest;
 use self::service::AuthService;
 
+mod commands;
 mod dtos;
+mod queries;
 mod service;
 
 pub fn routes() -> Router<PgPool> {

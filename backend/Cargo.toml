@@ -9,6 +9,7 @@ tokio.workspace = true
 uuid.workspace = true
 axum.workspace = true
 axum-cookie.workspace = true
+argon2.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sealed-env.workspace = true
