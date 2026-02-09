@@ -1,0 +1,11 @@
+:80 {
+	encode gzip zstd
+
+	reverse_proxy frontend:3000
+
+	handle_path /api/* {
+		reverse_proxy backend:80 {
+			header_up X-IP {http.request.remote.host}
+		}
+	}
+}

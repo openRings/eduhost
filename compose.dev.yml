@@ -1,0 +1,40 @@
+services:
+  proxy:
+    restart: unless-stopped
+    image: caddy:2.11-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
+
+  frontend:
+    restart: unless-stopped
+    build:
+      dockerfile: ./docker/Dockerfile.dev.frontend
+      context: .
+    volumes:
+      - ./frontend:/app
+  
+  backend:
+    restart: unless-stopped
+    build:
+      dockerfile: ./docker/Dockerfile.dev.backend
+      context: .
+    volumes:
+      - /usr/local/cargo
+      - ./:/app
+    env_file: .dev.env
+    environment:
+      PACKAGE: eduhost
+
+  database:
+    restart: unless-stopped
+    build:
+      dockerfile: ./docker/Dockerfile.dev.database
+      context: .
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/database:/var/lib/postgresql/data
+    env_file: .dev.env
+

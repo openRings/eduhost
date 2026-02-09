@@ -1,6 +1,14 @@
-[package]
-name = "eduhost"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "2"
+members = ["backend"]
 
-[dependencies]
+[workspace.dependencies]
+sqlx = { version = "0.8.6", features = ["postgres", "mysql", "runtime-tokio", "time", "uuid"] }
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread", "net"] }
+uuid = { version = "1.12.0", features = ["rng", "serde", "v7"] }
+axum = { version = "0.8.8", features = ["http2"] }
+sealed-env = "0.1.0"
+axum-cookie = "0.2.4"
+anyhow = "1.0.101"
+time = "0.3.47"
+

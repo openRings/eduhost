@@ -1,0 +1,15 @@
+FROM alpine:3.23 AS sealed-builder
+
+RUN apk add --no-cache cargo && cargo install cargo-sealed --root /usr
+
+
+FROM postgres:18.1-alpine3.23
+
+COPY --from=sealed-builder /usr/bin/sealed /usr/bin/sealed
+COPY ./docker/database-entrypoint.sh /usr/bin/entrypoint.sh
+COPY ./.dev.env /.env
+
+RUN chmod +x /usr/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+
