@@ -11,6 +11,8 @@ pub type EndpointResult<T> = Result<T, EndpointError>;
 
 pub enum EndpointError {
     BadRequest(Cow<'static, str>),
+    DeserealizeError(serde_json::Error),
+    UnknownContentType,
     Internal(anyhow::Error),
     Other(StatusCode),
 }
@@ -25,6 +27,24 @@ impl IntoResponse for EndpointError {
         match self {
             Self::BadRequest(message) => {
                 let body = json!({ "message": message }).to_string();
+
+                builder
+                    .status(StatusCode::BAD_REQUEST)
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(Body::new(body))
+            }
+            Self::UnknownContentType => {
+                let body =
+                    json!({ "message": "Неизвестный тип контента, ожидается application/json" })
+                        .to_string();
+
+                builder
+                    .status(StatusCode::UNSUPPORTED_MEDIA_TYPE)
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(Body::new(body))
+            }
+            Self::DeserealizeError(error) => {
+                let body = json!({ "message": error.to_string() }).to_string();
 
                 builder
                     .status(StatusCode::BAD_REQUEST)

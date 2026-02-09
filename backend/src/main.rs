@@ -1,6 +1,5 @@
 use anyhow::Context;
 use axum::extract::State;
-use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Router, middleware};
