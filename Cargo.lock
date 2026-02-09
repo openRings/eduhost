@@ -327,6 +327,8 @@ dependencies = [
  "axum",
  "axum-cookie",
  "sealed-env",
+ "serde",
+ "serde_json",
  "sqlx",
  "time",
  "tokio",

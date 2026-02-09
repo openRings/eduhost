@@ -1,23 +1,26 @@
 use anyhow::Context;
-use axum::Router;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::get;
+use axum::{Router, middleware};
+use eduhost::error::{EndpointResult, error_middleware};
 use sqlx::PgPool;
 use tokio::net::TcpListener;
 
-mod database;
+mod auth;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let pool = database::init_database_pool()
+    let pool = eduhost::database::init_database_pool()
         .await
         .context("failed to init database pool")?;
 
     let router = Router::new()
+        .nest("/auth", auth::routes())
         .route("/", get(index))
         .route("/database", get(database))
+        .layer(middleware::from_fn(error_middleware))
         .with_state(pool);
 
     let listener = TcpListener::bind("0.0.0.0:80")
@@ -35,11 +38,11 @@ async fn index() -> impl IntoResponse {
     "Ok\n"
 }
 
-async fn database(State(pool): State<PgPool>) -> Result<impl IntoResponse, (StatusCode, String)> {
+async fn database(State(pool): State<PgPool>) -> EndpointResult<impl IntoResponse> {
     sqlx::query("SELECT 1 = 1")
         .execute(&pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .context("failed to exec query")?;
 
     Ok("Ok\n")
 }
