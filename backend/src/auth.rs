@@ -2,7 +2,6 @@ use axum::Router;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::post;
-use axum_cookie::prelude::CookieManager;
 use eduhost::error::EndpointResult;
 use eduhost::normalize::NormalizedJson;
 use eduhost::service::WithService;
@@ -32,11 +31,10 @@ async fn signup(
 }
 
 async fn signin(
-    cookie: CookieManager,
     WithService(auth_service): WithService<AuthService>,
     NormalizedJson(body): NormalizedJson<SigninRequest>,
 ) -> EndpointResult<impl IntoResponse> {
-    let response = auth_service.signin(body, cookie).await?;
+    let response = auth_service.signin(body).await?;
 
     Ok(response)
 }

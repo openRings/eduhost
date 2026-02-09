@@ -1,6 +1,8 @@
 use axum::Json;
+use axum::http::HeaderValue;
+use axum::http::header::SET_COOKIE;
 use axum::response::{IntoResponse, Response};
-use axum_cookie::prelude::{Cookie, CookieManager};
+use axum_cookie::prelude::Cookie;
 use eduhost::normalize::Normalize;
 use serde::Deserialize;
 use serde_json::json;
@@ -91,18 +93,21 @@ impl Normalize for SigninRequest {
 pub struct SigninResponse {
     pub access_token: String,
     pub refresh_token: String,
-    pub cookies: CookieManager,
 }
 
 impl IntoResponse for SigninResponse {
     fn into_response(self) -> Response {
-        let mut cookie = Cookie::new("refresh-token", self.refresh_token);
+        let cookie = Cookie::new("refresh-token", self.refresh_token)
+            .with_path("/api/auth")
+            .with_http_only(true)
+            .with_secure(!cfg!(debug_assertions));
 
-        cookie.set_http_only(true);
-        cookie.set_secure(!cfg!(debug_assertions));
+        let mut response = Json(json!({ "token": self.access_token })).into_response();
 
-        self.cookies.add(cookie);
+        let header_value = HeaderValue::from_str(&cookie.to_string()).expect("must be valid");
 
-        Json(json!({ "token": self.access_token })).into_response()
+        response.headers_mut().insert(SET_COOKIE, header_value);
+
+        response
     }
 }

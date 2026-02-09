@@ -1,6 +1,5 @@
 use anyhow::Context;
 use axum::http::StatusCode;
-use axum_cookie::prelude::CookieManager;
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use eduhost::crypto::{hash_password, verify_password};
@@ -58,11 +57,7 @@ impl AuthService {
         Ok(())
     }
 
-    pub async fn signin(
-        &self,
-        body: SigninRequest,
-        cookie: CookieManager,
-    ) -> EndpointResult<SigninResponse> {
+    pub async fn signin(&self, body: SigninRequest) -> EndpointResult<SigninResponse> {
         let SigninRequest { username, password } = &body;
 
         let credentials = UserCredentialsQuery { username }
@@ -93,7 +88,6 @@ impl AuthService {
         Ok(SigninResponse {
             access_token,
             refresh_token,
-            cookies: cookie,
         })
     }
 }
