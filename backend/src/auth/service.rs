@@ -100,8 +100,9 @@ impl Service for AuthService {
 
 fn generate_tokens() -> (String, String) {
     let mut rng = rand::rng();
-    let mut access = [0u8; 128];
-    let mut refresh = [0u8; 128];
+
+    let mut access = [0u8; 32];
+    let mut refresh = [0u8; 32];
 
     rng.fill(&mut access);
     rng.fill(&mut refresh);

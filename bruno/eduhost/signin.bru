@@ -1,0 +1,23 @@
+meta {
+  name: signin
+  type: http
+  seq: 2
+}
+
+post {
+  url: localhost/api/auth/signin
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "boris",
+    "password": "aA12345678"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
