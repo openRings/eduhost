@@ -72,6 +72,10 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 .lucide-icon {
   width: 1em;
   height: 1em;
