@@ -1,27 +1,13 @@
-import { ark, type HTMLArkProps } from "@ark-ui/solid";
+import { ark, HTMLArkProps } from "@ark-ui/solid";
 import { clsx } from "clsx";
 import { LoaderCircle } from "lucide-solid";
-import { type JSX, splitProps, Show } from "solid-js";
+import { JSX, splitProps, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
-
-type Variant = "default" | "transparent" | "accent" | "primary" | "danger";
-type Size = "icon-sm" | "icon-md" | "sm" | "md";
-
-type ArkButtonProps = HTMLArkProps<"button">;
-
-export type ButtonProps = ArkButtonProps & {
-  variant?: Variant;
-  size?: Size;
-  isLoading?: boolean;
-  iconStart?: JSX.Element;
-  iconEnd?: JSX.Element;
-  class?: string;
-};
 
 const baseClass =
   "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none cursor-pointer disabled:cursor-not-allowed";
 
-const variantClass: Record<Variant, string> = {
+const variantClass = {
   default:
     "ring-1 ring-inset ring-neutral-300 bg-gradient-to-t from-neutral-100 to-white hover:from-neutral-200 hover:to-neutral-100 hover:ring-neutral-400 active:from-neutral-300 active:to-neutral-200 active:ring-neutral-500 disabled:from-neutral-100 disabled:to-white disabled:ring-neutral-300 disabled:text-neutral-500",
   transparent:
@@ -34,11 +20,20 @@ const variantClass: Record<Variant, string> = {
     "ring-1 ring-inset ring-error-200 bg-error-300 text-white hover:bg-error-400 hover:ring-error-300 active:bg-error-500 active:ring-error-400 disabled:ring-error-200 disabled:bg-error-300 disabled:text-white/60",
 };
 
-const sizeClass: Record<Size, string> = {
+const sizeClass = {
   "icon-sm": "size-6",
   "icon-md": "size-8",
   sm: "px-md h-6",
   md: "px-lg h-8",
+};
+
+export type ButtonProps = HTMLArkProps<"button"> & {
+  variant?: keyof typeof variantClass;
+  size?: keyof typeof sizeClass;
+  isLoading?: boolean;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
+  class?: string;
 };
 
 export function Button(props: ButtonProps) {
