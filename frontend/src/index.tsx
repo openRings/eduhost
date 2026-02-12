@@ -1,12 +1,44 @@
 /* @refresh reload */
-import { render } from 'solid-js/web';
-import './tailwind.css';
-import 'solid-devtools';
+import { render } from "solid-js/web";
+import "./tailwind.css";
+import "solid-devtools";
+import { Button } from "./shared/uikit/Button";
+import { Settings } from "lucide-solid";
 
 const App = () => {
   return (
-    <p class="text-4xl text-green-700 text-center py-20">Hello tailwind!</p>
+    <div class="gap-xl mx-auto flex w-120 flex-col">
+      <p class="py-20 text-center text-4xl text-green-700">Hello tailwind!</p>
+      <div class="gap-md flex items-center">
+        <Button iconStart={<Settings />}>Нажми на меня</Button>
+        <Button size="sm">Нажми на меня</Button>
+      </div>
+      <div class="gap-md flex items-center">
+        <Button variant="transparent">Нажми на меня</Button>
+        <Button size="sm" variant="transparent">
+          Нажми на меня
+        </Button>
+      </div>
+      <div class="gap-md flex items-center">
+        <Button variant="accent">Нажми на меня</Button>
+        <Button size="sm" variant="accent">
+          Нажми на меня
+        </Button>
+      </div>
+      <div class="gap-md flex items-center">
+        <Button variant="primary">Нажми на меня</Button>
+        <Button size="sm" variant="primary">
+          Нажми на меня
+        </Button>
+      </div>
+      <div class="gap-md flex items-center">
+        <Button variant="danger">Нажми на меня</Button>
+        <Button size="sm" variant="danger">
+          Нажми на меня
+        </Button>
+      </div>
+    </div>
   );
-}
+};
 
 render(App, document.body);

@@ -1,3 +1,5 @@
 /target
 /.prod.key
 /data
+
+.DS_Store

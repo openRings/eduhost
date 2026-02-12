@@ -4,6 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
+    "format": "prettier . --write",
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
@@ -12,6 +13,8 @@
   "license": "MIT",
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "solid-devtools": "^0.34.3",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
@@ -19,6 +22,10 @@
     "vite-plugin-solid": "^2.11.8"
   },
   "dependencies": {
-    "solid-js": "^1.9.9"
+    "@ark-ui/solid": "^5.31.0",
+    "clsx": "^2.1.1",
+    "lucide-solid": "^0.563.0",
+    "solid-js": "^1.9.9",
+    "tailwind-merge": "^3.4.0"
   }
 }
