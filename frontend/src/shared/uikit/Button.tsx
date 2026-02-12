@@ -4,7 +4,7 @@ import { type JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 type Variant = "default" | "transparent" | "accent" | "primary" | "danger";
-type Size = "sm" | "md";
+type Size = "icon-sm" | "icon-md" | "sm" | "md";
 
 type ArkButtonProps = HTMLArkProps<"button">;
 
@@ -17,7 +17,7 @@ export type ButtonProps = ArkButtonProps & {
 };
 
 const baseClass =
-  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150";
+  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none";
 
 const variantClass: Record<Variant, string> = {
   default:
@@ -33,8 +33,10 @@ const variantClass: Record<Variant, string> = {
 };
 
 const sizeClass: Record<Size, string> = {
-  sm: "px-md py-xs",
-  md: "px-lg py-md",
+  "icon-sm": "size-6",
+  "icon-md": "size-8",
+  sm: "px-md h-6",
+  md: "px-lg h-8",
 };
 
 export function Button(props: ButtonProps) {
