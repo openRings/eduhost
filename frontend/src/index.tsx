@@ -7,13 +7,19 @@ import { Settings } from "lucide-solid";
 
 const App = () => {
   return (
-    <div class="gap-xl mx-auto flex w-120 flex-col">
+    <div class="gap-xl mx-auto flex w-140 flex-col">
       <p class="py-20 text-center text-4xl text-green-700">Hello tailwind!</p>
       <div class="gap-md flex items-center">
         <Button iconStart={<Settings />} disabled>
           Нажми на меня
         </Button>
+        <Button iconStart={<Settings />} isLoading>
+          Нажми на меня
+        </Button>
         <Button size="icon-md">
+          <Settings />
+        </Button>
+        <Button size="icon-md" isLoading>
           <Settings />
         </Button>
         <Button size="sm">Нажми на меня</Button>

@@ -1,6 +1,7 @@
 import { ark, type HTMLArkProps } from "@ark-ui/solid";
 import { clsx } from "clsx";
-import { type JSX, splitProps } from "solid-js";
+import { LoaderCircle } from "lucide-solid";
+import { type JSX, splitProps, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 type Variant = "default" | "transparent" | "accent" | "primary" | "danger";
@@ -11,13 +12,14 @@ type ArkButtonProps = HTMLArkProps<"button">;
 export type ButtonProps = ArkButtonProps & {
   variant?: Variant;
   size?: Size;
+  isLoading?: boolean;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
   class?: string;
 };
 
 const baseClass =
-  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none";
+  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none cursor-pointer disabled:cursor-not-allowed";
 
 const variantClass: Record<Variant, string> = {
   default:
@@ -43,6 +45,7 @@ export function Button(props: ButtonProps) {
   const [_, attrs] = splitProps(props, [
     "variant",
     "size",
+    "isLoading",
     "iconStart",
     "iconEnd",
     "class",
@@ -54,15 +57,26 @@ export function Button(props: ButtonProps) {
         baseClass,
         variantClass[props.variant ?? "default"],
         sizeClass[props.size ?? "md"],
+        props.isLoading && "cursor-progress",
         props.class,
       ),
     );
 
   return (
     <ark.button {...attrs} class={classes()}>
-      {props.iconStart}
-      {props.children}
-      {props.iconEnd}
+      <Show
+        when={!props.isLoading}
+        fallback={
+          <>
+            <LoaderCircle class="animate-spin" />{" "}
+            <Show when={!props.size?.startsWith("icon")}>Подождите..</Show>
+          </>
+        }
+      >
+        {props.iconStart}
+        {props.children}
+        {props.iconEnd}
+      </Show>
     </ark.button>
   );
 }

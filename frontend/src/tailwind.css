@@ -66,14 +66,9 @@
   --color-success-300: #00C950;
   --color-success-400: #00A63E;
   --color-success-500: #008236;
-}
 
-button {
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
+  /* animations */
+  --animate-spin: spin 0.4s linear infinite;
 }
 
 .lucide-icon {
