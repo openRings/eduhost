@@ -9,13 +9,13 @@ export default function () {
         <Button iconStart={<Settings />} disabled>
           Нажми на меня
         </Button>
-        <Button iconStart={<Settings />} isLoading>
+        <Button iconStart={<Settings />} isPending>
           Нажми на меня
         </Button>
         <Button size="icon-md">
           <Settings />
         </Button>
-        <Button size="icon-md" isLoading>
+        <Button size="icon-md" isPending>
           <Settings />
         </Button>
         <Button size="sm">Нажми на меня</Button>

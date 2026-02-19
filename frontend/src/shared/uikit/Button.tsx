@@ -30,7 +30,8 @@ const sizeClass = {
 export type ButtonProps = HTMLArkProps<"button"> & {
   variant?: keyof typeof variantClass;
   size?: keyof typeof sizeClass;
-  isLoading?: boolean;
+  isPending?: boolean;
+  pendingText?: string;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
 };
@@ -39,7 +40,8 @@ export function Button(props: ButtonProps) {
   const [_, attrs] = splitProps(props, [
     "variant",
     "size",
-    "isLoading",
+    "isPending",
+    "pendingText",
     "iconStart",
     "iconEnd",
     "class",
@@ -51,7 +53,7 @@ export function Button(props: ButtonProps) {
         baseClass,
         variantClass[props.variant ?? "default"],
         sizeClass[props.size ?? "md"],
-        props.isLoading && "cursor-progress",
+        props.isPending && "cursor-progress",
         props.class,
       ),
     );
@@ -59,11 +61,13 @@ export function Button(props: ButtonProps) {
   return (
     <ark.button {...attrs} class={classes()}>
       <Show
-        when={!props.isLoading}
+        when={!props.isPending}
         fallback={
           <>
             <LoaderCircle class="animate-spin" />{" "}
-            <Show when={!props.size?.startsWith("icon")}>Подождите..</Show>
+            <Show when={!props.size?.startsWith("icon")}>
+              {props.pendingText ?? "Подождите.."}
+            </Show>
           </>
         }
       >
