@@ -28,7 +28,7 @@ const baseControlClass =
   "flex rounded-sm transition-colors duration-150 items-center cursor-pointer ring-1 ring-inset ring-neutral-300 text-neutral-700 bg-gradient-to-t from-neutral-100 to-white hover:ring-neutral-400 relative data-[disabled]:cursor-not-allowed data-[disabled]:ring-neutral-300 data-[disabled]:text-neutral-400";
 
 const baseTriggerClass =
-  "flex w-full h-full cursor-pointer items-center justify-between gap-sm bg-transparent text-left outline-none leading-none disabled:cursor-not-allowed data-[placeholder-shown]:text-neutral-500";
+  "flex w-full h-full cursor-pointer items-center justify-between gap-sm bg-transparent text-left outline-none leading-none disabled:cursor-not-allowed data-[placeholder-shown]:text-neutral-500 disabled:data-[placeholder-shown]:text-neutral-400";
 
 const sizeControlClass = {
   sm: "h-6 gap-xs text-xs",
@@ -166,7 +166,7 @@ export function Select(props: SelectProps) {
                     <span class="flex-1">
                       {props.placeholder ?? "Выберите"}
                     </span>
-                    <span class="text-neutral-500">
+                    <span>
                       <ChevronsUpDown />
                     </span>
                   </div>
@@ -208,7 +208,11 @@ export function Select(props: SelectProps) {
                     placeholder={props.placeholder ?? "Выберите"}
                     class="truncate"
                   />
-                  <ArkSelect.Indicator class="text-neutral-500">
+                  <ArkSelect.Indicator
+                    class={
+                      props.disabled ? "text-neutral-400" : "text-neutral-500"
+                    }
+                  >
                     <ChevronsUpDown />
                   </ArkSelect.Indicator>
                 </ArkSelect.Trigger>
