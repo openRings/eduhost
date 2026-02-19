@@ -1,0 +1,77 @@
+import { ark, HTMLArkProps } from "@ark-ui/solid";
+import { clsx } from "clsx";
+import { Search, X } from "lucide-solid";
+import { createSignal, createUniqueId, JSX, Show, splitProps } from "solid-js";
+import { twMerge } from "tailwind-merge";
+
+const baseClass =
+  "transition-colors duration-150 outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:placeholder:text-neutral-400";
+
+const baseContainerClass =
+  "flex rounded-sm transition-colors duration-150 items-center cursor-text ring-1 ring-inset ring-neutral-300 text-neutral-700 [&:has(input:placeholder-shown)]:text-neutral-500 bg-gradient-to-t from-neutral-100 to-white [&:has(input:focus)]:ring-neutral-400 [&:has(input:focus)]:from-neutral-200 [&:has(input:focus)]:to-neutral-100 hover:ring-neutral-400 relative [&:has(input:disabled)]:cursor-not-allowed [&:has(input:disabled)]:ring-neutral-300 [&:has(input:disabled)]:text-neutral-400!";
+
+const sizeContainerClass = {
+  sm: "px-sm h-6 gap-xs",
+  md: "px-md h-8 gap-sm",
+};
+
+export type InputProps = HTMLArkProps<"input"> & {
+  size?: keyof typeof sizeContainerClass;
+  onclear?: () => void;
+  icon?: JSX.Element;
+  containerClass?: string;
+};
+
+export function Input(props: InputProps) {
+  const [_, attrs] = splitProps(props, [
+    "size",
+    "onclear",
+    "icon",
+    "class",
+    "containerClass",
+  ]);
+
+  const [value, setValue] = createSignal(props.value);
+
+  const inputId = createUniqueId();
+
+  const classes = () => twMerge(clsx(baseClass, props.class));
+
+  const containerClasses = () =>
+    twMerge(
+      clsx(
+        baseContainerClass,
+        sizeContainerClass[props.size ?? "md"],
+        props.containerClass,
+      ),
+    );
+
+  return (
+    <label for={props.id ?? inputId} class={containerClasses()}>
+      {props.icon ?? <Search />}
+      <ark.input
+        id={inputId}
+        {...attrs}
+        class={classes()}
+        oninput={(e) => {
+          setValue(e.target.value);
+          props.oninput && (props.oninput as CallableFunction)(e);
+        }}
+      >
+        {props.children}
+      </ark.input>
+      <Show when={!!value() && !!props.onclear}>
+        <button
+          title="Очистить"
+          onclick={() => props.onclear!()}
+          class={clsx(
+            "hover:text-error-300 absolute right-0 flex cursor-pointer items-center justify-center text-neutral-400 transition-colors",
+            sizeContainerClass[props.size ?? "md"],
+          )}
+        >
+          <X />
+        </button>
+      </Show>
+    </label>
+  );
+}

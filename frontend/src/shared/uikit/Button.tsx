@@ -33,7 +33,6 @@ export type ButtonProps = HTMLArkProps<"button"> & {
   isLoading?: boolean;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
-  class?: string;
 };
 
 export function Button(props: ButtonProps) {
