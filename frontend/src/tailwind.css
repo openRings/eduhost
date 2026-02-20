@@ -15,6 +15,7 @@
   --font-weight-black: 850;
   
   /* spacings */
+  --spacing-xxs: 2px;
   --spacing-xs: 4px;
   --spacing-sm: 6px;
   --spacing-md: 8px;

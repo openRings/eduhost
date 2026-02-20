@@ -49,7 +49,7 @@ const baseItemClass =
   "flex items-center justify-between rounded-sm cursor-pointer text-neutral-700 transition-colors data-[highlighted]:bg-neutral-200 data-[disabled]:cursor-not-allowed data-[disabled]:text-neutral-400 gap-md";
 
 const sizeItemClass = {
-  sm: "px-xs h-6 text-xs",
+  sm: "px-xxs h-6 text-xs",
   md: "px-xs h-8 text-sm",
 };
 
