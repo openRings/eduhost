@@ -1,4 +1,4 @@
-import { Settings } from "lucide-solid";
+import { Plus, Settings } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
 
 export default function () {
@@ -79,6 +79,9 @@ export default function () {
           <Settings />
         </Button>
       </div>
+      <Button class="h-36" variant="lined" iconStart={<Plus />}>
+        Добавить предмет
+      </Button>
     </div>
   );
 }

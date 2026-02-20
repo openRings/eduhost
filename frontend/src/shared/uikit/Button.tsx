@@ -5,11 +5,13 @@ import { JSX, splitProps, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 const baseClass =
-  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none cursor-pointer disabled:cursor-not-allowed";
+  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none cursor-pointer disabled:cursor-not-allowed group";
 
 const variantClass = {
   default:
     "ring-1 ring-inset ring-neutral-300 bg-gradient-to-t from-neutral-100 to-white hover:from-neutral-200 hover:to-neutral-100 hover:ring-neutral-400 active:from-neutral-300 active:to-neutral-200 active:ring-neutral-500 disabled:from-neutral-100 disabled:to-white disabled:ring-neutral-300 disabled:text-neutral-500",
+  lined:
+    "items-center justify-center rounded-md [background-image:repeating-linear-gradient(-45deg,transparent,transparent_9px,currentColor_9px,currentColor_12px)] text-neutral-300/40 ring-1 ring-neutral-400 ring-inset hover:ring-primary-300 hover:text-primary-100/20 transition-all duration-150",
   transparent:
     "hover:bg-neutral-200 active:bg-neutral-300 disabled:bg-transparent disabled:text-neutral-500",
   accent:
@@ -71,9 +73,22 @@ export function Button(props: ButtonProps) {
           </>
         }
       >
-        {props.iconStart}
-        {props.children}
-        {props.iconEnd}
+        <Show
+          when={props.variant == "lined"}
+          fallback={
+            <>
+              {props.iconStart}
+              {props.children}
+              {props.iconEnd}
+            </>
+          }
+        >
+          <div class="gap-xs group-hover:text-primary-300 flex text-neutral-500 transition-colors">
+            {props.iconStart}
+            {props.children}
+            {props.iconEnd}
+          </div>
+        </Show>
       </Show>
     </ark.button>
   );
