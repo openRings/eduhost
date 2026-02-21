@@ -11,7 +11,7 @@ const variantClass = {
   default:
     "ring-1 ring-inset ring-neutral-300 bg-gradient-to-t from-neutral-100 to-white hover:from-neutral-200 hover:to-neutral-100 hover:ring-neutral-400 active:from-neutral-300 active:to-neutral-200 active:ring-neutral-500 disabled:from-neutral-100 disabled:to-white disabled:ring-neutral-300 disabled:text-neutral-500",
   lined:
-    "items-center justify-center rounded-md [background-image:repeating-linear-gradient(-45deg,transparent,transparent_9px,currentColor_9px,currentColor_12px)] text-neutral-300/40 ring-1 ring-neutral-400 ring-inset hover:ring-primary-300 hover:text-primary-100/20 transition-all duration-150",
+    "items-center justify-center rounded-md [background-image:repeating-linear-gradient(-45deg,transparent,transparent_9px,currentColor_9px,currentColor_12px)] text-neutral-300/40 ring-1 ring-neutral-400 ring-inset hover:ring-primary-300 hover:text-primary-100/20 transition duration-150",
   transparent:
     "hover:bg-neutral-200 active:bg-neutral-300 disabled:bg-transparent disabled:text-neutral-500",
   accent:
