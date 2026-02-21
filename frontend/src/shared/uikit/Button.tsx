@@ -5,7 +5,7 @@ import { JSX, splitProps, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 const baseClass =
-  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center leading-none cursor-pointer disabled:cursor-not-allowed group";
+  "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center cursor-pointer disabled:cursor-not-allowed group";
 
 const variantClass = {
   default:
