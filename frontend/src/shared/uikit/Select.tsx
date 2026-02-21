@@ -184,8 +184,8 @@ export function Select(props: SelectProps) {
                     <For each={collection().items}>
                       {(item) => (
                         <div data-measure-item class={itemClasses()}>
-                          <span class="flex-1">{item.label}</span>
-                          <span class="text-neutral-700">
+                          <span class="w-max flex-1">{item.label}</span>
+                          <span class="ml-2 text-neutral-700">
                             <Check />
                           </span>
                         </div>
