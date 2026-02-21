@@ -1,6 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
+import { Section } from "./shared/Section";
 import "./tailwind.css";
 import "solid-devtools";
 
@@ -10,12 +11,18 @@ import Selects from "./pages/selects";
 import Blocks from "./pages/blocks";
 
 const App = () => (
-  <Router>
-    <Route path="/buttons" component={Buttons} />
-    <Route path="/inputs" component={Inputs} />
-    <Route path="/selects" component={Selects} />
-    <Route path="/blocks" component={Blocks} />
-  </Router>
+  <div class="p-md flex min-h-screen">
+    <Section class="h-auto grow" />
+    <div class="flex w-[1200px] flex-col">
+      <Router>
+        <Route path="/buttons" component={Buttons} />
+        <Route path="/inputs" component={Inputs} />
+        <Route path="/selects" component={Selects} />
+        <Route path="/blocks" component={Blocks} />
+      </Router>
+    </div>
+    <Section class="p-md h-auto grow" />
+  </div>
 );
 
 render(App, document.body);
