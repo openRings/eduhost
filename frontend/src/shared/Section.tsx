@@ -3,7 +3,7 @@ import { JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 
-const baseClass = "p-6xl gap-3xl m-0.5 flex flex-col rounded-md bg-neutral-100";
+const baseClass = "p-6xl gap-3xl flex flex-col rounded-md bg-neutral-100";
 
 export type SectionProps = Omit<HTMLArkProps<"section">, "title"> & {
   title?: JSX.Element;

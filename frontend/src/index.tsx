@@ -11,9 +11,9 @@ import Selects from "./pages/selects";
 import Blocks from "./pages/blocks";
 
 const App = () => (
-  <div class="p-md flex min-h-screen">
+  <div class="flex min-h-screen gap-0.5">
     <Section class="h-auto grow" />
-    <div class="flex w-[1200px] flex-col">
+    <div class="flex w-[1200px] flex-col gap-0.5">
       <Router>
         <Route path="/buttons" component={Buttons} />
         <Route path="/inputs" component={Inputs} />
