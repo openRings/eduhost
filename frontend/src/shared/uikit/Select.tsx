@@ -53,10 +53,14 @@ const sizeItemClass = {
   md: "px-xs h-8 text-sm",
 };
 
-export type SelectProps = Omit<SelectRootProps<SelectOption>, "collection"> & {
+export type SelectProps = Omit<
+  SelectRootProps<SelectOption>,
+  "collection" | "onselect"
+> & {
   items: SelectOption[];
   label?: string;
   placeholder?: string;
+  onselect?: (value: string) => void;
   size?: keyof typeof sizeControlClass;
   containerClass?: string;
   triggerClass?: string;
@@ -139,6 +143,7 @@ export function Select(props: SelectProps) {
       {...rootProps}
       collection={collection()}
       class={rootClasses()}
+      onValueChange={(e) => (props.onselect as CallableFunction)(e.value[0])}
       positioning={{ placement: "bottom-start", gutter: 0 }}
     >
       <ArkSelect.Context>

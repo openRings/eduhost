@@ -43,12 +43,13 @@ export default function () {
         </div>
       </Section>
       <Section class="gap-md flex-row">
-        <Input placeholder="Найти.." containerClass="grow" onclear={() => {}} />
+        <Input placeholder="Найти.." containerClass="grow" />
         <Select
           items={[
             { label: "Проектирование и раз...", value: "1" },
             { label: "Оптимизация веб прил...", value: "2" },
           ]}
+          onselect={(value) => console.log(value)}
           placeholder="Выберите предмет"
         />
         <Button iconStart={<BrushCleaning />}>Сбросить фильтры</Button>
