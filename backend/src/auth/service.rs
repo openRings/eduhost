@@ -27,6 +27,8 @@ impl AuthService {
             .with_context(|| format!("failed to check is username exists: {username}"))?;
 
         if is_username_exists {
+            tracing::warn!(%username, "user try to create account with exists username");
+
             return Err(EndpointError::bad_request(
                 "Юзернейм занят другим пользователем",
             ));
@@ -54,6 +56,8 @@ impl AuthService {
         .await
         .with_context(|| format!("failed to create user, username: {username}"))?;
 
+        tracing::info!(%username, "created new user");
+
         Ok(())
     }
 
@@ -67,6 +71,8 @@ impl AuthService {
             .ok_or(StatusCode::FORBIDDEN)?;
 
         if !verify_password(password, &credentials.password_hash) {
+            tracing::warn!(%username, "user try to signin with wrong password");
+
             return Err(StatusCode::FORBIDDEN.into());
         }
 

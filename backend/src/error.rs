@@ -96,7 +96,7 @@ pub async fn error_middleware(req: Request, next: Next) -> Response {
     let error_message = resp.extensions().get::<ErrorMessage>();
 
     if let Some(error_message) = error_message {
-        eprintln!("ERROR [{method} {path}]: {}", error_message.0)
+        tracing::error!(%path, %method, "{:?}", error_message.0);
     }
 
     resp
