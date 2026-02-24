@@ -67,47 +67,47 @@ export function Button(props: ButtonProps) {
       ),
     );
 
-  const component = () =>
-    "href" in props ? (
-      <A {...(attrs as AnchorProps)} class={classes()}>
-        {props.children}
-      </A>
-    ) : (
-      <ark.button {...(attrs as HTMLArkProps<"button">)} class={classes()}>
-        {props.children}
-      </ark.button>
-    );
-
-  return (
-    <Dynamic component={component}>
+  const children = () => (
+    <Show
+      when={!props.isPending}
+      fallback={
+        <>
+          <LoaderCircle class="animate-spin" />{" "}
+          <Show when={!props.size?.startsWith("icon")}>
+            {props.pendingText ?? "Подождите.."}
+          </Show>
+        </>
+      }
+    >
       <Show
-        when={!props.isPending}
+        when={props.variant == "lined"}
         fallback={
           <>
-            <LoaderCircle class="animate-spin" />{" "}
-            <Show when={!props.size?.startsWith("icon")}>
-              {props.pendingText ?? "Подождите.."}
-            </Show>
-          </>
-        }
-      >
-        <Show
-          when={props.variant == "lined"}
-          fallback={
-            <>
-              {props.iconStart}
-              {props.children}
-              {props.iconEnd}
-            </>
-          }
-        >
-          <div class="gap-xs group-hover:text-primary-300 flex text-neutral-500 transition-colors">
             {props.iconStart}
             {props.children}
             {props.iconEnd}
-          </div>
-        </Show>
+          </>
+        }
+      >
+        <div class="gap-xs group-hover:text-primary-300 flex text-neutral-500 transition-colors">
+          {props.iconStart}
+          {props.children}
+          {props.iconEnd}
+        </div>
       </Show>
-    </Dynamic>
+    </Show>
   );
+
+  const component = () =>
+    "href" in props ? (
+      <A {...(attrs as AnchorProps)} class={classes()}>
+        {children()}
+      </A>
+    ) : (
+      <ark.button {...(attrs as HTMLArkProps<"button">)} class={classes()}>
+        {children()}
+      </ark.button>
+    );
+
+  return <Dynamic component={component} />;
 }
