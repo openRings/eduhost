@@ -5,7 +5,7 @@ import { createSignal, createUniqueId, JSX, Show, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 const baseClass =
-  "transition-colors duration-150 outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:placeholder:text-neutral-400";
+  "transition-colors duration-150 grow outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:placeholder:text-neutral-400";
 
 const baseContainerClass =
   "flex rounded-sm transition-colors duration-150 items-center cursor-text ring-1 ring-inset ring-neutral-300 text-neutral-700 [&:has(input:placeholder-shown)]:text-neutral-500 bg-gradient-to-t from-neutral-100 to-white [&:has(input:focus)]:ring-neutral-400 [&:has(input:focus)]:from-neutral-200 [&:has(input:focus)]:to-neutral-100 hover:ring-neutral-400 relative [&:has(input:disabled)]:cursor-not-allowed [&:has(input:disabled)]:ring-neutral-300 [&:has(input:disabled)]:text-neutral-400!";
@@ -48,7 +48,7 @@ export function Input(props: InputProps) {
 
   return (
     <label for={props.id ?? inputId} class={containerClasses()}>
-      {props.icon ?? <Search />}
+      {props.icon}
       <ark.input
         id={inputId}
         {...attrs}
