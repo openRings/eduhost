@@ -45,7 +45,7 @@ export type ButtonProps =
   | (AnchorProps & BaseButtonProps & { href: string });
 
 export function Button(props: ButtonProps) {
-  const [_, attrs] = splitProps(props as any, [
+  const [_, attrs] = splitProps(props, [
     "variant",
     "size",
     "isPending",
@@ -53,7 +53,6 @@ export function Button(props: ButtonProps) {
     "iconStart",
     "iconEnd",
     "class",
-    "href",
   ]);
 
   const classes = () =>
