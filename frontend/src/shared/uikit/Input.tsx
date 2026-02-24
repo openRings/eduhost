@@ -1,6 +1,6 @@
 import { ark, HTMLArkProps } from "@ark-ui/solid";
 import { clsx } from "clsx";
-import { Search, X } from "lucide-solid";
+import { X } from "lucide-solid";
 import { createSignal, createUniqueId, JSX, Show, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
