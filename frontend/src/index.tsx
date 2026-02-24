@@ -21,6 +21,7 @@ const App = () => (
         <Route path="/selects" component={Selects} />
         <Route path="/blocks" component={Blocks} />
       </Router>
+      <Section class="grow" />
     </div>
     <Section class="h-auto grow" />
   </div>
