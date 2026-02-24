@@ -2,6 +2,7 @@
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
 import { Section } from "./shared/Section";
+
 import "./tailwind.css";
 import "solid-devtools";
 
@@ -13,7 +14,7 @@ import Blocks from "./pages/blocks";
 const App = () => (
   <div class="flex min-h-screen gap-0.5">
     <Section class="h-auto grow" />
-    <div class="flex w-[1200px] flex-col gap-0.5">
+    <div class="flex w-300 flex-col gap-0.5">
       <Router>
         <Route path="/buttons" component={Buttons} />
         <Route path="/inputs" component={Inputs} />
@@ -21,7 +22,7 @@ const App = () => (
         <Route path="/blocks" component={Blocks} />
       </Router>
     </div>
-    <Section class="p-md h-auto grow" />
+    <Section class="h-auto grow" />
   </div>
 );
 
