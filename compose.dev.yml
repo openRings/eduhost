@@ -4,6 +4,7 @@ services:
     image: caddy:2.11-alpine
     ports:
       - 80:80
+      - 3000:3000
     volumes:
       - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
 
@@ -38,3 +39,9 @@ services:
       - ./data/database:/var/lib/postgresql
     env_file: .dev.env
 
+  grafana:
+    restart: unless-stopped
+    image: grafana/grafana:12.3
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_LOG_LEVEL: error
