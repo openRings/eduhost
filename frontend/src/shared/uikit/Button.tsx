@@ -1,7 +1,9 @@
 import { ark, HTMLArkProps } from "@ark-ui/solid";
+import { A, AnchorProps } from "@solidjs/router";
 import { clsx } from "clsx";
 import { LoaderCircle } from "lucide-solid";
 import { JSX, splitProps, Show } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import { twMerge } from "tailwind-merge";
 
 const baseClass =
@@ -29,7 +31,7 @@ const sizeClass = {
   md: "px-lg h-8",
 };
 
-export type ButtonProps = HTMLArkProps<"button"> & {
+export type BaseButtonProps = {
   variant?: keyof typeof variantClass;
   size?: keyof typeof sizeClass;
   isPending?: boolean;
@@ -38,8 +40,12 @@ export type ButtonProps = HTMLArkProps<"button"> & {
   iconEnd?: JSX.Element;
 };
 
+export type ButtonProps =
+  | (HTMLArkProps<"button"> & BaseButtonProps)
+  | (AnchorProps & BaseButtonProps & { href: string });
+
 export function Button(props: ButtonProps) {
-  const [_, attrs] = splitProps(props, [
+  const [_, attrs] = splitProps(props as any, [
     "variant",
     "size",
     "isPending",
@@ -47,6 +53,7 @@ export function Button(props: ButtonProps) {
     "iconStart",
     "iconEnd",
     "class",
+    "href",
   ]);
 
   const classes = () =>
@@ -60,8 +67,19 @@ export function Button(props: ButtonProps) {
       ),
     );
 
+  const component = () =>
+    "href" in props ? (
+      <A {...(attrs as AnchorProps)} class={classes()}>
+        {props.children}
+      </A>
+    ) : (
+      <ark.button {...(attrs as HTMLArkProps<"button">)} class={classes()}>
+        {props.children}
+      </ark.button>
+    );
+
   return (
-    <ark.button {...attrs} class={classes()}>
+    <Dynamic component={component}>
       <Show
         when={!props.isPending}
         fallback={
@@ -90,6 +108,6 @@ export function Button(props: ButtonProps) {
           </div>
         </Show>
       </Show>
-    </ark.button>
+    </Dynamic>
   );
 }
