@@ -1,11 +1,11 @@
 meta {
-  name: get current session
+  name: refresh
   type: http
-  seq: 5
+  seq: 4
 }
 
-get {
-  url: localhost/api/session
+post {
+  url: http://localhost/api/auth/refresh
   body: none
   auth: inherit
 }
