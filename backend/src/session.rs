@@ -111,11 +111,11 @@ where
             .ok_or(EndpointError::Other(StatusCode::UNAUTHORIZED))?;
 
         let row = sqlx::query_as::<_, SessionModel>(
-            r#"SELECT s.id AS session_id, u.id AS user_id, u.is_admin,
+            "SELECT s.id AS session_id, u.id AS user_id, u.is_admin,
             EXISTS (SELECT 1 FROM teachers t WHERE t.user_id = u.id) AS is_teacher
             FROM sessions s
             JOIN users u ON u.id = s.user_id
-            WHERE s.access_token = $1"#,
+            WHERE s.access_token = $1 AND s.created_at + s.access_duration > NOW()",
         )
         .bind(token)
         .fetch_optional(state)
