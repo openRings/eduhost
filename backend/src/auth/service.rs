@@ -9,9 +9,11 @@ use rand::RngExt;
 use sqlx::PgPool;
 use time::Duration;
 
-use crate::auth::commands::{SessionCreateCommand, UserCreateCommand};
-use crate::auth::dtos::{SigninRequest, SigninResponse, SignupRequest};
-use crate::auth::queries::{IsUsernameExistsQuery, UserCredentialsQuery};
+use crate::auth::commands::{SessionCreateCommand, SessionExpireCommand, UserCreateCommand};
+use crate::auth::dtos::{NewSessionResponse, SigninRequest, SignupRequest};
+use crate::auth::queries::{
+    IsUsernameExistsQuery, SessionSummaryByRefreshQuery, UserCredentialsQuery,
+};
 
 pub struct AuthService {
     pool: PgPool,
@@ -61,7 +63,61 @@ impl AuthService {
         Ok(())
     }
 
-    pub async fn signin(&self, body: SigninRequest) -> EndpointResult<SigninResponse> {
+    pub async fn refresh(&self, refresh_token: &str) -> EndpointResult<NewSessionResponse> {
+        let session_summary = SessionSummaryByRefreshQuery { refresh_token }
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("failed to get session summary: {}..", &refresh_token[..8]))?
+            .ok_or_else(|| {
+                tracing::warn!(refresh_token = %refresh_token[..8], "user try to unknown session");
+
+                StatusCode::UNAUTHORIZED
+            })?;
+
+        let session_expired = SessionExpireCommand {
+            session_id: session_summary.id,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| {
+            format!(
+                "failed to delete session before refresh, user: {} refresh_token: {}..",
+                session_summary.user_id,
+                &refresh_token[..8]
+            )
+        })?;
+
+        if session_expired != 1 {
+            return Err(StatusCode::UNAUTHORIZED.into());
+        }
+
+        let (access_token, refresh_token) = generate_tokens();
+        let access_duration = Duration::minutes(10);
+        let refresh_duration = Duration::days(31);
+
+        SessionCreateCommand {
+            user_id: session_summary.user_id,
+            access_token: &access_token,
+            refresh_token: &refresh_token,
+            access_duration,
+            refresh_duration,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| {
+            format!(
+                "failed to create session while refresh for user: {}",
+                session_summary.user_id
+            )
+        })?;
+
+        Ok(NewSessionResponse {
+            access_token,
+            refresh_token,
+        })
+    }
+
+    pub async fn signin(&self, body: SigninRequest) -> EndpointResult<NewSessionResponse> {
         let SigninRequest { username, password } = &body;
 
         let credentials = UserCredentialsQuery { username }
@@ -91,7 +147,7 @@ impl AuthService {
         .await
         .with_context(|| format!("failed to create session: {username}"))?;
 
-        Ok(SigninResponse {
+        Ok(NewSessionResponse {
             access_token,
             refresh_token,
         })

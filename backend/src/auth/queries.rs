@@ -7,6 +7,26 @@ pub struct IsUsernameExistsQuery<'a> {
     pub username: &'a str,
 }
 
+#[derive(Debug, Clone, FromRow)]
+pub struct UserCredentialsModel {
+    pub id: Uuid,
+    pub password_hash: String,
+}
+
+pub struct UserCredentialsQuery<'a> {
+    pub username: &'a str,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct SessionSummaryModel {
+    pub id: Uuid,
+    pub user_id: Uuid,
+}
+
+pub struct SessionSummaryByRefreshQuery<'a> {
+    pub refresh_token: &'a str,
+}
+
 impl<'a> IsUsernameExistsQuery<'a> {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<bool>
     where
@@ -20,16 +40,6 @@ impl<'a> IsUsernameExistsQuery<'a> {
     }
 }
 
-#[derive(Debug, Clone, FromRow)]
-pub struct UserCredentialsModel {
-    pub id: Uuid,
-    pub password_hash: String,
-}
-
-pub struct UserCredentialsQuery<'a> {
-    pub username: &'a str,
-}
-
 impl<'a> UserCredentialsQuery<'a> {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Option<UserCredentialsModel>>
     where
@@ -40,5 +50,21 @@ impl<'a> UserCredentialsQuery<'a> {
             .fetch_optional(conn)
             .await
             .context("failed to fetch")
+    }
+}
+
+impl<'a> SessionSummaryByRefreshQuery<'a> {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Option<SessionSummaryModel>>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_as(
+            "SELECT id, user_id FROM sessions
+            WHERE refresh_token = $1 AND created_at + refresh_duration > NOW()",
+        )
+        .bind(self.refresh_token)
+        .fetch_optional(conn)
+        .await
+        .context("failed to fetch")
     }
 }

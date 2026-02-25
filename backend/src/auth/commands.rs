@@ -11,6 +11,18 @@ pub struct UserCreateCommand<'a> {
     pub password_hash: &'a str,
 }
 
+pub struct SessionCreateCommand<'a> {
+    pub user_id: Uuid,
+    pub access_token: &'a str,
+    pub refresh_token: &'a str,
+    pub access_duration: Duration,
+    pub refresh_duration: Duration,
+}
+
+pub struct SessionExpireCommand {
+    pub session_id: Uuid,
+}
+
 impl<'a> UserCreateCommand<'a> {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<u64>
     where
@@ -36,14 +48,6 @@ impl<'a> UserCreateCommand<'a> {
     }
 }
 
-pub struct SessionCreateCommand<'a> {
-    pub user_id: Uuid,
-    pub access_token: &'a str,
-    pub refresh_token: &'a str,
-    pub access_duration: Duration,
-    pub refresh_duration: Duration,
-}
-
 impl<'a> SessionCreateCommand<'a> {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<u64>
     where
@@ -65,5 +69,19 @@ impl<'a> SessionCreateCommand<'a> {
         .await
         .map(|r| r.rows_affected())
         .context("failed to execute query")
+    }
+}
+
+impl SessionExpireCommand {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<u64>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query("DELETE FROM sessions WHERE id = $1")
+            .bind(self.session_id)
+            .execute(conn)
+            .await
+            .map(|r| r.rows_affected())
+            .context("failed to execute query")
     }
 }

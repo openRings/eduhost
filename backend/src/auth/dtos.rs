@@ -18,6 +18,18 @@ pub struct SignupRequest {
     pub password_repeat: String,
 }
 
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SigninRequest {
+    pub username: String,
+    pub password: String,
+}
+
+pub struct NewSessionResponse {
+    pub access_token: String,
+    pub refresh_token: String,
+}
+
 impl Normalize for SignupRequest {
     fn normalize(self) -> Result<Self, String> {
         if !(4..=12).contains(&self.username.len()) {
@@ -75,13 +87,6 @@ impl Normalize for SignupRequest {
     }
 }
 
-#[derive(Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SigninRequest {
-    pub username: String,
-    pub password: String,
-}
-
 impl Normalize for SigninRequest {
     fn normalize(mut self) -> Result<Self, String> {
         self.username.make_ascii_lowercase();
@@ -90,12 +95,7 @@ impl Normalize for SigninRequest {
     }
 }
 
-pub struct SigninResponse {
-    pub access_token: String,
-    pub refresh_token: String,
-}
-
-impl IntoResponse for SigninResponse {
+impl IntoResponse for NewSessionResponse {
     fn into_response(self) -> Response {
         let cookie = Cookie::new("refresh-token", self.refresh_token)
             .with_path("/api/auth")
