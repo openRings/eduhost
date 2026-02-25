@@ -11,6 +11,7 @@ import Buttons from "./pages/buttons";
 import Inputs from "./pages/inputs";
 import Selects from "./pages/selects";
 import Blocks from "./pages/blocks";
+import Signup from "./pages/signup";
 
 const App = () => (
   <div class="flex min-h-screen gap-0.5">
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/inputs" component={Inputs} />
         <Route path="/selects" component={Selects} />
         <Route path="/blocks" component={Blocks} />
+        <Route path="/signup" component={Signup} />
       </Router>
       <Section class="grow" />
     </div>
