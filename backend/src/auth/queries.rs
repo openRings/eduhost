@@ -1,6 +1,5 @@
 use anyhow::Context;
-use sqlx::FromRow;
-use sqlx::PgExecutor;
+use sqlx::{FromRow, PgExecutor};
 use uuid::Uuid;
 
 pub struct IsUsernameExistsQuery<'a> {
