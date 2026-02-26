@@ -39,6 +39,13 @@ services:
       - ./data/database:/var/lib/postgresql
     env_file: .dev.env
 
+  prometheus:
+    image: prom/prometheus:v3.10.0
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus
+
   grafana:
     restart: unless-stopped
     image: grafana/grafana:12.3
