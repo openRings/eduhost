@@ -13,8 +13,18 @@ import { Input } from "../shared/uikit/Input";
 import { Select } from "../shared/uikit/Select";
 import { Label } from "../shared/uikit/Label";
 import { Notification } from "../components/Notification";
+import { createSignal } from "solid-js";
+import { fetchApi } from "../utils/api";
 
 export default function () {
+  const [sessionId, setSessionId] = createSignal("");
+
+  const fetchSessionId = async () => {
+    const { body } = await fetchApi("/session");
+
+    setSessionId(body.sessionId);
+  };
+
   return (
     <>
       <Section label="Блоки">
@@ -64,9 +74,17 @@ export default function () {
             placeholder="Выберите предмет"
           />
           <Button iconStart={<BrushCleaning />}>Сбросить фильтры</Button>
-          <Button iconStart={<Plus />} variant="accent">
+          <Button
+            iconStart={<Plus />}
+            variant="accent"
+            onclick={fetchSessionId}
+          >
             Новый проект
           </Button>
+        </div>
+        <div class="gap-md flex">
+          <span>Текущая сессия:</span>
+          <span>{sessionId() || "Пусто"}</span>
         </div>
       </Section>
       <Section labelIcon={<BellRing />} label="Уведомления">
