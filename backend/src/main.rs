@@ -3,6 +3,7 @@ use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Router, middleware};
 use axum_cookie::CookieLayer;
+use axum_prometheus::PrometheusMetricLayer;
 use eduhost::error::error_middleware;
 use eduhost::session::{Session, Student};
 use serde_json::json;
@@ -18,6 +19,8 @@ mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
+
     let (layer, task) = tracing_loki::builder()
         .extra_field("pid", format!("{}", process::id()))?
         .build_url(Url::parse("http://loki:3100").unwrap())?;
@@ -36,10 +39,12 @@ async fn main() -> anyhow::Result<()> {
 
     let router = Router::new()
         .route("/session", get(session))
+        .route("/metrics", get(|| async move { metric_handle.render() }))
         .nest("/auth", auth::routes())
         .nest("/profile", profile::routes())
         .layer(middleware::from_fn(error_middleware))
         .layer(CookieLayer::strict())
+        .layer(prometheus_layer)
         .with_state(pool);
 
     let listener = TcpListener::bind("0.0.0.0:80")

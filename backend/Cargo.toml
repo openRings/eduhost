@@ -9,6 +9,7 @@ tokio.workspace = true
 uuid.workspace = true
 axum.workspace = true
 axum-cookie.workspace = true
+axum-prometheus.workspace = true
 tracing.workspace = true
 tracing-loki.workspace = true
 tracing-subscriber.workspace = true
