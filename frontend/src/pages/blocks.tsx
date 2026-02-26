@@ -14,15 +14,15 @@ import { Select } from "../shared/uikit/Select";
 import { Label } from "../shared/uikit/Label";
 import { Notification } from "../components/Notification";
 import { createSignal } from "solid-js";
-import { fetchApi } from "../utils/api";
+import { fetchSession } from "../entities/session";
 
 export default function () {
   const [sessionId, setSessionId] = createSignal("");
 
   const fetchSessionId = async () => {
-    const { body } = await fetchApi("/session");
+    const session = await fetchSession();
 
-    setSessionId(body.sessionId);
+    setSessionId(session.sessionId);
   };
 
   return (
