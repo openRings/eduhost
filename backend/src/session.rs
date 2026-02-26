@@ -20,7 +20,7 @@ impl AccessLevelMarker for Student {}
 impl AccessLevelMarker for Teacher {}
 impl AccessLevelMarker for Admin {}
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, sqlx::Type)]
 pub enum AccessLevel {
     Student,
     Teacher,

@@ -14,6 +14,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
 mod auth;
+mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -36,6 +37,7 @@ async fn main() -> anyhow::Result<()> {
     let router = Router::new()
         .route("/session", get(session))
         .nest("/auth", auth::routes())
+        .nest("/profile", profile::routes())
         .layer(middleware::from_fn(error_middleware))
         .layer(CookieLayer::strict())
         .with_state(pool);
@@ -51,6 +53,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+// TODO: remove that
 async fn session(session: Session<Student>) -> impl IntoResponse {
     json!({
         "userId": session.user_id(),
