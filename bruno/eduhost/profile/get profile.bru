@@ -1,16 +1,15 @@
 meta {
-  name: refresh
+  name: get profile
   type: http
-  seq: 4
+  seq: 1
 }
 
-post {
-  url: http://localhost/api/auth/refresh
+get {
+  url: http://localhost/api/profile
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
-  timeout: 0
 }

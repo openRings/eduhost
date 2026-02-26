@@ -1,0 +1,27 @@
+meta {
+  name: refresh
+  type: http
+  seq: 3
+  tags: [
+    auth
+  ]
+}
+
+post {
+  url: http://localhost/api/auth/refresh
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const cookieHeader = res.getHeader("set-cookie")[0]
+  
+  const token = cookieHeader.match(/refresh-token=([^;]+)/)?.[1];
+  
+  console.log(token)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

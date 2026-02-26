@@ -3,5 +3,43 @@ auth {
 }
 
 auth:bearer {
-  token: f3eHZMaW4fnaHTOk5qaGOwCIOaLTttZN0KspnJX9FuE
+  token: jVm_2AvdzAEk5up6LIwXmQb8wBDLMloHVtIjesccO_g
+}
+
+script:pre-request {
+  const refreshToken = bru.getEnvVar("refresh-token");
+  
+  if (req.getTags().includes("auth")) {
+    return
+  }
+  
+  if (!refreshToken) {
+    console.warn("skipped session refresh, no refresh-token");
+    return
+  }
+  
+  const response = await bru.sendRequest({
+    method: "POST",
+    url: "http://localhost/api/auth/refresh",
+    headers: {
+      "Content-Type": "application/json",
+      "Cookie": `refresh-token=${refreshToken}`
+    }
+  });
+  
+  if (response.status === 200) {
+    const body = response.body;
+    const data = typeof body === "string" ? JSON.parse(body) : body;
+    
+    const cookieHeader = response.getHeader("set-cookie")[0]
+    const refreshToken = cookieHeader.match(/refresh-token=([^;]+)/)?.[1];
+    
+    bru.setEnvVar("refresh-token", refreshToken)
+  
+    console.log(data);
+    
+    if (data.token) {
+      bru.setVar("access_token", data.token);
+    }
+  }
 }
