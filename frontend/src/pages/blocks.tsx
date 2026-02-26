@@ -11,6 +11,7 @@ import { Button } from "../shared/uikit/Button";
 import { Input } from "../shared/uikit/Input";
 import { Select } from "../shared/uikit/Select";
 import { Label } from "../shared/uikit/Label";
+import { Notification } from "../components/Notification";
 
 export default function () {
   return (
@@ -66,6 +67,20 @@ export default function () {
             Новый проект
           </Button>
         </div>
+      </Section>
+      <Section label="Уведомления">
+        <Notification id="123" level="info" message="Обычное уведомление" />
+        <Notification
+          id="123"
+          level="success"
+          message="Уведомление об успешном действии"
+        />
+        <Notification
+          id="123"
+          level="warning"
+          message="Длинный текст предупреждения бла бла бла бла бла бла бла бла бла бла бла"
+        />
+        <Notification id="123" level="error" message="Уведомление об ошибке" />
       </Section>
     </>
   );

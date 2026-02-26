@@ -1,6 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
+import { Notifications } from "./features/Notifications";
 import { Section } from "./shared/Section";
 
 import "./tailwind.css";
@@ -24,6 +25,7 @@ const App = () => (
       <Section class="grow" />
     </div>
     <Section class="h-auto grow" />
+    <Notifications />
   </div>
 );
 

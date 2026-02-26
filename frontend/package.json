@@ -24,9 +24,10 @@
   "dependencies": {
     "@ark-ui/solid": "^5.31.0",
     "@solidjs/router": "^0.15.4",
-    "clsx": "^2.1.1",
+    "solid-motionone": "^1.0.4",
     "lucide-solid": "^0.563.0",
+    "tailwind-merge": "^3.4.0",
     "solid-js": "^1.9.9",
-    "tailwind-merge": "^3.4.0"
+    "clsx": "^2.1.1"
   }
 }
