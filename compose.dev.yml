@@ -57,7 +57,6 @@ services:
       - ./docker/grafana/dashboards:/etc/grafana/dashboards
       - ./data/grafana:/var/lib/grafana
 
-
   loki:
     restart: unless-stopped
     image: grafana/loki:3
@@ -65,5 +64,3 @@ services:
     volumes:
       - ./docker/loki:/etc/loki
       - ./data/loki:/loki
-
-
