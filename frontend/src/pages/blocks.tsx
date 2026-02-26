@@ -1,4 +1,5 @@
 import {
+  BellRing,
   BrushCleaning,
   ExternalLink,
   PanelsTopLeft,
@@ -47,7 +48,7 @@ export default function () {
           </Block>
         </div>
       </Section>
-      <Section label={<Label icon={<PanelsTopLeft />}>Пример заголовка</Label>}>
+      <Section labelIcon={<PanelsTopLeft />} label="Пример заголовка">
         <div class="gap-md flex">
           <Input
             icon={<Search />}
@@ -68,7 +69,7 @@ export default function () {
           </Button>
         </div>
       </Section>
-      <Section label="Уведомления">
+      <Section labelIcon={<BellRing />} label="Уведомления">
         <Notification id="123" level="info" message="Обычное уведомление" />
         <Notification
           id="123"
