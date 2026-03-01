@@ -169,12 +169,7 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
     const form = useFormContext();
 
     return (
-      <Button
-        {...attrs}
-        isPending={form.isPending()}
-        pendingText="Вход.."
-        type="submit"
-      >
+      <Button {...attrs} isPending={form.isPending()} type="submit">
         {props.children}
       </Button>
     );
