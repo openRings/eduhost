@@ -103,7 +103,11 @@ export function Button(props: ButtonProps) {
         {children()}
       </A>
     ) : (
-      <ark.button {...(attrs as HTMLArkProps<"button">)} class={classes()}>
+      <ark.button
+        {...(attrs as HTMLArkProps<"button">)}
+        type={props.type ?? "button"}
+        class={classes()}
+      >
         {children()}
       </ark.button>
     );
