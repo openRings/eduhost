@@ -1,9 +1,11 @@
 import {
   BellRing,
   BrushCleaning,
+  Contact,
   ExternalLink,
   PanelsTopLeft,
   Plus,
+  RectangleEllipsis,
   Search,
 } from "lucide-solid";
 import { Block } from "../shared/Block";
@@ -15,6 +17,7 @@ import { Label } from "../shared/uikit/Label";
 import { Notification } from "../components/Notification";
 import { createSignal } from "solid-js";
 import { fetchSession } from "../entities/session";
+import { Field } from "../shared/Field";
 
 export default function () {
   const [sessionId, setSessionId] = createSignal("");
@@ -100,6 +103,14 @@ export default function () {
           message="Длинный текст предупреждения бла бла бла бла бла бла бла бла бла бла бла"
         />
         <Notification id="123" level="error" message="Уведомление об ошибке" />
+      </Section>
+      <Section labelIcon={<RectangleEllipsis />} label="Поля">
+        <Field
+          label="Юзернейм"
+          icon={<Contact />}
+          placeholder="Введите ваш юзернейм"
+          class="w-120"
+        />
       </Section>
     </>
   );

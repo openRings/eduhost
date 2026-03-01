@@ -1,7 +1,7 @@
 import { ark, HTMLArkProps } from "@ark-ui/solid";
 import { clsx } from "clsx";
 import { X } from "lucide-solid";
-import { createSignal, createUniqueId, JSX, Show, splitProps } from "solid-js";
+import { createUniqueId, JSX, Show, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 const baseClass =
@@ -31,8 +31,6 @@ export function Input(props: InputProps) {
     "containerClass",
   ]);
 
-  const [value, setValue] = createSignal(props.value);
-
   const inputId = createUniqueId();
 
   const classes = () => twMerge(clsx(baseClass, props.class));
@@ -49,18 +47,10 @@ export function Input(props: InputProps) {
   return (
     <label for={props.id ?? inputId} class={containerClasses()}>
       {props.icon}
-      <ark.input
-        id={inputId}
-        {...attrs}
-        class={classes()}
-        oninput={(e) => {
-          setValue(e.target.value);
-          props.oninput && (props.oninput as CallableFunction)(e);
-        }}
-      >
+      <ark.input id={inputId} {...attrs} class={classes()}>
         {props.children}
       </ark.input>
-      <Show when={!!value() && !!props.onclear}>
+      <Show when={!!props.onclear}>
         <button
           title="Очистить"
           onclick={() => props.onclear!()}
