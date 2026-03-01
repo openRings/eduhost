@@ -14,7 +14,7 @@ const FormData = z.object({
 });
 
 export default function () {
-  const Form = createForm(FormData);
+  const { Form } = createForm(FormData);
 
   return (
     <Section label="Формы">

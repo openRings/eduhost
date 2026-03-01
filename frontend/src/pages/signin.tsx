@@ -5,6 +5,7 @@ import { Contact, KeyRound, LogIn } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
 import { fetchApi } from "../utils/api";
 import { error, success } from "../utils/notifications";
+import { useLocation } from "@solidjs/router";
 
 const SigninForm = z.object({
   username: z.string().min(4).max(12).lowercase(),
@@ -12,7 +13,12 @@ const SigninForm = z.object({
 });
 
 export default function () {
-  const Form = createForm(SigninForm);
+  const location = useLocation();
+
+  const { Form } = createForm(SigninForm, {
+    username: (location.state as any).username,
+    password: (location.state as any).password,
+  });
 
   const signin = async (data: z.infer<typeof SigninForm>) => {
     const { status } = await fetchApi("/auth/signin", {
@@ -48,6 +54,7 @@ export default function () {
           <Form.Clear></Form.Clear>
           <Form.Submit
             title="Войти в аккаунт"
+            pendingText="Вход.."
             class="grow"
             variant="primary"
             iconStart={<LogIn />}

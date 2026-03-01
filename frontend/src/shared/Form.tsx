@@ -3,6 +3,7 @@ import {
   createContext,
   createSignal,
   JSX,
+  onMount,
   splitProps,
   useContext,
 } from "solid-js";
@@ -13,8 +14,24 @@ import { Button, ButtonProps } from "./uikit/Button";
 import { BrushCleaning } from "lucide-solid";
 import { HTMLArkProps } from "@ark-ui/solid";
 
-export function createForm<S extends ZodObject<any>>(schema: S) {
+export function createForm<S extends ZodObject<any>>(
+  schema: S,
+  initialValues?: Partial<z.infer<S>>,
+) {
   type FormData = z.infer<S>;
+
+  const [isPending, setIsPending] = createSignal(false);
+
+  const [values, setValues] = createStore<Partial<FormData>>({});
+  const [errors, setErrors] = createStore<
+    Partial<Record<keyof FormData, string>>
+  >({});
+
+  onMount(() => {
+    if (!initialValues) return;
+    for (const key in initialValues)
+      setValues(key as any, initialValues[key] as any);
+  });
 
   const FormContext = createContext<{
     values: Partial<FormData>;
@@ -40,13 +57,6 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
     },
   ) {
     const [_, attrs] = splitProps(props, ["onsubmit"]);
-
-    const [isPending, setIsPending] = createSignal(false);
-
-    const [values, setValues] = createStore<Partial<FormData>>({});
-    const [errors, setErrors] = createStore<
-      Partial<Record<keyof FormData, string>>
-    >({});
 
     const setFieldValue = <K extends keyof FormData>(
       name: K,
@@ -179,5 +189,5 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
   Form.Clear = ClearButton;
   Form.Submit = SubmitButton;
 
-  return Form;
+  return { Form, values, errors, isPending };
 }
