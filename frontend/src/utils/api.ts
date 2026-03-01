@@ -1,4 +1,5 @@
 import { currentAccessToken, isAuthorized, refreshSession } from "./auth";
+import { error } from "./notifications";
 
 export type FetchApiOptions = Omit<RequestInit, "body"> & {
   authRedirect?: boolean;
@@ -30,7 +31,7 @@ export async function fetchApi<T = any>(
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
   if (body) headers.set("Content-Type", "application/json");
 
-  const response = await fetch(fetchPath, { ...fetchOptions, headers });
+  const response = await fetch(fetchPath, { ...fetchOptions, headers, body });
   const status = response.status;
 
   if (status == 401) {
@@ -42,7 +43,13 @@ export async function fetchApi<T = any>(
     !(authRedirect == false) && window.location.assign("/signin");
   }
 
-  const responseBody: T = await response.json();
+  let responseBody: T = undefined as any;
+
+  if (response.headers.get("Content-Type") == "application/json")
+    responseBody = await response.json();
+  else responseBody = (await response.text()) as any;
+
+  if (status == 400) error((responseBody as any).message);
 
   return {
     status,
