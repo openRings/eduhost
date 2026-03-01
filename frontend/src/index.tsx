@@ -13,6 +13,7 @@ import Inputs from "./pages/inputs";
 import Selects from "./pages/selects";
 import Blocks from "./pages/blocks";
 import Signin from "./pages/signin";
+import Signup from "./pages/signup";
 import Form from "./pages/form";
 
 const App = () => {
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/blocks" component={Blocks} />
           <Route path="/form" component={Form} />
           <Route path="/signin" component={Signin} />
+          <Route path="/signup" component={Signup} />
         </Router>
       </div>
       <Section class="h-auto grow" />
