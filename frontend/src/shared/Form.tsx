@@ -137,7 +137,6 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
         title="Очистить форму"
         {...attrs}
         disabled={isDisabled()}
-        type="button"
         onclick={form.clear}
       >
         {props.children ?? "Очистить"}
