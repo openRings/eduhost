@@ -50,6 +50,7 @@ export function Button(props: ButtonProps) {
     "size",
     "isPending",
     "pendingText",
+    "onclick",
     "iconStart",
     "iconEnd",
     "class",
@@ -105,6 +106,10 @@ export function Button(props: ButtonProps) {
     ) : (
       <ark.button
         {...(attrs as HTMLArkProps<"button">)}
+        onclick={(e) => {
+          if (props.isPending) return;
+          props.onclick && (props.onclick as CallableFunction)(e);
+        }}
         type={props.type ?? "button"}
         class={classes()}
       >

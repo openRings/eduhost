@@ -1,4 +1,11 @@
-import { createContext, JSX, splitProps, useContext } from "solid-js";
+import {
+  Accessor,
+  createContext,
+  createSignal,
+  JSX,
+  splitProps,
+  useContext,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import { FieldProps, Field as UIKitField } from "./Field";
 import { z, ZodObject } from "zod";
@@ -12,6 +19,7 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
   const FormContext = createContext<{
     values: Partial<FormData>;
     errors: Partial<Record<keyof FormData, string>>;
+    isPending: Accessor<boolean>;
     clear: () => void;
     setFieldValue: <K extends keyof FormData>(
       name: K,
@@ -26,12 +34,14 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
   }
 
   function Form(
-    props: HTMLArkProps<"form"> & {
+    props: Omit<HTMLArkProps<"form">, "onsubmit"> & {
       onsubmit?: (data: FormData) => Promise<void>;
       children?: JSX.Element;
     },
   ) {
     const [_, attrs] = splitProps(props, ["onsubmit"]);
+
+    const [isPending, setIsPending] = createSignal(false);
 
     const [values, setValues] = createStore<Partial<FormData>>({});
     const [errors, setErrors] = createStore<
@@ -65,6 +75,7 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
 
     const handleSubmit = async (e: Event) => {
       e.preventDefault();
+      if (isPending()) return;
 
       const result = schema.safeParse(values);
 
@@ -78,11 +89,19 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
         return;
       }
 
-      props.onsubmit && (await props.onsubmit(result.data));
+      setIsPending(true);
+
+      try {
+        props.onsubmit && (await props.onsubmit(result.data));
+      } finally {
+        setIsPending(false);
+      }
     };
 
     return (
-      <FormContext.Provider value={{ values, errors, clear, setFieldValue }}>
+      <FormContext.Provider
+        value={{ values, errors, isPending, clear, setFieldValue }}
+      >
         <form {...attrs} onsubmit={handleSubmit}>
           {props.children}
         </form>
@@ -147,8 +166,15 @@ export function createForm<S extends ZodObject<any>>(schema: S) {
   function SubmitButton(props: ButtonProps) {
     const [_, attrs] = splitProps(props, []);
 
+    const form = useFormContext();
+
     return (
-      <Button {...attrs} type="submit">
+      <Button
+        {...attrs}
+        isPending={form.isPending()}
+        pendingText="Вход.."
+        type="submit"
+      >
         {props.children}
       </Button>
     );

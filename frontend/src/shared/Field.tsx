@@ -49,6 +49,7 @@ export function Field(props: FieldProps) {
         />
         <Show when={props.copyable}>
           <Button
+            title="Скопировать"
             onclick={() => copyToClipboard(inputElement!.value)}
             iconStart={<Clipboard />}
             size="md"
@@ -57,6 +58,7 @@ export function Field(props: FieldProps) {
         {props.children}
         <Show when={props.type === "password"}>
           <Button
+            title="Показать"
             onmousedown={() => setIsHide(false)}
             onmouseup={() => setIsHide(true)}
             onmouseleave={() => setIsHide(true)}
