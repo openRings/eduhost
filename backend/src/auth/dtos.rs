@@ -49,6 +49,20 @@ impl Normalize for SignupRequest {
             return Err("Юзернейм не может начинаться с цифры".to_string());
         }
 
+        if !(2..=30).contains(&self.first_name.len()) {
+            return Err("Имя должно быть длиной от 2 до 30 символов".to_string());
+        }
+
+        if !(4..=30).contains(&self.last_name.len()) {
+            return Err("Фамилия должна быть длиной от 4 до 30 символов".to_string());
+        }
+
+        if let Some(patronymic) = self.patronymic.as_ref()
+            && !(4..=30).contains(&patronymic.len())
+        {
+            return Err("Отчество должно быть длиной от 4 до 30 символов".to_string());
+        }
+
         if self.password != self.password_repeat {
             return Err("Пароли не совпадают".to_string());
         }
