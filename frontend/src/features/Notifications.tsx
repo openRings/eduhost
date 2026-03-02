@@ -6,7 +6,7 @@ export type NotificationsProps = {};
 
 export function Notifications(_props: NotificationsProps) {
   return (
-    <div class="gap-2xl fixed right-0 bottom-0 flex flex-col items-end p-12">
+    <div class="gap-2xl fixed right-0 bottom-0 z-20 flex flex-col items-end p-12">
       <For each={notifications()}>
         {(notification) => <Notification {...notification} />}
       </For>
