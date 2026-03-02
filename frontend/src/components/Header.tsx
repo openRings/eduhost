@@ -1,9 +1,13 @@
 import { ChevronsUpDown } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
+import { createResource, Suspense } from "solid-js";
+import { fetchProfile } from "../entities/profile";
 
 export type HeaderProps = {};
 
 export function Header(_props: HeaderProps) {
+  const [profile] = createResource(fetchProfile);
+
   return (
     <header class="py-2xl px-6xl sticky top-0 right-0 left-0 z-10 flex justify-center border-b border-neutral-300 bg-white/80 backdrop-blur-xs">
       <nav class="grid w-full max-w-[1200px] grid-cols-4 text-neutral-600">
@@ -30,7 +34,9 @@ export function Header(_props: HeaderProps) {
         </div>
         <div class="flex items-center justify-end">
           <Button variant="transparent" class="gap-md!">
-            Иванов иван
+            <Suspense fallback="Загрузка..">
+              {profile()?.lastName} {profile()?.firstName}
+            </Suspense>
             <div class="size-6 rounded-full bg-neutral-700" />
           </Button>
         </div>

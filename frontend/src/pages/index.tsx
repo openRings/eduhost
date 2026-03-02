@@ -13,8 +13,12 @@ import {
 import { Section } from "../shared/Section";
 import { Button } from "../shared/uikit/Button";
 import { Block } from "../shared/Block";
+import { createResource, Suspense } from "solid-js";
+import { fetchProfile } from "../entities/profile";
 
 export default function () {
+  const [profile] = createResource(fetchProfile);
+
   return (
     <>
       <Section class="gap-xl flex flex-row items-center justify-between">
@@ -23,8 +27,13 @@ export default function () {
             <User strokeWidth={1.5} />
           </div>
           <div class="gap-sm flex flex-col">
-            <span class="text-neutral-700">Иванов Иван Иванович</span>
-            <span class="text-neutral-500">ivan11</span>
+            <Suspense fallback="Загрузка..">
+              <span class="text-neutral-700">
+                {profile()?.lastName} {profile()?.firstName}{" "}
+                {profile()?.patronymic}
+              </span>
+              <span class="text-neutral-500">{profile()?.username}</span>
+            </Suspense>
           </div>
         </div>
         <Button title="Редактировать профиль" iconStart={<SquarePen />}>
