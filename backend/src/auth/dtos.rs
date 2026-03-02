@@ -63,10 +63,6 @@ impl Normalize for SignupRequest {
             return Err("Отчество должно быть длиной от 4 до 30 символов".to_string());
         }
 
-        if self.password != self.password_repeat {
-            return Err("Пароли не совпадают".to_string());
-        }
-
         if !(8..=30).contains(&self.password.len()) {
             return Err("Пароль должен быть длиной от 8 до 30 символов".to_string());
         }
@@ -93,6 +89,10 @@ impl Normalize for SignupRequest {
             return Err(
                 "Пароль должен содержать верхний регистр, нижний регистр и цифры".to_string(),
             );
+        }
+
+        if self.password != self.password_repeat {
+            return Err("Пароли не совпадают".to_string());
         }
 
         // TODO: add more verify
