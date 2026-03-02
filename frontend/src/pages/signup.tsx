@@ -15,11 +15,22 @@ import { useNavigate } from "@solidjs/router";
 
 const SigninForm = z
   .object({
-    username: z.string().min(4).max(12).lowercase(),
+    username: z
+      .string()
+      .min(4)
+      .max(12)
+      .lowercase()
+      .regex(/^[^0-9]/, "Не должен начинаться с цифры"),
     firstName: z.string().min(2).max(30),
     lastName: z.string().min(4).max(30),
     patronymic: z.string().min(4).max(30).optional(),
-    password: z.string().min(8).max(32),
+    password: z
+      .string()
+      .min(8)
+      .max(30)
+      .regex(/[a-z]/, "Должен содержать строчную букву")
+      .regex(/[A-Z]/, "Должен содержать заглавную букву")
+      .regex(/[0-9]/, "Должен содержать цифру"),
     passwordRepeat: z.string(),
   })
   .refine((data) => data.password === data.passwordRepeat, {
