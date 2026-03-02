@@ -1,8 +1,9 @@
 /* @refresh reload */
-import { render } from "solid-js/web";
-import { Router, Route } from "@solidjs/router";
+import { render, Show } from "solid-js/web";
+import { Router, Route, useLocation } from "@solidjs/router";
 import { Notifications } from "./features/Notifications";
 import { Section } from "./shared/Section";
+import { Header } from "./components/Header";
 import z from "zod";
 
 import "./tailwind.css";
@@ -14,6 +15,7 @@ import Selects from "./pages/selects";
 import Blocks from "./pages/blocks";
 import Signin from "./pages/signin";
 import Signup from "./pages/signup";
+import Index from "./pages/index";
 import Form from "./pages/form";
 
 const App = () => {
@@ -31,23 +33,36 @@ const App = () => {
     },
   });
 
+  const layout = (props: any) => {
+    const location = useLocation();
+
+    return (
+      <>
+        <Show when={!location.pathname.startsWith("/sign")}>
+          <Header />
+        </Show>
+        <Notifications />
+        <div class="flex min-h-screen gap-0.5">
+          <Section class="h-auto grow p-0! max-md:hidden" />
+          <div class="flex w-full max-w-[1264px] flex-col gap-0.5">
+            {props.children}
+          </div>
+          <Section class="h-auto grow p-0! max-md:hidden" />
+        </div>
+      </>
+    );
+  };
   return (
-    <div class="flex min-h-screen gap-0.5">
-      <Section class="h-auto grow max-md:hidden" />
-      <div class="flex w-full max-w-[1264px] flex-col gap-0.5">
-        <Router>
-          <Route path="/buttons" component={Buttons} />
-          <Route path="/inputs" component={Inputs} />
-          <Route path="/selects" component={Selects} />
-          <Route path="/blocks" component={Blocks} />
-          <Route path="/form" component={Form} />
-          <Route path="/signin" component={Signin} />
-          <Route path="/signup" component={Signup} />
-        </Router>
-      </div>
-      <Section class="h-auto grow max-md:hidden" />
-      <Notifications />
-    </div>
+    <Router root={layout}>
+      <Route path="/buttons" component={Buttons} />
+      <Route path="/inputs" component={Inputs} />
+      <Route path="/selects" component={Selects} />
+      <Route path="/blocks" component={Blocks} />
+      <Route path="/form" component={Form} />
+      <Route path="/" component={Index} />
+      <Route path="/signin" component={Signin} />
+      <Route path="/signup" component={Signup} />
+    </Router>
   );
 };
 render(App, document.body);
