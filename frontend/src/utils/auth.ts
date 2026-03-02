@@ -1,4 +1,5 @@
 import { createEffect, createSignal } from "solid-js";
+import { isDev } from "solid-js/web";
 
 type RefreshSessionResponse = {
   token: string;
@@ -33,6 +34,8 @@ export async function refreshSession(authRedirect?: boolean) {
   lock = new Promise((resolve) => (unlock = resolve));
 
   const response = await fetch("/api/auth/refresh", { method: "POST" });
+
+  if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 150));
 
   if (!response.ok) {
     setIsAuthorized(false);

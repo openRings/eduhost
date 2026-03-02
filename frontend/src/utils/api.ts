@@ -1,3 +1,4 @@
+import { isDev } from "solid-js/web";
 import { currentAccessToken, isAuthorized, refreshSession } from "./auth";
 import { error } from "./notifications";
 
@@ -33,6 +34,8 @@ export async function fetchApi<T = any>(
 
   const response = await fetch(fetchPath, { ...fetchOptions, headers, body });
   const status = response.status;
+
+  if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 150));
 
   if (status == 401) {
     if (isAuthorized()) {
