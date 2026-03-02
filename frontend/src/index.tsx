@@ -52,6 +52,7 @@ const App = () => {
       </>
     );
   };
+
   return (
     <Router root={layout}>
       <Route path="/buttons" component={Buttons} />
@@ -65,4 +66,5 @@ const App = () => {
     </Router>
   );
 };
+
 render(App, document.body);

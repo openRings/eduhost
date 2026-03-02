@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   /* font */
@@ -13,7 +13,7 @@
   --font-weight-bold: 650;
   --font-weight-extrabold: 750;
   --font-weight-black: 850;
-  
+
   /* spacings */
   --spacing-xxs: 2px;
   --spacing-xs: 4px;
@@ -32,42 +32,42 @@
   --rounded-md: 8px;
 
   /* neutral */
-  --color-neutral-100: #FAFAF9;
-  --color-neutral-200: #F5F5F4;
-  --color-neutral-300: #E7E5E4;
-  --color-neutral-400: #D6D3D1;
-  --color-neutral-500: #A6A09B;
-  --color-neutral-600: #79716B;
-  --color-neutral-700: #57534D;
-  --color-neutral-800: #44403B;
+  --color-neutral-100: #fafaf9;
+  --color-neutral-200: #f5f5f4;
+  --color-neutral-300: #e7e5e4;
+  --color-neutral-400: #d6d3d1;
+  --color-neutral-500: #a6a09b;
+  --color-neutral-600: #79716b;
+  --color-neutral-700: #57534d;
+  --color-neutral-800: #44403b;
   --color-neutral-900: #292524;
 
   /* primary */
-  --color-primary-100: #FFB86A;
-  --color-primary-200: #FF8904;
-  --color-primary-300: #FF6900;
-  --color-primary-400: #F54900;
-  --color-primary-500: #CA3500;
+  --color-primary-100: #ffb86a;
+  --color-primary-200: #ff8904;
+  --color-primary-300: #ff6900;
+  --color-primary-400: #f54900;
+  --color-primary-500: #ca3500;
 
   /* error */
-  --color-error-100: #FFA2A2;
-  --color-error-200: #FF6467;
-  --color-error-300: #FB2C36;
-  --color-error-400: #E7000B;
-  --color-error-500: #C10007;
+  --color-error-100: #ffa2a2;
+  --color-error-200: #ff6467;
+  --color-error-300: #fb2c36;
+  --color-error-400: #e7000b;
+  --color-error-500: #c10007;
 
   /* warning */
-  --color-warning-100: #FFDF20;
-  --color-warning-200: #FDC700;
-  --color-warning-300: #F0B100;
-  --color-warning-400: #D08700;
-  --color-warning-500: #A65F00;
+  --color-warning-100: #ffdf20;
+  --color-warning-200: #fdc700;
+  --color-warning-300: #f0b100;
+  --color-warning-400: #d08700;
+  --color-warning-500: #a65f00;
 
   /* success */
-  --color-success-100: #7BF1A8;
-  --color-success-200: #05DF72;
-  --color-success-300: #00C950;
-  --color-success-400: #00A63E;
+  --color-success-100: #7bf1a8;
+  --color-success-200: #05df72;
+  --color-success-300: #00c950;
+  --color-success-400: #00a63e;
   --color-success-500: #008236;
 
   /* animations */
@@ -82,5 +82,5 @@
 @font-face {
   font-family: Martian Grotesk;
   font-display: swap;
-  src: url('/grotesk.woff2') format('woff2');
+  src: url("/grotesk.woff2") format("woff2");
 }
