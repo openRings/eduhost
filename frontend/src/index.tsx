@@ -33,8 +33,8 @@ const App = () => {
 
   return (
     <div class="flex min-h-screen gap-0.5">
-      <Section class="h-auto grow" />
-      <div class="flex w-300 flex-col gap-0.5">
+      <Section class="h-auto grow max-md:hidden" />
+      <div class="flex w-full max-w-[1264px] flex-col gap-0.5">
         <Router>
           <Route path="/buttons" component={Buttons} />
           <Route path="/inputs" component={Inputs} />
@@ -45,7 +45,7 @@ const App = () => {
           <Route path="/signup" component={Signup} />
         </Router>
       </div>
-      <Section class="h-auto grow" />
+      <Section class="h-auto grow max-md:hidden" />
       <Notifications />
     </div>
   );
