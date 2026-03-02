@@ -16,8 +16,8 @@ export default function () {
   const location = useLocation();
 
   const { Form } = createForm(SigninForm, {
-    username: (location.state as any).username,
-    password: (location.state as any).password,
+    username: (location.state ?? ({} as any)).username,
+    password: (location.state ?? ({} as any)).password,
   });
 
   const signin = async (data: z.infer<typeof SigninForm>) => {
