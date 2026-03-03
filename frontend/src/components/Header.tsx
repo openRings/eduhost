@@ -12,11 +12,17 @@ export function Header(_props: HeaderProps) {
     <header class="py-2xl px-6xl sticky top-0 right-0 left-0 z-10 flex justify-center border-b border-neutral-300 bg-white/80 backdrop-blur-xs">
       <nav class="grid w-full max-w-[1200px] grid-cols-4 text-neutral-600">
         <div class="flex items-center justify-start">
-          <Button variant="transparent" iconStart={<ChevronsUpDown />}>
-            Студент
+          <Button
+            class="-ml-md"
+            variant="transparent"
+            iconStart={<ChevronsUpDown />}
+          >
+            <div class="gap-md flex">
+              Студент
+              <span class="text-neutral-400">/</span>
+              4ИСиП-111
+            </div>
           </Button>
-          <span class="text-neutral-400">/</span>
-          <Button variant="transparent">4ИСиП-111</Button>
         </div>
         <div class="gap-md col-span-2 flex items-center justify-center">
           <Button href="/" variant="transparent" class="text-primary-300">
@@ -33,7 +39,7 @@ export function Header(_props: HeaderProps) {
           </Button>
         </div>
         <div class="flex items-center justify-end">
-          <Button variant="transparent" class="gap-md!">
+          <Button variant="transparent" class="gap-md! -mr-md">
             <Suspense fallback="Загрузка..">
               {profile()?.lastName} {profile()?.firstName}
             </Suspense>
