@@ -27,9 +27,9 @@ export function Header(_props: HeaderProps) {
         </div>
         <div class="gap-md col-span-2 flex items-center justify-center">
           <NavLink href="/">Главная</NavLink>
-          <NavLink href="/signin">Проекты</NavLink>
-          <NavLink href="/signin">Базы данных</NavLink>
-          <NavLink href="/signin">Гайды</NavLink>
+          <NavLink href="/projects">Проекты</NavLink>
+          <NavLink href="/databases">Базы данных</NavLink>
+          <NavLink href="/guides">Гайды</NavLink>
         </div>
         <div class="flex items-center justify-end">
           <Button

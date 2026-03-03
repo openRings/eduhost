@@ -9,14 +9,12 @@ import z from "zod";
 import "./tailwind.css";
 import "solid-devtools";
 
-import Buttons from "./pages/buttons";
-import Inputs from "./pages/inputs";
-import Selects from "./pages/selects";
-import Blocks from "./pages/blocks";
 import Signin from "./pages/signin";
 import Signup from "./pages/signup";
 import Index from "./pages/index";
-import Form from "./pages/form";
+import Projects from "./pages/projects";
+import Databases from "./pages/databases";
+import Guides from "./pages/guides";
 
 const App = () => {
   z.config({
@@ -55,12 +53,10 @@ const App = () => {
 
   return (
     <Router root={layout}>
-      <Route path="/buttons" component={Buttons} />
-      <Route path="/inputs" component={Inputs} />
-      <Route path="/selects" component={Selects} />
-      <Route path="/blocks" component={Blocks} />
-      <Route path="/form" component={Form} />
       <Route path="/" component={Index} />
+      <Route path="/projects" component={Projects} />
+      <Route path="/databases" component={Databases} />
+      <Route path="/guides" component={Guides} />
       <Route path="/signin" component={Signin} />
       <Route path="/signup" component={Signup} />
     </Router>
