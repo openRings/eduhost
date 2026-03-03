@@ -4,6 +4,7 @@ import { Router, Route, useLocation } from "@solidjs/router";
 import { Notifications } from "./features/Notifications";
 import { Section } from "./shared/Section";
 import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 import z from "zod";
 
 import "./tailwind.css";
@@ -44,6 +45,7 @@ const App = () => {
           <Section class="h-auto grow p-0! max-md:hidden" />
           <div class="flex w-full max-w-[1264px] flex-col gap-0.5">
             {props.children}
+            <Footer />
           </div>
           <Section class="h-auto grow p-0! max-md:hidden" />
         </div>

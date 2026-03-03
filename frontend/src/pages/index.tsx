@@ -147,16 +147,18 @@ export default function () {
           </Button>
           <Block
             label={
-              <div class="gap-sm flex flex-col">
-                <span class="max-w-76 truncate">
-                  Проектирование и разработка веб проектирование веб приложений
-                </span>
+              <>
+                <div class="flex">
+                  <span class="min-w-0 flex-1 truncate">
+                    Проектирование и разработка веб приложений
+                  </span>
+                </div>
                 <span class="text-neutral-500 underline">
                   Пташкин Олег Генрихович
                 </span>
-              </div>
+              </>
             }
-            icon={<ExternalLink />}
+            icon={<ExternalLink class="min-w-3.5" />}
           >
             <div class="gap-2xl flex">
               <div class="gap-sm flex flex-1 flex-col">

@@ -18,8 +18,8 @@ export function Block(props: BlockProps) {
 
   return (
     <div {...attrs} class={classes()}>
-      <div class="group-hover:text-primary-300 flex w-full items-start justify-between text-neutral-400 transition-colors">
-        <div class="gap-xs group-hover:text-primary-300 flex flex-col text-neutral-700">
+      <div class="group-hover:text-primary-300 gap-4xl flex w-full items-start justify-between text-neutral-400 transition-colors">
+        <div class="gap-xs group-hover:text-primary-300 flex min-w-0 flex-col text-neutral-700">
           {props.label}
         </div>
         {props.icon}
