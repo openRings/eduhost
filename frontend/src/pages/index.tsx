@@ -18,6 +18,7 @@ import { Block } from "../shared/Block";
 import { createResource, Suspense } from "solid-js";
 import { fetchProfile } from "../entities/profile";
 import { Label } from "../shared/uikit/Label";
+import { A } from "@solidjs/router";
 
 export default function () {
   const [profile] = createResource(fetchProfile);
@@ -93,51 +94,59 @@ export default function () {
       </Section>
       <Section labelIcon={<Map />} label="Навигация">
         <div class="gap-md grid grid-cols-3">
-          <Block
-            title="Проекты"
-            class="h-40"
-            label={<PanelsTopLeft class="text-2xl text-neutral-700" />}
-          >
-            <div class="flex items-end justify-between">
-              <div class="gap-md flex flex-col">
-                <span class="group-hover:text-primary-300 text-lg leading-none">
-                  Проекты
-                </span>
-                <span class="text-neutral-500">Ваши предметы и проекты</span>
+          <A href="/projects">
+            <Block
+              title="Проекты"
+              class="h-40"
+              label={<PanelsTopLeft class="text-2xl text-neutral-700" />}
+            >
+              <div class="flex items-end justify-between">
+                <div class="gap-md flex flex-col">
+                  <span class="group-hover:text-primary-300 text-lg leading-none">
+                    Проекты
+                  </span>
+                  <span class="text-neutral-500">Ваши предметы и проекты</span>
+                </div>
+                <ChevronRight class="group-hover:text-primary-300 text-xl" />
               </div>
-              <ChevronRight class="group-hover:text-primary-300 text-xl" />
-            </div>
-          </Block>
-          <Block
-            title="Базы данных"
-            class="h-40"
-            label={<Database class="text-2xl text-neutral-700" />}
-          >
-            <div class="flex items-end justify-between">
-              <div class="gap-md flex flex-col">
-                <span class="group-hover:text-primary-300 text-lg leading-none">
-                  Базы данных
-                </span>
-                <span class="text-neutral-500">Ваши базы данных</span>
+            </Block>
+          </A>
+          <A href="/databases">
+            <Block
+              title="Базы данных"
+              class="h-40"
+              label={<Database class="text-2xl text-neutral-700" />}
+            >
+              <div class="flex items-end justify-between">
+                <div class="gap-md flex flex-col">
+                  <span class="group-hover:text-primary-300 text-lg leading-none">
+                    Базы данных
+                  </span>
+                  <span class="text-neutral-500">Ваши базы данных</span>
+                </div>
+                <ChevronRight class="group-hover:text-primary-300 text-xl" />
               </div>
-              <ChevronRight class="group-hover:text-primary-300 text-xl" />
-            </div>
-          </Block>
-          <Block
-            title="Гайды"
-            class="h-40"
-            label={<BookOpen class="text-2xl text-neutral-700" />}
-          >
-            <div class="flex items-end justify-between">
-              <div class="gap-md flex flex-col">
-                <span class="group-hover:text-primary-300 text-lg leading-none">
-                  Гайды
-                </span>
-                <span class="text-neutral-500">Как пользоваться сервисом</span>
+            </Block>
+          </A>
+          <A href="/guides">
+            <Block
+              title="Гайды"
+              class="h-40"
+              label={<BookOpen class="text-2xl text-neutral-700" />}
+            >
+              <div class="flex items-end justify-between">
+                <div class="gap-md flex flex-col">
+                  <span class="group-hover:text-primary-300 text-lg leading-none">
+                    Гайды
+                  </span>
+                  <span class="text-neutral-500">
+                    Как пользоваться сервисом
+                  </span>
+                </div>
+                <ChevronRight class="group-hover:text-primary-300 text-xl" />
               </div>
-              <ChevronRight class="group-hover:text-primary-300 text-xl" />
-            </div>
-          </Block>
+            </Block>
+          </A>
         </div>
       </Section>
       <Section labelIcon={<Book />} label="Предметы">
@@ -146,6 +155,7 @@ export default function () {
             Добавить предмет
           </Button>
           <Block
+            title="Проектирование и разработка веб приложений"
             label={
               <>
                 <div class="flex">
