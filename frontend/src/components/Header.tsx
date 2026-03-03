@@ -1,7 +1,8 @@
 import { ChevronsUpDown } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
-import { createResource, Suspense } from "solid-js";
+import { createResource, JSX, Suspense } from "solid-js";
 import { fetchProfile } from "../entities/profile";
+import { useLocation } from "@solidjs/router";
 
 export type HeaderProps = {};
 
@@ -13,7 +14,7 @@ export function Header(_props: HeaderProps) {
       <nav class="grid w-full max-w-[1200px] grid-cols-4 text-neutral-600">
         <div class="flex items-center justify-start">
           <Button
-            class="-ml-md"
+            class="-ml-md hover:text-neutral-700"
             variant="transparent"
             iconStart={<ChevronsUpDown />}
           >
@@ -25,21 +26,16 @@ export function Header(_props: HeaderProps) {
           </Button>
         </div>
         <div class="gap-md col-span-2 flex items-center justify-center">
-          <Button href="/" variant="transparent" class="text-primary-300">
-            Главная
-          </Button>
-          <Button href="/" variant="transparent">
-            Проекты
-          </Button>
-          <Button href="/" variant="transparent">
-            Базы данных
-          </Button>
-          <Button href="/" variant="transparent">
-            Гайды
-          </Button>
+          <NavLink href="/">Главная</NavLink>
+          <NavLink href="/signin">Проекты</NavLink>
+          <NavLink href="/signin">Базы данных</NavLink>
+          <NavLink href="/signin">Гайды</NavLink>
         </div>
         <div class="flex items-center justify-end">
-          <Button variant="transparent" class="gap-md! -mr-md">
+          <Button
+            variant="transparent"
+            class="gap-md! -mr-md hover:text-neutral-700"
+          >
             <Suspense fallback="Загрузка..">
               {profile()?.lastName} {profile()?.firstName}
             </Suspense>
@@ -48,5 +44,27 @@ export function Header(_props: HeaderProps) {
         </div>
       </nav>
     </header>
+  );
+}
+
+type HeaderLinkProps = {
+  href: string;
+  children: JSX.Element;
+};
+
+function NavLink(props: HeaderLinkProps) {
+  const location = useLocation();
+
+  return (
+    <Button
+      href={props.href}
+      variant="transparent"
+      class="hover:text-neutral-700"
+      classList={{
+        "text-primary-300!": location.pathname == props.href,
+      }}
+    >
+      {props.children}
+    </Button>
   );
 }
