@@ -5,7 +5,7 @@ import { Contact, KeyRound, LogIn } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
 import { fetchApi } from "../utils/api";
 import { error, success } from "../utils/notifications";
-import { useLocation } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 
 const SigninForm = z.object({
   username: z.string().min(4).max(12).lowercase(),
@@ -14,6 +14,7 @@ const SigninForm = z.object({
 
 export default function () {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { Form } = createForm(SigninForm, {
     username: (location.state ?? ({} as any)).username,
@@ -28,7 +29,10 @@ export default function () {
     });
 
     if (status == 403) error("Неверный логин или пароль");
-    if (status == 200) success("Успешная авторизация");
+    if (status == 200) {
+      success("Успешная авторизация");
+      navigate("/");
+    }
   };
 
   return (
