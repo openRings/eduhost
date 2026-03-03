@@ -4,8 +4,10 @@ import {
   ChevronRight,
   Database,
   ExternalLink,
+  HardDrive,
   Map,
   PanelsTopLeft,
+  Plus,
   SquarePen,
   SquareUser,
   User,
@@ -15,6 +17,7 @@ import { Button } from "../shared/uikit/Button";
 import { Block } from "../shared/Block";
 import { createResource, Suspense } from "solid-js";
 import { fetchProfile } from "../entities/profile";
+import { Label } from "../shared/uikit/Label";
 
 export default function () {
   const [profile] = createResource(fetchProfile);
@@ -137,7 +140,52 @@ export default function () {
           </Block>
         </div>
       </Section>
-      <Section labelIcon={<Book />} label="Предметы"></Section>
+      <Section labelIcon={<Book />} label="Предметы">
+        <div class="gap-md grid grid-cols-3">
+          <Button iconStart={<Plus />} class="h-[176px]" variant="lined">
+            Добавить предмет
+          </Button>
+          <Block
+            label={
+              <div class="gap-sm flex flex-col">
+                <span class="max-w-76 truncate">
+                  Проектирование и разработка веб проектирование веб приложений
+                </span>
+                <span class="text-neutral-500 underline">
+                  Пташкин Олег Генрихович
+                </span>
+              </div>
+            }
+            icon={<ExternalLink />}
+          >
+            <div class="gap-2xl flex">
+              <div class="gap-sm flex flex-1 flex-col">
+                <Label icon={<HardDrive />}>Диск</Label>
+                <span>
+                  712<span class="text-[10px] text-neutral-500">МБ</span> / 1.00
+                  <span class="text-[10px] text-neutral-500">ГБ</span>{" "}
+                  <span class="text-neutral-500">(71%)</span>
+                </span>
+                <div class="h-1 w-full rounded-full bg-neutral-300">
+                  <div class="bg-warning-300 h-full w-[71%] rounded-full" />
+                </div>
+              </div>
+              <div class="h-full w-0.5 rounded-full bg-neutral-300" />
+              <div class="gap-sm flex flex-1 flex-col">
+                <Label icon={<Database />}>База данных</Label>
+                <span>
+                  7.05<span class="text-[10px] text-neutral-500">МБ</span> / 100
+                  <span class="text-[10px] text-neutral-500">МБ</span>{" "}
+                  <span class="text-neutral-500">(7%)</span>
+                </span>
+                <div class="h-1 w-full rounded-full bg-neutral-300">
+                  <div class="bg-success-300 h-full w-[7%] rounded-full" />
+                </div>
+              </div>
+            </div>
+          </Block>
+        </div>
+      </Section>
     </>
   );
 }
