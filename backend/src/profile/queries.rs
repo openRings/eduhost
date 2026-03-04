@@ -67,7 +67,11 @@ impl AccountMetricsQuery {
                     WHERE t.user_id = $1
                 ), 0) AS disk_available_bytes,
                 (SELECT COUNT(*) FROM projects p WHERE p.owner_id = $1) AS project_count,
-                (SELECT COUNT(*) FROM subjects s WHERE s.owner_id = $1) AS subject_count",
+                (SELECT COUNT(DISTINCT s.id)
+                FROM subjects s
+                JOIN subject_groups sg ON sg.subject_id = s.id
+                JOIN group_users gu ON gu.group_id = sg.group_id
+                WHERE gu.user_id = $1) AS subject_count",
         )
         .bind(self.user_id)
         .fetch_one(conn)

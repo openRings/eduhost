@@ -27,8 +27,12 @@ impl SubjectsByUserQuery {
             u.id AS teacher_id, u.first_name AS teacher_first_name,
             u.last_name AS teacher_last_name, u.patronymic AS teacher_patronymic
             FROM subjects s
+            JOIN subject_groups sg ON sg.subject_id = s.id
+            JOIN group_users gu ON gu.group_id = sg.group_id
             JOIN users u ON u.id = s.owner_id
-            WHERE s.owner_id = $1
+            WHERE gu.user_id = $1
+            GROUP BY s.id, s.name, s.reserved_disk_bytes,
+            u.id, u.first_name, u.last_name, u.patronymic
             ORDER BY s.created_at DESC",
         )
         .bind(self.user_id)
