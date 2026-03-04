@@ -15,8 +15,8 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
 mod auth;
-mod subjects;
 mod profile;
+mod subjects;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
