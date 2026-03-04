@@ -1,13 +1,10 @@
 import {
-  Book,
   BookOpen,
   ChevronRight,
   Database,
   ExternalLink,
-  HardDrive,
   Map,
   PanelsTopLeft,
-  Plus,
   SquarePen,
   SquareUser,
   User,
@@ -17,31 +14,14 @@ import { Button } from "../shared/uikit/Button";
 import { Block } from "../shared/Block";
 import { createResource, Suspense } from "solid-js";
 import { fetchAccountMetrics, fetchProfile } from "../entities/profile";
-import { Label } from "../shared/uikit/Label";
-import { Volume } from "../shared/Volume";
 import { A } from "@solidjs/router";
 import { Skeleton } from "../shared/Skeleton";
+import { SubjectsSection } from "../features/SubjectsSection";
+import { Volume } from "../shared/Volume";
 
 export default function () {
   const [profile] = createResource(fetchProfile);
   const [metrics] = createResource(fetchAccountMetrics);
-  const subjectFileBytes = 712 * 1024 * 1024;
-  const subjectDbBytes = 7.05 * 1024 * 1024;
-  const subjectAvailableBytes = 1 * 1024 * 1024 * 1024 + 100 * 1024 * 1024;
-  const subjectTotalUsedBytes = subjectFileBytes + subjectDbBytes;
-  const subjectPercent = Math.min(
-    100,
-    Math.round((subjectTotalUsedBytes / subjectAvailableBytes) * 100),
-  );
-  const subjectFilePercent = Math.min(
-    100,
-    Math.round((subjectFileBytes / subjectAvailableBytes) * 100),
-  );
-  const subjectDbPercent = Math.min(
-    100,
-    Math.round((subjectDbBytes / subjectAvailableBytes) * 100),
-  );
-
   return (
     <>
       <Section class="gap-xl flex flex-row items-center justify-between">
@@ -222,69 +202,7 @@ export default function () {
           </A>
         </div>
       </Section>
-      <Section labelIcon={<Book />} label="Предметы">
-        <div class="gap-md grid grid-cols-3">
-          <Button iconStart={<Plus />} class="h-[176px]" variant="lined">
-            Добавить предмет
-          </Button>
-          <Block
-            title="Проектирование и разработка веб приложений"
-            label={
-              <>
-                <div class="flex">
-                  <span class="min-w-0 flex-1 truncate">
-                    Проектирование и разработка веб приложений
-                  </span>
-                </div>
-                <span class="text-neutral-500 underline">
-                  Пташкин Олег Генрихович
-                </span>
-              </>
-            }
-            icon={<ExternalLink class="min-w-3.5" />}
-          >
-            <div class="gap-2xl flex">
-              <div class="gap-sm flex flex-1 flex-col">
-                <div class="gap-x-xl gap-y-md flex flex-wrap items-center">
-                  <div class="gap-sm flex flex-col">
-                    <Label icon={<HardDrive />}>Файлы</Label>
-                    <span>
-                      <Volume bytes={subjectFileBytes} />{" "}
-                      <span class="text-neutral-500">
-                        ({subjectFilePercent}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div class="w-0.5 self-stretch rounded-full bg-neutral-300" />
-                  <div class="gap-sm flex flex-col">
-                    <Label icon={<Database />}>База данных</Label>
-                    <span>
-                      <Volume bytes={subjectDbBytes} />{" "}
-                      <span class="text-neutral-500">
-                        ({subjectDbPercent}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div class="w-0.5 self-stretch rounded-full bg-neutral-300" />
-                  <div class="gap-sm flex flex-col">
-                    <Label icon={<HardDrive />}>Всего</Label>
-                    <span>
-                      <Volume bytes={subjectAvailableBytes} />{" "}
-                      <span class="text-neutral-500">(100%)</span>
-                    </span>
-                  </div>
-                </div>
-                <div class="h-1 w-full rounded-full bg-neutral-300">
-                  <div
-                    class="bg-warning-300 h-full rounded-full"
-                    style={{ width: `${subjectPercent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </Block>
-        </div>
-      </Section>
+      <SubjectsSection />
     </>
   );
 }
