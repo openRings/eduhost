@@ -19,7 +19,7 @@ pub struct AccountMetricsModel {
     pub disk_used_bytes: i64,
     pub disk_available_bytes: i64,
     pub project_count: i64,
-    pub group_count: i64,
+    pub subject_count: i64,
 }
 
 pub struct AccountMetricsQuery {
@@ -67,7 +67,7 @@ impl AccountMetricsQuery {
                     WHERE t.user_id = $1
                 ), 0) AS disk_available_bytes,
                 (SELECT COUNT(*) FROM projects p WHERE p.owner_id = $1) AS project_count,
-                (SELECT COUNT(*) FROM group_users gu WHERE gu.user_id = $1) AS group_count",
+                (SELECT COUNT(*) FROM subjects s WHERE s.owner_id = $1) AS subject_count",
         )
         .bind(self.user_id)
         .fetch_one(conn)

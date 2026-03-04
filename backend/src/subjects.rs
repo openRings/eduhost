@@ -6,23 +6,23 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
-use crate::groups::service::GroupsService;
+use crate::subjects::service::SubjectsService;
 
 mod dtos;
 mod queries;
 mod service;
 
 pub fn routes() -> Router<PgPool> {
-    Router::new().route("/", get(get_groups))
+    Router::new().route("/", get(get_subjects))
 }
 
-async fn get_groups(
-    WithService(groups_service): WithService<GroupsService>,
+async fn get_subjects(
+    WithService(subjects_service): WithService<SubjectsService>,
     session: Session<Student>,
 ) -> EndpointResult<impl IntoResponse> {
     let user_id = session.user_id();
 
-    let response = groups_service.get_groups(user_id).await?;
+    let response = subjects_service.get_subjects(user_id).await?;
 
     Ok(Json(response))
 }

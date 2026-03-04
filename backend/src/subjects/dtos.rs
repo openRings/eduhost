@@ -1,7 +1,7 @@
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::groups::queries::GroupModel;
+use crate::subjects::queries::SubjectModel;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,7 +14,7 @@ pub struct TeacherResponse {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct GroupDiskUsageResponse {
+pub struct SubjectDiskUsageResponse {
     pub files_usage_bytes: i64,
     pub database_usage_bytes: i64,
     pub avaliable_bytes: i64,
@@ -22,22 +22,23 @@ pub struct GroupDiskUsageResponse {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct GetGroupResponse {
+pub struct GetSubjectResponse {
     pub id: Uuid,
     pub name: String,
     pub teacher: TeacherResponse,
-    pub disk_usage: GroupDiskUsageResponse,
+    pub disk_usage: SubjectDiskUsageResponse,
 }
 
-impl GetGroupResponse {
-    pub fn from_model(model: GroupModel) -> Self {
-        let GroupModel {
+impl GetSubjectResponse {
+    pub fn from_model(model: SubjectModel) -> Self {
+        let SubjectModel {
             id,
             name,
             teacher_id,
             teacher_first_name,
             teacher_last_name,
             teacher_patronymic,
+            reserved_disk_bytes,
         } = model;
 
         Self {
@@ -49,10 +50,10 @@ impl GetGroupResponse {
                 last_name: teacher_last_name,
                 patronymic: teacher_patronymic,
             },
-            disk_usage: GroupDiskUsageResponse {
+            disk_usage: SubjectDiskUsageResponse {
                 files_usage_bytes: 0,
                 database_usage_bytes: 0,
-                avaliable_bytes: 0,
+                avaliable_bytes: reserved_disk_bytes,
             },
         }
     }

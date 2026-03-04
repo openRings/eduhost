@@ -13,7 +13,7 @@ export type AccountMetrics = {
     avaliableBytes: number;
   };
   projectCount: number;
-  groupCount: number;
+  subjectCount: number;
 };
 
 export async function fetchProfile() {

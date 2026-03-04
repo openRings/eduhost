@@ -154,13 +154,13 @@ export default function () {
             label={
               <Suspense fallback={<Skeleton class="h-7 w-10" />}>
                 <span class="text-2xl text-neutral-700">
-                  {metrics()?.groupCount ?? 0}
+                  {metrics()?.subjectCount ?? 0}
                 </span>
               </Suspense>
             }
           >
             <span class="group-hover:text-primary-300 text-neutral-500">
-              Всего групп
+              Всего предметов
             </span>
           </Block>
         </div>

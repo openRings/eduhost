@@ -25,7 +25,7 @@ pub struct DiskUsageResponse {
 pub struct GetAccountMetricsResponse {
     pub disk_usage: DiskUsageResponse,
     pub project_count: i64,
-    pub group_count: i64,
+    pub subject_count: i64,
 }
 
 impl GetProfileResponse {
@@ -53,7 +53,7 @@ impl GetAccountMetricsResponse {
             disk_used_bytes,
             disk_available_bytes,
             project_count,
-            group_count,
+            subject_count,
         } = model;
 
         Self {
@@ -62,7 +62,7 @@ impl GetAccountMetricsResponse {
                 avaliable_bytes: disk_available_bytes,
             },
             project_count,
-            group_count,
+            subject_count,
         }
     }
 }
