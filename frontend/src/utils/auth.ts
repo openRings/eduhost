@@ -35,7 +35,7 @@ export async function refreshSession(authRedirect?: boolean) {
 
   const response = await fetch("/api/auth/refresh", { method: "POST" });
 
-  if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 150));
+  if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 300));
 
   if (!response.ok) {
     setIsAuthorized(false);
