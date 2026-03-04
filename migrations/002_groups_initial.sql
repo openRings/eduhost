@@ -8,6 +8,8 @@ CREATE TABLE groups (
 CREATE TABLE group_users (
   user_id UUID NOT NULL REFERENCES users(id),
   group_id UUID NOT NULL REFERENCES groups(id),
+  added_by UUID NOT NULL REFERENCES users(id),
   added_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY (user_id, group_id)
 );
+
