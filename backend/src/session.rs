@@ -16,16 +16,16 @@ pub struct Student;
 pub struct Teacher;
 pub struct Admin;
 
-impl AccessLevelMarker for Student {}
-impl AccessLevelMarker for Teacher {}
-impl AccessLevelMarker for Admin {}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, sqlx::Type)]
 pub enum AccessLevel {
     Student,
     Teacher,
     Admin,
 }
+
+impl AccessLevelMarker for Student {}
+impl AccessLevelMarker for Teacher {}
+impl AccessLevelMarker for Admin {}
 
 pub struct Session<Level>
 where

@@ -13,6 +13,22 @@ pub struct GetProfileResponse {
     pub access: AccessLevel,
 }
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiskUsageResponse {
+    pub used: i64,
+    #[serde(rename = "avaliable")]
+    pub available: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetAccountMetricsResponse {
+    pub disk_usage: DiskUsageResponse,
+    pub project_count: i64,
+    pub group_count: i64,
+}
+
 impl GetProfileResponse {
     pub fn from_model(model: ProfileModel, access: AccessLevel) -> Self {
         let ProfileModel {
@@ -30,22 +46,6 @@ impl GetProfileResponse {
             access,
         }
     }
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiskUsageResponse {
-    pub used: i64,
-    #[serde(rename = "avaliable")]
-    pub available: i64,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GetAccountMetricsResponse {
-    pub disk_usage: DiskUsageResponse,
-    pub project_count: i64,
-    pub group_count: i64,
 }
 
 impl GetAccountMetricsResponse {

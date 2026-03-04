@@ -204,6 +204,12 @@ impl ProfileQuery {
 - Keep HTTP status handling consistent with existing endpoint behavior.
 - Reuse session/auth helpers and extractor patterns instead of duplicating token parsing logic.
 
+### 3.8 Rust code ordering
+
+- Declare structs/enums first.
+- Then place inherent `impl` blocks.
+- Place `impl Trait for Type` blocks after inherent `impl` blocks.
+
 ## 4) AGENTS.md Maintenance Policy
 
 This section is mandatory for future agent behavior.
