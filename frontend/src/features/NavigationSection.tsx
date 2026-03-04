@@ -11,13 +11,13 @@ export function NavigationSection(_props: NavigationSectionProps) {
         <NavigationCard
           href="/projects"
           title="Проекты"
-          description="Ваши предметы и проекты"
+          description="Управление вашими проектами"
           icon={<PanelsTopLeft />}
         />
         <NavigationCard
           href="/databases"
           title="Базы данных"
-          description="Ваши базы данных"
+          description="Управление вашими базами данных"
           icon={<Database />}
         />
         <NavigationCard
