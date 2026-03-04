@@ -51,6 +51,7 @@ Main principle: follow existing project style and architecture, do not invent a 
 - `src/entities`: domain-facing types + fetch functions
 - `src/utils`: technical utilities (`api`, `auth`, `clipboard`, notifications helpers)
 - `src/pages`: route pages; mostly composition
+- For page sections (e.g., account summary, navigation, subjects), place data loading + layout in `src/features` and put per-card UI in `src/components`.
 
 ### 2.3 Canonical component pattern
 
