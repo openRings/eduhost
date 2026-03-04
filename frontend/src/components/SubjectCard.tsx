@@ -41,7 +41,7 @@ export function SubjectCard(props: SubjectCardProps) {
       icon={<ExternalLink class="min-w-3.5" />}
     >
       <div class="gap-2xl flex">
-        <div class="gap-sm flex flex-1 flex-col">
+        <div class="gap-md flex flex-1 flex-col">
           <div class="gap-x-xl gap-y-md flex flex-wrap items-center">
             <div class="gap-sm flex flex-col">
               <Label icon={<HardDrive />}>Файлы</Label>
