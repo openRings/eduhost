@@ -43,7 +43,12 @@ export type VolumeProps = Omit<HTMLArkProps<"span">, "children"> & {
 };
 
 export function Volume(props: VolumeProps) {
-  const [_, attrs] = splitProps(props, ["bytes", "class", "unitClass", "valueClass"]);
+  const [_, attrs] = splitProps(props, [
+    "bytes",
+    "class",
+    "unitClass",
+    "valueClass",
+  ]);
 
   const classes = () => twMerge(clsx(baseClass, props.class));
   const unitClasses = () => twMerge(clsx(unitBaseClass, props.unitClass));

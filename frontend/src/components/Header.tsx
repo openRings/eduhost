@@ -37,9 +37,7 @@ export function Header(_props: HeaderProps) {
             variant="transparent"
             class="gap-md! -mr-md hover:text-neutral-700"
           >
-            <Suspense
-              fallback={<Skeleton class="h-4 w-32" radius="sm" />}
-            >
+            <Suspense fallback={<Skeleton class="h-4 w-32" radius="sm" />}>
               {profile()?.lastName} {profile()?.firstName}
             </Suspense>
             <div class="size-6 rounded-full bg-neutral-700" />

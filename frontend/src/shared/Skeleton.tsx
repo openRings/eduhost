@@ -18,9 +18,7 @@ export function Skeleton(props: SkeletonProps) {
   const [_, attrs] = splitProps(props, ["radius", "class"]);
 
   const classes = () =>
-    twMerge(
-      clsx(baseClass, radiusClass[props.radius ?? "md"], props.class),
-    );
+    twMerge(clsx(baseClass, radiusClass[props.radius ?? "md"], props.class));
 
   return <ark.div {...attrs} class={classes()} aria-hidden />;
 }

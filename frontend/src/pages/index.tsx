@@ -25,6 +25,22 @@ import { Skeleton } from "../shared/Skeleton";
 export default function () {
   const [profile] = createResource(fetchProfile);
   const [metrics] = createResource(fetchAccountMetrics);
+  const subjectFileBytes = 712 * 1024 * 1024;
+  const subjectDbBytes = 7.05 * 1024 * 1024;
+  const subjectAvailableBytes = 1 * 1024 * 1024 * 1024 + 100 * 1024 * 1024;
+  const subjectTotalUsedBytes = subjectFileBytes + subjectDbBytes;
+  const subjectPercent = Math.min(
+    100,
+    Math.round((subjectTotalUsedBytes / subjectAvailableBytes) * 100),
+  );
+  const subjectFilePercent = Math.min(
+    100,
+    Math.round((subjectFileBytes / subjectAvailableBytes) * 100),
+  );
+  const subjectDbPercent = Math.min(
+    100,
+    Math.round((subjectDbBytes / subjectAvailableBytes) * 100),
+  );
 
   return (
     <>
@@ -62,9 +78,7 @@ export default function () {
             icon={<ExternalLink />}
             label={
               <div class="gap-md flex text-2xl text-neutral-700">
-                <Suspense
-                  fallback={<Skeleton class="h-7 w-48" />}
-                >
+                <Suspense fallback={<Skeleton class="h-7 w-48" />}>
                   <Volume
                     bytes={metrics()?.diskUsage.usedBytes ?? 0}
                     valueClass="text-2xl text-neutral-700"
@@ -80,9 +94,12 @@ export default function () {
                     (
                     {(() => {
                       const used = metrics()?.diskUsage.usedBytes ?? 0;
-                      const available = metrics()?.diskUsage.avaliableBytes ?? 0;
+                      const available =
+                        metrics()?.diskUsage.avaliableBytes ?? 0;
                       const percent =
-                        available > 0 ? Math.round((used / available) * 100) : 0;
+                        available > 0
+                          ? Math.round((used / available) * 100)
+                          : 0;
 
                       return `${Math.min(100, percent)}%`;
                     })()}
@@ -102,9 +119,12 @@ export default function () {
                   style={{
                     width: (() => {
                       const used = metrics()?.diskUsage.usedBytes ?? 0;
-                      const available = metrics()?.diskUsage.avaliableBytes ?? 0;
+                      const available =
+                        metrics()?.diskUsage.avaliableBytes ?? 0;
                       const percent =
-                        available > 0 ? Math.round((used / available) * 100) : 0;
+                        available > 0
+                          ? Math.round((used / available) * 100)
+                          : 0;
 
                       return `${Math.min(100, percent)}%`;
                     })(),
@@ -118,9 +138,7 @@ export default function () {
             class="h-32"
             icon={<ExternalLink />}
             label={
-              <Suspense
-                fallback={<Skeleton class="h-7 w-10" />}
-              >
+              <Suspense fallback={<Skeleton class="h-7 w-10" />}>
                 <span class="text-2xl text-neutral-700">
                   {metrics()?.projectCount ?? 0}
                 </span>
@@ -134,9 +152,7 @@ export default function () {
           <Block
             class="h-32"
             label={
-              <Suspense
-                fallback={<Skeleton class="h-7 w-10" />}
-              >
+              <Suspense fallback={<Skeleton class="h-7 w-10" />}>
                 <span class="text-2xl text-neutral-700">
                   {metrics()?.groupCount ?? 0}
                 </span>
@@ -229,26 +245,40 @@ export default function () {
           >
             <div class="gap-2xl flex">
               <div class="gap-sm flex flex-1 flex-col">
-                <Label icon={<HardDrive />}>Диск</Label>
-                <span>
-                  <Volume bytes={712 * 1024 * 1024} /> /{" "}
-                  <Volume bytes={1 * 1024 * 1024 * 1024} />{" "}
-                  <span class="text-neutral-500">(71%)</span>
-                </span>
-                <div class="h-1 w-full rounded-full bg-neutral-300">
-                  <div class="bg-warning-300 h-full w-[71%] rounded-full" />
+                <div class="gap-x-xl gap-y-md flex flex-wrap items-center">
+                  <div class="gap-sm flex flex-col">
+                    <Label icon={<HardDrive />}>Файлы</Label>
+                    <span>
+                      <Volume bytes={subjectFileBytes} />{" "}
+                      <span class="text-neutral-500">
+                        ({subjectFilePercent}%)
+                      </span>
+                    </span>
+                  </div>
+                  <div class="w-0.5 self-stretch rounded-full bg-neutral-300" />
+                  <div class="gap-sm flex flex-col">
+                    <Label icon={<Database />}>База данных</Label>
+                    <span>
+                      <Volume bytes={subjectDbBytes} />{" "}
+                      <span class="text-neutral-500">
+                        ({subjectDbPercent}%)
+                      </span>
+                    </span>
+                  </div>
+                  <div class="w-0.5 self-stretch rounded-full bg-neutral-300" />
+                  <div class="gap-sm flex flex-col">
+                    <Label icon={<HardDrive />}>Всего</Label>
+                    <span>
+                      <Volume bytes={subjectAvailableBytes} />{" "}
+                      <span class="text-neutral-500">(100%)</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div class="h-full w-0.5 rounded-full bg-neutral-300" />
-              <div class="gap-sm flex flex-1 flex-col">
-                <Label icon={<Database />}>База данных</Label>
-                <span>
-                  <Volume bytes={7.05 * 1024 * 1024} /> /{" "}
-                  <Volume bytes={100 * 1024 * 1024} />{" "}
-                  <span class="text-neutral-500">(7%)</span>
-                </span>
                 <div class="h-1 w-full rounded-full bg-neutral-300">
-                  <div class="bg-success-300 h-full w-[7%] rounded-full" />
+                  <div
+                    class="bg-warning-300 h-full rounded-full"
+                    style={{ width: `${subjectPercent}%` }}
+                  />
                 </div>
               </div>
             </div>
