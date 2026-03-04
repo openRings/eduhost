@@ -33,10 +33,20 @@ export function Header(_props: HeaderProps) {
       setIsRoleOpen(false);
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isRoleOpen()) return;
+
+      if (event.key === "Escape") {
+        setIsRoleOpen(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKeyDown);
 
     onCleanup(() => {
       document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
     });
   });
 
@@ -62,9 +72,10 @@ export function Header(_props: HeaderProps) {
           <Presence>
             <Show when={isRoleOpen()}>
               <Motion.div
-                animate={{ opacity: [0, 1], scale: [1.025, 1.0], y: [4, 0] }}
-                exit={{ opacity: 0, scale: 1.025 }}
-                class="p-md gap-sm absolute top-10 -left-2 flex rounded-md bg-gradient-to-t from-neutral-100 to-white shadow-md ring-1 ring-neutral-300 ring-inset"
+                animate={{ opacity: [0, 1], scale: [1.02, 1.0] }}
+                exit={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+                class="p-md gap-sm absolute top-10 -left-2 flex origin-top rounded-md bg-gradient-to-t from-neutral-100 to-white shadow-md ring-1 ring-neutral-300 ring-inset"
               >
                 <div class="gap-sm flex min-w-44 flex-col">
                   <Button
