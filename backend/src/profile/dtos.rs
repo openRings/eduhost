@@ -16,9 +16,8 @@ pub struct GetProfileResponse {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DiskUsageResponse {
-    pub used: i64,
-    #[serde(rename = "avaliable")]
-    pub available: i64,
+    pub used_bytes: i64,
+    pub avaliable_bytes: i64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -59,8 +58,8 @@ impl GetAccountMetricsResponse {
 
         Self {
             disk_usage: DiskUsageResponse {
-                used: disk_used_bytes,
-                available: disk_available_bytes,
+                used_bytes: disk_used_bytes,
+                avaliable_bytes: disk_available_bytes,
             },
             project_count,
             group_count,
