@@ -62,9 +62,11 @@ impl AccountMetricsQuery {
                     WHERE d.owner_id = $1
                 ), 0) AS disk_used_bytes,
                 COALESCE((
-                    SELECT t.reserved_disk_bytes
-                    FROM teachers t
-                    WHERE t.user_id = $1
+                    SELECT SUM(s.reserved_disk_bytes)::BIGINT
+                    FROM subjects s
+                    JOIN subject_groups sg ON sg.subject_id = s.id
+                    JOIN group_users gu ON gu.group_id = sg.group_id
+                    WHERE gu.user_id = $1
                 ), 0) AS disk_available_bytes,
                 (SELECT COUNT(*) FROM projects p WHERE p.owner_id = $1) AS project_count,
                 (SELECT COUNT(DISTINCT s.id)
