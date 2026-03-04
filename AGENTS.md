@@ -250,3 +250,5 @@ If a rule is obsolete:
 - Frontend follows Solid + UI kit patterns from this guide.
 - Backend follows route/service/query/command/DTO boundaries from this guide.
 - `AGENTS.md` reviewed for drift and updated if needed.
+- Backend changes: run `cargo check`, `cargo clippy`, `cargo fmt`.
+- Frontend changes: run `pnpm format`.
