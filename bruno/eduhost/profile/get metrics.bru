@@ -1,0 +1,15 @@
+meta {
+  name: get metrics
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost/api/profile/metrics
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
