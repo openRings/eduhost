@@ -18,14 +18,13 @@ import { Block } from "../shared/Block";
 import { createResource, Suspense } from "solid-js";
 import { fetchAccountMetrics, fetchProfile } from "../entities/profile";
 import { Label } from "../shared/uikit/Label";
+import { Volume } from "../shared/Volume";
 import { A } from "@solidjs/router";
 import { Skeleton } from "../shared/Skeleton";
 
 export default function () {
   const [profile] = createResource(fetchProfile);
   const [metrics] = createResource(fetchAccountMetrics);
-
-  const formatGb = (bytes: number) => (bytes / 1024 / 1024 / 1024).toFixed(2);
 
   return (
     <>
@@ -66,15 +65,17 @@ export default function () {
                 <Suspense
                   fallback={<Skeleton class="h-7 w-48" />}
                 >
-                  <span>
-                    {formatGb(metrics()?.diskUsage.usedBytes ?? 0)}
-                    <span class="text-sm text-neutral-500">ГБ</span>
-                  </span>{" "}
+                  <Volume
+                    bytes={metrics()?.diskUsage.usedBytes ?? 0}
+                    valueClass="text-2xl text-neutral-700"
+                    unitClass="text-sm text-neutral-500"
+                  />{" "}
                   /{" "}
-                  <span>
-                    {formatGb(metrics()?.diskUsage.avaliableBytes ?? 0)}
-                    <span class="text-sm text-neutral-500">ГБ</span>
-                  </span>
+                  <Volume
+                    bytes={metrics()?.diskUsage.avaliableBytes ?? 0}
+                    valueClass="text-2xl text-neutral-700"
+                    unitClass="text-sm text-neutral-500"
+                  />
                   <span class="text-neutral-500">
                     (
                     {(() => {
@@ -230,8 +231,8 @@ export default function () {
               <div class="gap-sm flex flex-1 flex-col">
                 <Label icon={<HardDrive />}>Диск</Label>
                 <span>
-                  712<span class="text-[10px] text-neutral-500">МБ</span> / 1.00
-                  <span class="text-[10px] text-neutral-500">ГБ</span>{" "}
+                  <Volume bytes={712 * 1024 * 1024} /> /{" "}
+                  <Volume bytes={1 * 1024 * 1024 * 1024} />{" "}
                   <span class="text-neutral-500">(71%)</span>
                 </span>
                 <div class="h-1 w-full rounded-full bg-neutral-300">
@@ -242,8 +243,8 @@ export default function () {
               <div class="gap-sm flex flex-1 flex-col">
                 <Label icon={<Database />}>База данных</Label>
                 <span>
-                  7.05<span class="text-[10px] text-neutral-500">МБ</span> / 100
-                  <span class="text-[10px] text-neutral-500">МБ</span>{" "}
+                  <Volume bytes={7.05 * 1024 * 1024} /> /{" "}
+                  <Volume bytes={100 * 1024 * 1024} />{" "}
                   <span class="text-neutral-500">(7%)</span>
                 </span>
                 <div class="h-1 w-full rounded-full bg-neutral-300">
