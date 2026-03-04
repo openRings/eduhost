@@ -6,8 +6,8 @@ use eduhost::session::AccessLevel;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::profile::dtos::GetProfileResponse;
-use crate::profile::queries::ProfileQuery;
+use crate::profile::dtos::{GetAccountMetricsResponse, GetProfileResponse};
+use crate::profile::queries::{AccountMetricsQuery, ProfileQuery};
 
 pub struct ProfileService {
     pool: PgPool,
@@ -26,6 +26,15 @@ impl ProfileService {
             .ok_or(StatusCode::NOT_FOUND)?;
 
         Ok(GetProfileResponse::from_model(model, access))
+    }
+
+    pub async fn get_metrics(&self, user_id: Uuid) -> EndpointResult<GetAccountMetricsResponse> {
+        let model = AccountMetricsQuery { user_id }
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("failed to fetch account metrics, user id: {user_id}"))?;
+
+        Ok(GetAccountMetricsResponse::from_model(model))
     }
 }
 

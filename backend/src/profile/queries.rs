@@ -14,6 +14,18 @@ pub struct ProfileQuery {
     pub user_id: Uuid,
 }
 
+#[derive(FromRow)]
+pub struct AccountMetricsModel {
+    pub disk_used_bytes: i64,
+    pub disk_available_bytes: i64,
+    pub project_count: i64,
+    pub group_count: i64,
+}
+
+pub struct AccountMetricsQuery {
+    pub user_id: Uuid,
+}
+
 impl ProfileQuery {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Option<ProfileModel>>
     where
@@ -25,6 +37,40 @@ impl ProfileQuery {
         )
         .bind(self.user_id)
         .fetch_optional(conn)
+        .await
+        .context("failed to fetch")
+    }
+}
+
+impl AccountMetricsQuery {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<AccountMetricsModel>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_as::<_, AccountMetricsModel>(
+            "SELECT
+                COALESCE((
+                    SELECT SUM(ps.size_bytes)::BIGINT
+                    FROM projects p
+                    JOIN project_sources ps ON ps.id = p.source_id
+                    WHERE p.owner_id = $1
+                ), 0)
+                +
+                COALESCE((
+                    SELECT SUM(d.disk_usage_bytes)::BIGINT
+                    FROM databases d
+                    WHERE d.owner_id = $1
+                ), 0) AS disk_used_bytes,
+                COALESCE((
+                    SELECT t.reserved_disk_bytes
+                    FROM teachers t
+                    WHERE t.user_id = $1
+                ), 0) AS disk_available_bytes,
+                (SELECT COUNT(*) FROM projects p WHERE p.owner_id = $1) AS project_count,
+                (SELECT COUNT(*) FROM group_users gu WHERE gu.user_id = $1) AS group_count",
+        )
+        .bind(self.user_id)
+        .fetch_one(conn)
         .await
         .context("failed to fetch")
     }
