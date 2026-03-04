@@ -1,5 +1,6 @@
 import { ChevronsUpDown } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
+import { Skeleton } from "../shared/Skeleton";
 import { createResource, JSX, Suspense } from "solid-js";
 import { fetchProfile } from "../entities/profile";
 import { useLocation } from "@solidjs/router";
@@ -36,7 +37,9 @@ export function Header(_props: HeaderProps) {
             variant="transparent"
             class="gap-md! -mr-md hover:text-neutral-700"
           >
-            <Suspense fallback="Загрузка..">
+            <Suspense
+              fallback={<Skeleton class="h-4 w-32" radius="sm" />}
+            >
               {profile()?.lastName} {profile()?.firstName}
             </Suspense>
             <div class="size-6 rounded-full bg-neutral-700" />

@@ -6,6 +6,7 @@ import { Button } from "../shared/uikit/Button";
 import { fetchApi } from "../utils/api";
 import { error, success } from "../utils/notifications";
 import { useLocation, useNavigate } from "@solidjs/router";
+import { authorize } from "../utils/auth";
 
 const SigninForm = z.object({
   username: z.string().min(4).max(12).lowercase(),
@@ -31,6 +32,7 @@ export default function () {
     if (status == 403) error("Неверный логин или пароль");
     if (status == 200) {
       success("Успешная авторизация");
+      authorize();
       navigate("/");
     }
   };

@@ -16,12 +16,16 @@ import { Section } from "../shared/Section";
 import { Button } from "../shared/uikit/Button";
 import { Block } from "../shared/Block";
 import { createResource, Suspense } from "solid-js";
-import { fetchProfile } from "../entities/profile";
+import { fetchAccountMetrics, fetchProfile } from "../entities/profile";
 import { Label } from "../shared/uikit/Label";
 import { A } from "@solidjs/router";
+import { Skeleton } from "../shared/Skeleton";
 
 export default function () {
   const [profile] = createResource(fetchProfile);
+  const [metrics] = createResource(fetchAccountMetrics);
+
+  const formatGb = (bytes: number) => (bytes / 1024 / 1024 / 1024).toFixed(2);
 
   return (
     <>
@@ -31,7 +35,14 @@ export default function () {
             <User strokeWidth={1.5} />
           </div>
           <div class="gap-sm flex flex-col">
-            <Suspense fallback="Загрузка..">
+            <Suspense
+              fallback={
+                <div class="gap-xs flex flex-col">
+                  <Skeleton class="h-4 w-44" />
+                  <Skeleton class="h-3 w-28" radius="sm" />
+                </div>
+              }
+            >
               <span class="text-neutral-700">
                 {profile()?.lastName} {profile()?.firstName}{" "}
                 {profile()?.patronymic}
@@ -52,14 +63,31 @@ export default function () {
             icon={<ExternalLink />}
             label={
               <div class="gap-md flex text-2xl text-neutral-700">
-                <span>
-                  2.26<span class="text-sm text-neutral-500">ГБ</span>
-                </span>{" "}
-                /{" "}
-                <span>
-                  3.00<span class="text-sm text-neutral-500">ГБ</span>
-                </span>
-                <span class="text-neutral-500">(76%)</span>
+                <Suspense
+                  fallback={<Skeleton class="h-7 w-48" />}
+                >
+                  <span>
+                    {formatGb(metrics()?.diskUsage.usedBytes ?? 0)}
+                    <span class="text-sm text-neutral-500">ГБ</span>
+                  </span>{" "}
+                  /{" "}
+                  <span>
+                    {formatGb(metrics()?.diskUsage.avaliableBytes ?? 0)}
+                    <span class="text-sm text-neutral-500">ГБ</span>
+                  </span>
+                  <span class="text-neutral-500">
+                    (
+                    {(() => {
+                      const used = metrics()?.diskUsage.usedBytes ?? 0;
+                      const available = metrics()?.diskUsage.avaliableBytes ?? 0;
+                      const percent =
+                        available > 0 ? Math.round((used / available) * 100) : 0;
+
+                      return `${Math.min(100, percent)}%`;
+                    })()}
+                    )
+                  </span>
+                </Suspense>
               </div>
             }
           >
@@ -68,7 +96,19 @@ export default function () {
                 Использование диска
               </span>
               <div class="h-1 w-full rounded-full bg-neutral-300">
-                <div class="bg-warning-300 h-full w-[76%] rounded-full" />
+                <div
+                  class="bg-warning-300 h-full rounded-full"
+                  style={{
+                    width: (() => {
+                      const used = metrics()?.diskUsage.usedBytes ?? 0;
+                      const available = metrics()?.diskUsage.avaliableBytes ?? 0;
+                      const percent =
+                        available > 0 ? Math.round((used / available) * 100) : 0;
+
+                      return `${Math.min(100, percent)}%`;
+                    })(),
+                  }}
+                />
               </div>
             </div>
           </Block>
@@ -76,7 +116,15 @@ export default function () {
             title="Подробнее"
             class="h-32"
             icon={<ExternalLink />}
-            label={<span class="text-2xl text-neutral-700">5</span>}
+            label={
+              <Suspense
+                fallback={<Skeleton class="h-7 w-10" />}
+              >
+                <span class="text-2xl text-neutral-700">
+                  {metrics()?.projectCount ?? 0}
+                </span>
+              </Suspense>
+            }
           >
             <span class="group-hover:text-primary-300 text-neutral-500">
               Всего проектов
@@ -84,10 +132,18 @@ export default function () {
           </Block>
           <Block
             class="h-32"
-            label={<span class="text-2xl text-neutral-700">2</span>}
+            label={
+              <Suspense
+                fallback={<Skeleton class="h-7 w-10" />}
+              >
+                <span class="text-2xl text-neutral-700">
+                  {metrics()?.groupCount ?? 0}
+                </span>
+              </Suspense>
+            }
           >
             <span class="group-hover:text-primary-300 text-neutral-500">
-              Всего предметов
+              Всего групп
             </span>
           </Block>
         </div>

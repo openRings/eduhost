@@ -14,6 +14,7 @@ const [isAuthorized, setIsAuthorized] = createSignal(
 
 export const currentAccessToken = () => accessToken();
 export const logout = () => setIsAuthorized(false);
+export const authorize = () => setIsAuthorized(true);
 export { isAuthorized };
 
 createEffect(() => {
@@ -45,6 +46,7 @@ export async function refreshSession(authRedirect?: boolean) {
   const responseBody: RefreshSessionResponse = await response.json();
 
   setAccessToken(responseBody.token);
+  localStorage.setItem("isAuthorized", "true");
   setIsAuthorized(true);
 
   unlock!(undefined);
