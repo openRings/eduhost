@@ -43,9 +43,7 @@ where
         let body =
             serde_json::from_reader::<_, T>(&*bytes).map_err(EndpointError::DeserealizeError)?;
 
-        let normalized_body = body
-            .normalize()
-            .map_err(|m| EndpointError::BadRequest(m.into()))?;
+        let normalized_body = body.normalize().map_err(EndpointError::bad_request)?;
 
         Ok(Self(normalized_body))
     }

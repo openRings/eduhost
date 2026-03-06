@@ -32,7 +32,7 @@ pub struct GetSubjectResponse {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetSubjectsQuery {
-    pub group_id: Uuid,
+    pub group_id: Option<String>,
 }
 
 impl GetSubjectResponse {

@@ -11,6 +11,10 @@ pub type EndpointResult<T> = Result<T, EndpointError>;
 
 pub enum EndpointError {
     BadRequest(Cow<'static, str>),
+    BadRequestWithError {
+        message: Cow<'static, str>,
+        error: Cow<'static, str>,
+    },
     DeserealizeError(serde_json::Error),
     UnknownContentType,
     Internal(anyhow::Error),
@@ -27,6 +31,17 @@ impl EndpointError {
     {
         Self::BadRequest(message.into())
     }
+
+    pub fn bad_request_with_error<M, E>(message: M, error: E) -> Self
+    where
+        M: Into<Cow<'static, str>>,
+        E: Into<Cow<'static, str>>,
+    {
+        Self::BadRequestWithError {
+            message: message.into(),
+            error: error.into(),
+        }
+    }
 }
 
 impl IntoResponse for EndpointError {
@@ -36,6 +51,14 @@ impl IntoResponse for EndpointError {
         match self {
             Self::BadRequest(message) => {
                 let body = json!({ "message": message }).to_string();
+
+                builder
+                    .status(StatusCode::BAD_REQUEST)
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(Body::new(body))
+            }
+            Self::BadRequestWithError { message, error } => {
+                let body = json!({ "message": message, "error": error }).to_string();
 
                 builder
                     .status(StatusCode::BAD_REQUEST)

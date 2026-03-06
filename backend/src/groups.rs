@@ -9,7 +9,7 @@ use sqlx::PgPool;
 use crate::groups::service::GroupsService;
 
 mod dtos;
-mod queries;
+pub(crate) mod queries;
 mod service;
 
 pub fn routes() -> Router<PgPool> {
