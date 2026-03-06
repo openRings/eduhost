@@ -62,6 +62,7 @@ export type SelectProps = Omit<
   placeholder?: string;
   onselect?: (value: string) => void;
   size?: keyof typeof sizeControlClass;
+  autosize?: boolean;
   containerClass?: string;
   triggerClass?: string;
   contentClass?: string;
@@ -75,6 +76,7 @@ export function Select(props: SelectProps) {
     "label",
     "placeholder",
     "size",
+    "autosize",
     "class",
     "containerClass",
     "triggerClass",
@@ -126,6 +128,8 @@ export function Select(props: SelectProps) {
     );
 
   createEffect(() => {
+    if (props.autosize === false) return;
+
     const el = measureRef;
     if (!el) return;
     const nodes = Array.from(el.querySelectorAll("[data-measure-item]"));
@@ -137,6 +141,15 @@ export function Select(props: SelectProps) {
   });
 
   const selectWidth = () => (maxWidth() ? `${maxWidth()}px` : "fit-content");
+  const widthStyle = () =>
+    props.autosize === false ? undefined : { width: selectWidth() };
+  const positionerStyle = () =>
+    props.autosize === false
+      ? {
+          width: "var(--reference-width)",
+          "min-width": "var(--reference-width)",
+        }
+      : { width: selectWidth(), "min-width": selectWidth() };
 
   return (
     <ArkSelect.Root
@@ -204,14 +217,10 @@ export function Select(props: SelectProps) {
                   {props.label}
                 </ArkSelect.Label>
               </Show>
-              <ArkSelect.Control
-                class={controlClasses()}
-                style={{ width: selectWidth() }}
-              >
+              <ArkSelect.Control class={controlClasses()} style={widthStyle()}>
                 <ArkSelect.Trigger class={triggerClasses()}>
                   <ArkSelect.ValueText
                     placeholder={props.placeholder ?? "Выберите"}
-                    class="truncate"
                   />
                   <ArkSelect.Indicator
                     class={
@@ -225,7 +234,7 @@ export function Select(props: SelectProps) {
               <Portal>
                 <ArkSelect.Positioner
                   class="z-[9999]"
-                  style={{ width: selectWidth(), "min-width": selectWidth() }}
+                  style={positionerStyle()}
                 >
                   <ArkSelect.Content
                     class={contentClasses()}
