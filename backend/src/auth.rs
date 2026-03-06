@@ -6,6 +6,7 @@ use axum_cookie::CookieManager;
 use eduhost::error::EndpointResult;
 use eduhost::normalize::NormalizedJson;
 use eduhost::service::WithService;
+use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
 use self::dtos::{SigninRequest, SignupRequest};
@@ -21,6 +22,7 @@ pub fn routes() -> Router<PgPool> {
         .route("/signup", post(signup))
         .route("/signin", post(signin))
         .route("/refresh", post(refresh))
+        .route("/logout", post(logout))
 }
 
 async fn signup(
@@ -54,4 +56,15 @@ async fn refresh(
     let response = auth_service.refresh(refresh_token).await?;
 
     Ok(response)
+}
+
+async fn logout(
+    WithService(auth_service): WithService<AuthService>,
+    session: Session<Student>,
+) -> EndpointResult<impl IntoResponse> {
+    let session_id = session.session_id();
+
+    auth_service.logout(session_id).await?;
+
+    Ok(StatusCode::NO_CONTENT)
 }

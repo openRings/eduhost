@@ -8,6 +8,7 @@ use eduhost::service::Service;
 use rand::RngExt;
 use sqlx::PgPool;
 use time::Duration;
+use uuid::Uuid;
 
 use crate::auth::commands::{SessionCreateCommand, SessionExpireCommand, UserCreateCommand};
 use crate::auth::dtos::{NewSessionResponse, SigninRequest, SignupRequest};
@@ -151,6 +152,21 @@ impl AuthService {
             access_token,
             refresh_token,
         })
+    }
+
+    pub async fn logout(&self, session_id: Uuid) -> EndpointResult<()> {
+        let session_expired = SessionExpireCommand { session_id }
+            .execute(&self.pool)
+            .await
+            .with_context(|| {
+                format!("failed to delete session by logout, session id: {session_id}")
+            })?;
+
+        if session_expired != 1 {
+            return Err(StatusCode::UNAUTHORIZED.into());
+        }
+
+        Ok(())
     }
 }
 
