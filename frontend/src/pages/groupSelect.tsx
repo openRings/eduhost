@@ -7,8 +7,9 @@ import { Input } from "../shared/uikit/Input";
 import { createResource, createSignal, Show } from "solid-js";
 import { fetchGroups } from "../entities/groups";
 import { Skeleton } from "../shared/Skeleton";
-import { setCurrentGroupId } from "../utils/group";
+import { resetCurrentGroupId, setCurrentGroupId } from "../utils/group";
 import { useNavigate } from "@solidjs/router";
+import { logout as logoutSession } from "../utils/auth";
 
 export default function () {
   const [selectedGroup, setSelectedGroup] = createSignal("");
@@ -18,6 +19,12 @@ export default function () {
 
   const groupItems = () =>
     (groups() ?? []).map((group) => ({ label: group.name, value: group.id }));
+
+  const logout = async () => {
+    await logoutSession();
+    resetCurrentGroupId();
+    navigate("/signin");
+  };
 
   return (
     <Section class="h-screen items-center justify-center">
@@ -53,6 +60,7 @@ export default function () {
                   title="Выйти из аккаунта"
                   variant="danger"
                   iconStart={<LogOut />}
+                  onclick={logout}
                 >
                   Выйти
                 </Button>

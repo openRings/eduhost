@@ -13,7 +13,6 @@ const [isAuthorized, setIsAuthorized] = createSignal(
 );
 
 export const currentAccessToken = () => accessToken();
-export const logout = () => setIsAuthorized(false);
 export const authorize = () => setIsAuthorized(true);
 export { isAuthorized };
 
@@ -24,6 +23,27 @@ createEffect(() => {
 });
 
 let lock: undefined | Promise<any> = undefined;
+
+export async function logout() {
+  try {
+    if (!currentAccessToken() && isAuthorized()) {
+      await refreshSession(false);
+    }
+
+    const accessToken = currentAccessToken();
+    const headers = new Headers();
+
+    if (accessToken) {
+      headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+
+    await fetch("/api/auth/logout", { method: "POST", headers });
+  } finally {
+    setAccessToken(undefined);
+    setIsAuthorized(false);
+    localStorage.removeItem("isAuthorized");
+  }
+}
 
 export async function refreshSession(authRedirect?: boolean) {
   if (lock != undefined) {
