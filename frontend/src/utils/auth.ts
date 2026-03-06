@@ -39,8 +39,12 @@ export async function refreshSession(authRedirect?: boolean) {
   if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 300));
 
   if (!response.ok) {
+    const isAuthPage =
+      window.location.pathname === "/signin" ||
+      window.location.pathname === "/signup";
+
     setIsAuthorized(false);
-    authRedirect && window.location.assign("/signin");
+    authRedirect && !isAuthPage && window.location.assign("/signin");
   }
 
   const responseBody: RefreshSessionResponse = await response.json();

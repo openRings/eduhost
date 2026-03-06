@@ -38,12 +38,18 @@ export async function fetchApi<T = any>(
   if (isDev) await new Promise((r) => setTimeout(r, Math.random() * 300));
 
   if (status == 401) {
+    const isAuthPage =
+      window.location.pathname === "/signin" ||
+      window.location.pathname === "/signup";
+
     if (isAuthorized()) {
       await refreshSession(authRedirect ?? true);
       return fetchApi(path, options);
     }
 
-    !(authRedirect == false) && window.location.assign("/signin");
+    !(authRedirect == false) &&
+      !isAuthPage &&
+      window.location.assign("/signin");
   }
 
   let responseBody: T = undefined as any;

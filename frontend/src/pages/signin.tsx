@@ -8,6 +8,7 @@ import { error, success } from "../utils/notifications";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { authorize } from "../utils/auth";
 import { HideController } from "../components/Hide";
+import { resetCurrentGroupId } from "../utils/group";
 
 const SigninForm = z.object({
   username: z.string().min(4).max(12).lowercase(),
@@ -33,8 +34,9 @@ export default function () {
     if (status == 403) error("Неверный логин или пароль");
     if (status == 200) {
       success("Успешная авторизация");
+      resetCurrentGroupId();
       authorize();
-      navigate("/");
+      navigate("/group-select");
     }
   };
 
