@@ -1,3 +1,4 @@
+use axum::Json;
 use axum::Router;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -9,7 +10,7 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
-use self::dtos::{SigninRequest, SignupRequest};
+use self::dtos::{IsUsernameAvailableRequest, SigninRequest, SignupRequest};
 use self::service::AuthService;
 
 mod commands;
@@ -21,6 +22,7 @@ pub fn routes() -> Router<PgPool> {
     Router::new()
         .route("/signup", post(signup))
         .route("/signin", post(signin))
+        .route("/username/available", post(is_username_available))
         .route("/refresh", post(refresh))
         .route("/logout", post(logout))
 }
@@ -41,6 +43,15 @@ async fn signin(
     let response = auth_service.signin(body).await?;
 
     Ok(response)
+}
+
+async fn is_username_available(
+    WithService(auth_service): WithService<AuthService>,
+    NormalizedJson(body): NormalizedJson<IsUsernameAvailableRequest>,
+) -> EndpointResult<impl IntoResponse> {
+    let response = auth_service.is_username_available(body).await?;
+
+    Ok(Json(response))
 }
 
 async fn refresh(

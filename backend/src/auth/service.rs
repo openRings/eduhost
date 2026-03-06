@@ -11,7 +11,10 @@ use time::Duration;
 use uuid::Uuid;
 
 use crate::auth::commands::{SessionCreateCommand, SessionExpireCommand, UserCreateCommand};
-use crate::auth::dtos::{NewSessionResponse, SigninRequest, SignupRequest};
+use crate::auth::dtos::{
+    IsUsernameAvailableRequest, IsUsernameAvailableResponse, NewSessionResponse, SigninRequest,
+    SignupRequest,
+};
 use crate::auth::queries::{
     IsUsernameExistsQuery, SessionSummaryByRefreshQuery, UserCredentialsQuery,
 };
@@ -21,6 +24,24 @@ pub struct AuthService {
 }
 
 impl AuthService {
+    pub async fn is_username_available(
+        &self,
+        body: IsUsernameAvailableRequest,
+    ) -> EndpointResult<IsUsernameAvailableResponse> {
+        let IsUsernameAvailableRequest { username } = body;
+
+        let is_username_exists = IsUsernameExistsQuery {
+            username: &username,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| format!("failed to check is username exists: {username}"))?;
+
+        Ok(IsUsernameAvailableResponse {
+            is_available: !is_username_exists,
+        })
+    }
+
     pub async fn create_user(&self, body: SignupRequest) -> EndpointResult<()> {
         let SignupRequest { username, .. } = &body;
 

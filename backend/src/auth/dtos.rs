@@ -4,7 +4,7 @@ use axum::http::header::SET_COOKIE;
 use axum::response::{IntoResponse, Response};
 use axum_cookie::prelude::Cookie;
 use eduhost::normalize::Normalize;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 #[derive(Clone, Deserialize)]
@@ -23,6 +23,18 @@ pub struct SignupRequest {
 pub struct SigninRequest {
     pub username: String,
     pub password: String,
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IsUsernameAvailableRequest {
+    pub username: String,
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IsUsernameAvailableResponse {
+    pub is_available: bool,
 }
 
 pub struct NewSessionResponse {
@@ -102,6 +114,14 @@ impl Normalize for SignupRequest {
 }
 
 impl Normalize for SigninRequest {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.username.make_ascii_lowercase();
+
+        Ok(self)
+    }
+}
+
+impl Normalize for IsUsernameAvailableRequest {
     fn normalize(mut self) -> Result<Self, String> {
         self.username.make_ascii_lowercase();
 
