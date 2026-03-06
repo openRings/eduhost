@@ -41,6 +41,7 @@ export function createForm<S extends ZodObject<any>>(
     setFieldValue: <K extends keyof FormData>(
       name: K,
       value: FormData[K],
+      force?: boolean,
     ) => void;
   }>();
 
@@ -58,13 +59,14 @@ export function createForm<S extends ZodObject<any>>(
   ) {
     const [_, attrs] = splitProps(props, ["onsubmit"]);
 
-    const setFieldValue = <K extends keyof FormData>(
+    const setFieldValue = async <K extends keyof FormData>(
       name: K,
       value: FormData[K],
+      force?: boolean,
     ) => {
-      const result = schema.shape[name as any].safeParse(value);
+      const result = await schema.shape[name as any].safeParseAsync(value);
 
-      setValues(!!name ? (name as any) : null, value as any);
+      if (!force) setValues(!!name ? (name as any) : null, value as any);
 
       if (!result.success && !!value) {
         setErrors(name as any, result.error.flatten().formErrors[0]);
@@ -87,7 +89,7 @@ export function createForm<S extends ZodObject<any>>(
       e.preventDefault();
       if (isPending()) return;
 
-      const result = schema.safeParse(values);
+      const result = await schema.safeParseAsync(values);
 
       if (!result.success) {
         const fieldErrors = result.error.flatten().fieldErrors;
@@ -131,7 +133,7 @@ export function createForm<S extends ZodObject<any>>(
 
     const oninput = (e: Event & { target: any }) => {
       if (!error()) return;
-      form.setFieldValue(props.name, e.target.value);
+      form.setFieldValue(props.name, e.target.value, true);
     };
 
     const onchange = (e: Event & { target: any }) => {

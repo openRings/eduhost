@@ -13,15 +13,22 @@ import { fetchApi } from "../utils/api";
 import { success } from "../utils/notifications";
 import { useNavigate } from "@solidjs/router";
 import { HideController } from "../components/Hide";
+import { checkUsernameAvailability } from "../entities/auth";
+
+const UsernameSchema = z
+  .string()
+  .min(4)
+  .max(12)
+  .lowercase()
+  .regex(/^[^0-9]/, "Не должен начинаться с цифры")
+  .refine(
+    async (username) => await checkUsernameAvailability(username),
+    "Занято другим пользователем",
+  );
 
 const SigninForm = z
   .object({
-    username: z
-      .string()
-      .min(4)
-      .max(12)
-      .lowercase()
-      .regex(/^[^0-9]/, "Не должен начинаться с цифры"),
+    username: UsernameSchema,
     firstName: z.string().min(2).max(30),
     lastName: z.string().min(4).max(30),
     patronymic: z.string().min(4).max(30).optional(),
