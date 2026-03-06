@@ -15,6 +15,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
 mod auth;
+mod groups;
 mod profile;
 mod subjects;
 
@@ -42,6 +43,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/session", get(session))
         .route("/metrics", get(|| async move { metric_handle.render() }))
         .nest("/auth", auth::routes())
+        .nest("/groups", groups::routes())
         .nest("/subjects", subjects::routes())
         .nest("/profile", profile::routes())
         .layer(middleware::from_fn(error_middleware))
