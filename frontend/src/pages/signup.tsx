@@ -12,6 +12,7 @@ import { Button } from "../shared/uikit/Button";
 import { fetchApi } from "../utils/api";
 import { success } from "../utils/notifications";
 import { useNavigate } from "@solidjs/router";
+import { HideController } from "../components/Hide";
 
 const SigninForm = z
   .object({
@@ -60,6 +61,7 @@ export default function () {
 
   return (
     <Section class="h-screen items-center justify-center">
+      <HideController keys={["header", "footer"]} />
       <Form class="gap-3xl flex w-[360px] flex-col" onsubmit={signup}>
         <h1 class="text-lg text-neutral-400">Создание аккаунта</h1>
         <div class="gap-md flex flex-col">

@@ -7,6 +7,7 @@ import { fetchApi } from "../utils/api";
 import { error, success } from "../utils/notifications";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { authorize } from "../utils/auth";
+import { HideController } from "../components/Hide";
 
 const SigninForm = z.object({
   username: z.string().min(4).max(12).lowercase(),
@@ -39,6 +40,7 @@ export default function () {
 
   return (
     <Section class="h-screen items-center justify-center">
+      <HideController keys={["header", "footer"]} />
       <Form class="gap-3xl flex w-[360px] flex-col" onsubmit={signin}>
         <h1 class="text-lg text-neutral-400">Вход в аккаунт</h1>
         <div class="gap-md flex flex-col">

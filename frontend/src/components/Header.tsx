@@ -174,7 +174,9 @@ export function Header(_props: HeaderProps) {
                       <Button
                         variant="transparent"
                         class={`px-md justify-start ${
-                          currentGroupId() === group.id ? "text-primary-300" : ""
+                          currentGroupId() === group.id
+                            ? "text-primary-300"
+                            : ""
                         }`}
                         onclick={() => setCurrentGroupId(group.id)}
                       >
