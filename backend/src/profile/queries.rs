@@ -24,6 +24,7 @@ pub struct AccountMetricsModel {
 
 pub struct AccountMetricsQuery {
     pub user_id: Uuid,
+    pub group_id: Uuid,
 }
 
 impl ProfileQuery {
@@ -66,16 +67,17 @@ impl AccountMetricsQuery {
                     FROM subjects s
                     JOIN subject_groups sg ON sg.subject_id = s.id
                     JOIN group_users gu ON gu.group_id = sg.group_id
-                    WHERE gu.user_id = $1
+                    WHERE gu.user_id = $1 AND gu.group_id = $2
                 ), 0) AS disk_available_bytes,
                 (SELECT COUNT(*) FROM projects p WHERE p.owner_id = $1) AS project_count,
                 (SELECT COUNT(DISTINCT s.id)
                 FROM subjects s
                 JOIN subject_groups sg ON sg.subject_id = s.id
                 JOIN group_users gu ON gu.group_id = sg.group_id
-                WHERE gu.user_id = $1) AS subject_count",
+                WHERE gu.user_id = $1 AND gu.group_id = $2) AS subject_count",
         )
         .bind(self.user_id)
+        .bind(self.group_id)
         .fetch_one(conn)
         .await
         .context("failed to fetch")

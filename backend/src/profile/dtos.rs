@@ -1,5 +1,6 @@
 use eduhost::session::AccessLevel;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::profile::queries::{AccountMetricsModel, ProfileModel};
 
@@ -26,6 +27,12 @@ pub struct GetAccountMetricsResponse {
     pub disk_usage: DiskUsageResponse,
     pub project_count: i64,
     pub subject_count: i64,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetAccountMetricsQuery {
+    pub group_id: Uuid,
 }
 
 impl GetProfileResponse {

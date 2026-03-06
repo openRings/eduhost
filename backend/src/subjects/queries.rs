@@ -15,6 +15,7 @@ pub struct SubjectModel {
 
 pub struct SubjectsByUserQuery {
     pub user_id: Uuid,
+    pub group_id: Uuid,
 }
 
 impl SubjectsByUserQuery {
@@ -30,12 +31,13 @@ impl SubjectsByUserQuery {
             JOIN subject_groups sg ON sg.subject_id = s.id
             JOIN group_users gu ON gu.group_id = sg.group_id
             JOIN users u ON u.id = s.owner_id
-            WHERE gu.user_id = $1
+            WHERE gu.user_id = $1 AND gu.group_id = $2
             GROUP BY s.id, s.name, s.reserved_disk_bytes,
             u.id, u.first_name, u.last_name, u.patronymic
             ORDER BY s.created_at DESC",
         )
         .bind(self.user_id)
+        .bind(self.group_id)
         .fetch_all(conn)
         .await
         .context("failed to fetch")

@@ -1,3 +1,4 @@
+use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
@@ -6,6 +7,7 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
+use crate::subjects::dtos::GetSubjectsQuery;
 use crate::subjects::service::SubjectsService;
 
 mod dtos;
@@ -19,10 +21,12 @@ pub fn routes() -> Router<PgPool> {
 async fn get_subjects(
     WithService(subjects_service): WithService<SubjectsService>,
     session: Session<Student>,
+    Query(query): Query<GetSubjectsQuery>,
 ) -> EndpointResult<impl IntoResponse> {
     let user_id = session.user_id();
+    let group_id = query.group_id;
 
-    let response = subjects_service.get_subjects(user_id).await?;
+    let response = subjects_service.get_subjects(user_id, group_id).await?;
 
     Ok(Json(response))
 }

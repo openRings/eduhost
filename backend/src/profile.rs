@@ -1,3 +1,4 @@
+use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
@@ -6,6 +7,7 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
+use crate::profile::dtos::GetAccountMetricsQuery;
 use crate::profile::service::ProfileService;
 
 mod dtos;
@@ -33,10 +35,12 @@ async fn get_profile(
 async fn get_metrics(
     WithService(profile_service): WithService<ProfileService>,
     session: Session<Student>,
+    Query(query): Query<GetAccountMetricsQuery>,
 ) -> EndpointResult<impl IntoResponse> {
     let user_id = session.user_id();
+    let group_id = query.group_id;
 
-    let response = profile_service.get_metrics(user_id).await?;
+    let response = profile_service.get_metrics(user_id, group_id).await?;
 
     Ok(Json(response))
 }

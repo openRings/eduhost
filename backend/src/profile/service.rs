@@ -28,11 +28,17 @@ impl ProfileService {
         Ok(GetProfileResponse::from_model(model, access))
     }
 
-    pub async fn get_metrics(&self, user_id: Uuid) -> EndpointResult<GetAccountMetricsResponse> {
-        let model = AccountMetricsQuery { user_id }
+    pub async fn get_metrics(
+        &self,
+        user_id: Uuid,
+        group_id: Uuid,
+    ) -> EndpointResult<GetAccountMetricsResponse> {
+        let model = AccountMetricsQuery { user_id, group_id }
             .execute(&self.pool)
             .await
-            .with_context(|| format!("failed to fetch account metrics, user id: {user_id}"))?;
+            .with_context(|| {
+                format!("failed to fetch account metrics, user id: {user_id}, group id: {group_id}")
+            })?;
 
         Ok(GetAccountMetricsResponse::from_model(model))
     }

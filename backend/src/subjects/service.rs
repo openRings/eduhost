@@ -12,11 +12,17 @@ pub struct SubjectsService {
 }
 
 impl SubjectsService {
-    pub async fn get_subjects(&self, user_id: Uuid) -> EndpointResult<Vec<GetSubjectResponse>> {
-        let models = SubjectsByUserQuery { user_id }
+    pub async fn get_subjects(
+        &self,
+        user_id: Uuid,
+        group_id: Uuid,
+    ) -> EndpointResult<Vec<GetSubjectResponse>> {
+        let models = SubjectsByUserQuery { user_id, group_id }
             .execute(&self.pool)
             .await
-            .with_context(|| format!("failed to fetch subjects, user id: {user_id}"))?;
+            .with_context(|| {
+                format!("failed to fetch subjects, user id: {user_id}, group id: {group_id}")
+            })?;
 
         Ok(models
             .into_iter()
