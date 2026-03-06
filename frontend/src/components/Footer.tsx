@@ -24,11 +24,17 @@ export function Footer(_props: FooterProps) {
           <span class="mb-xl font-normal">О проекте</span>
           <p class="mb-xl leading-[150%] text-neutral-500">
             Проект разработан и выпущен под открытой лицензией{" "}
-            <a class="text-neutral-700 underline" href="#">
+            <a
+              class="hover:text-primary-300 text-neutral-700 underline"
+              href="#"
+            >
               MIT
             </a>{" "}
             в рамках производственной практики в колледже{" "}
-            <a class="text-neutral-700 underline" href="#">
+            <a
+              class="hover:text-primary-300 text-neutral-700 underline"
+              href="#"
+            >
               КИПФИН
             </a>
           </p>
@@ -49,7 +55,7 @@ function FooterLink(props: FooterLinkProps) {
   return (
     <A
       href={props.href}
-      class="text-neutral-600 hover:text-neutral-700 hover:underline"
+      class="hover:text-primary-300 text-neutral-600 hover:underline"
     >
       {props.children}
     </A>
