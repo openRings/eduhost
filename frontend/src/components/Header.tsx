@@ -2,8 +2,11 @@ import { ChevronsUpDown, GraduationCap, User, UserStar } from "lucide-solid";
 import { Button } from "../shared/uikit/Button";
 import { Skeleton } from "../shared/Skeleton";
 import {
+  createEffect,
+  createMemo,
   createResource,
   createSignal,
+  For,
   JSX,
   onCleanup,
   onMount,
@@ -11,16 +14,72 @@ import {
   Suspense,
 } from "solid-js";
 import { fetchProfile } from "../entities/profile";
+import { AccessLevel } from "../entities/session";
+import { fetchGroups } from "../entities/groups";
 import { useLocation } from "@solidjs/router";
 import { Motion, Presence } from "solid-motionone";
+import { currentGroupId, setCurrentGroupId } from "../utils/group";
 
 export type HeaderProps = {};
 
+const roleLabel = {
+  [AccessLevel.Student]: "Студент",
+  [AccessLevel.Teacher]: "Преподаватель",
+  [AccessLevel.Admin]: "Администратор",
+};
+
+const roleIcon = {
+  [AccessLevel.Student]: <User />,
+  [AccessLevel.Teacher]: <GraduationCap />,
+  [AccessLevel.Admin]: <UserStar />,
+};
+
+function allowedRoles(maxAccess: AccessLevel | undefined): AccessLevel[] {
+  if (maxAccess === AccessLevel.Admin) {
+    return [AccessLevel.Student, AccessLevel.Teacher, AccessLevel.Admin];
+  }
+
+  if (maxAccess === AccessLevel.Teacher) {
+    return [AccessLevel.Student, AccessLevel.Teacher];
+  }
+
+  return [AccessLevel.Student];
+}
+
 export function Header(_props: HeaderProps) {
   const [isRoleOpen, setIsRoleOpen] = createSignal(false);
+  const [selectedRole, setSelectedRole] = createSignal(AccessLevel.Student);
   let roleRef: HTMLDivElement | undefined;
 
   const [profile] = createResource(fetchProfile);
+  const [groups] = createResource(fetchGroups);
+
+  const availableRoles = createMemo(() => allowedRoles(profile()?.access));
+  const selectedGroupName = createMemo(
+    () => groups()?.find((group) => group.id === currentGroupId())?.name,
+  );
+
+  createEffect(() => {
+    const roles = availableRoles();
+
+    if (!roles.includes(selectedRole())) {
+      setSelectedRole(roles[roles.length - 1] ?? AccessLevel.Student);
+    }
+  });
+
+  createEffect(() => {
+    const userGroups = groups() ?? [];
+    if (!userGroups.length) return;
+
+    const selectedGroup = currentGroupId();
+    const hasSelectedGroup = userGroups.some(
+      (group) => group.id === selectedGroup,
+    );
+
+    if (hasSelectedGroup) return;
+
+    setCurrentGroupId(userGroups[0].id);
+  });
 
   onMount(() => {
     const handleClick = (event: MouseEvent) => {
@@ -64,9 +123,14 @@ export function Header(_props: HeaderProps) {
             iconStart={<ChevronsUpDown />}
           >
             <div class="gap-md flex">
-              Студент
+              {roleLabel[selectedRole()]}
               <span class="text-neutral-400">/</span>
-              4ИСиП-111
+              <Show
+                when={!groups.loading}
+                fallback={<Skeleton class="h-4 w-28" radius="sm" />}
+              >
+                {selectedGroupName() ?? "Нет доступных групп"}
+              </Show>
             </div>
           </Button>
           <Presence>
@@ -78,38 +142,46 @@ export function Header(_props: HeaderProps) {
                 class="p-md gap-sm absolute top-10 -left-2 flex origin-top rounded-md bg-gradient-to-t from-neutral-100 to-white shadow-md ring-1 ring-neutral-300 ring-inset"
               >
                 <div class="gap-sm flex min-w-44 flex-col">
-                  <Button
-                    iconStart={<User />}
-                    variant="transparent"
-                    class="px-md text-primary-300 justify-start"
-                  >
-                    Студент
-                  </Button>
-                  <Button
-                    iconStart={<GraduationCap />}
-                    variant="transparent"
-                    class="px-md justify-start"
-                  >
-                    Преподаватель
-                  </Button>
-                  <Button
-                    iconStart={<UserStar />}
-                    variant="transparent"
-                    class="px-md justify-start"
-                  >
-                    Администратор
-                  </Button>
+                  <For each={availableRoles()}>
+                    {(role) => (
+                      <Button
+                        iconStart={roleIcon[role]}
+                        variant="transparent"
+                        class={`px-md justify-start ${
+                          selectedRole() === role ? "text-primary-300" : ""
+                        }`}
+                        onclick={() => setSelectedRole(role)}
+                      >
+                        {roleLabel[role]}
+                      </Button>
+                    )}
+                  </For>
                 </div>
                 <div class="gap-sm pl-sm flex min-w-44 flex-col border-l border-neutral-300">
-                  <Button
-                    variant="transparent"
-                    class="px-md text-primary-300 justify-start"
-                  >
-                    4ИСиП-111
-                  </Button>
-                  <Button variant="transparent" class="px-md justify-start">
-                    3ИСиП-222
-                  </Button>
+                  <Show when={groups.loading}>
+                    <div class="gap-sm px-md pt-xs flex flex-col">
+                      <Skeleton class="h-4 w-32" radius="sm" />
+                      <Skeleton class="h-4 w-28" radius="sm" />
+                    </div>
+                  </Show>
+                  <Show when={!groups.loading && !groups()?.length}>
+                    <span class="px-md text-sm text-neutral-500">
+                      Нет доступных групп
+                    </span>
+                  </Show>
+                  <For each={groups()}>
+                    {(group) => (
+                      <Button
+                        variant="transparent"
+                        class={`px-md justify-start ${
+                          currentGroupId() === group.id ? "text-primary-300" : ""
+                        }`}
+                        onclick={() => setCurrentGroupId(group.id)}
+                      >
+                        {group.name}
+                      </Button>
+                    )}
+                  </For>
                 </div>
               </Motion.div>
             </Show>

@@ -16,8 +16,10 @@ export type Subject = {
   };
 };
 
-export async function fetchSubjects() {
-  const { body } = await fetchApi<Subject[]>("/subjects");
+export async function fetchSubjects(groupId: string) {
+  const { body } = await fetchApi<Subject[]>("/subjects", {
+    query: { groupId },
+  });
 
   return body;
 }

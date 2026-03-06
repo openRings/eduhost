@@ -4,11 +4,12 @@ import { AccountCountCard } from "../components/AccountCountCard";
 import { AccountUsageCard } from "../components/AccountUsageCard";
 import { fetchAccountMetrics } from "../entities/profile";
 import { Section } from "../shared/Section";
+import { currentGroupId } from "../utils/group";
 
 export type AccountSummarySectionProps = {};
 
 export function AccountSummarySection(_props: AccountSummarySectionProps) {
-  const [metrics] = createResource(fetchAccountMetrics);
+  const [metrics] = createResource(currentGroupId, fetchAccountMetrics);
 
   return (
     <Section labelIcon={<SquareUser />} label="Аккаунт">

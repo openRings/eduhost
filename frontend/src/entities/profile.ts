@@ -1,10 +1,12 @@
 import { fetchApi } from "../utils/api";
+import type { AccessLevel } from "./session";
 
 export type Profile = {
   username: string;
   firstName: string;
   lastName: string;
   patronymic?: string;
+  access: AccessLevel;
 };
 
 export type AccountMetrics = {
@@ -22,8 +24,10 @@ export async function fetchProfile() {
   return body;
 }
 
-export async function fetchAccountMetrics() {
-  const { body } = await fetchApi<AccountMetrics>("/profile/metrics");
+export async function fetchAccountMetrics(groupId: string) {
+  const { body } = await fetchApi<AccountMetrics>("/profile/metrics", {
+    query: { groupId },
+  });
 
   return body;
 }

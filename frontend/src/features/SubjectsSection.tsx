@@ -5,6 +5,7 @@ import { fetchSubjects } from "../entities/subjects";
 import { Section } from "../shared/Section";
 import { Skeleton } from "../shared/Skeleton";
 import { Button } from "../shared/uikit/Button";
+import { currentGroupId } from "../utils/group";
 
 export type SubjectsSectionProps = {};
 
@@ -28,7 +29,7 @@ const subjectSkeleton = () => (
 );
 
 export function SubjectsSection(_props: SubjectsSectionProps) {
-  const [subjects] = createResource(fetchSubjects);
+  const [subjects] = createResource(currentGroupId, fetchSubjects);
 
   return (
     <Section labelIcon={<Book />} label="Предметы">

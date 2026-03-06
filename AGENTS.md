@@ -127,6 +127,7 @@ export type ButtonProps =
 - Store reusable class groups in constants.
 - Keep project tokens and state selectors (`group-hover`, `data-[...]`, `[&:has(...)]`, etc.).
 - Always merge classes with `twMerge` when combining dynamic class sets.
+- For loading placeholders in UI (dropdowns, lists, cards), prefer `Skeleton` components instead of text labels like "Загрузка...".
 
 ## 3) Backend (Rust)
 
