@@ -1,6 +1,7 @@
 import { isDev } from "solid-js/web";
 import { currentAccessToken, isAuthorized, refreshSession } from "./auth";
 import { error } from "./notifications";
+import { go } from "./navigation";
 
 export type FetchApiOptions = Omit<RequestInit, "body"> & {
   authRedirect?: boolean;
@@ -47,9 +48,7 @@ export async function fetchApi<T = any>(
       return fetchApi(path, options);
     }
 
-    !(authRedirect == false) &&
-      !isAuthPage &&
-      window.location.assign("/signin");
+    !(authRedirect == false) && !isAuthPage && go("/signin");
   }
 
   let responseBody: T = undefined as any;

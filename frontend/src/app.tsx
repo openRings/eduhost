@@ -1,6 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
-import { Router, Route } from "@solidjs/router";
+import { Router, Route, useNavigate } from "@solidjs/router";
+import { initNavigation } from "./utils/navigation";
 import { Notifications } from "./features/Notifications";
 import { Section } from "./shared/Section";
 import { Header } from "./components/Header";
@@ -57,13 +58,22 @@ const App = () => {
 
   return (
     <Router root={layout}>
-      <Route path="/" component={Index} />
-      <Route path="/projects" component={Projects} />
-      <Route path="/databases" component={Databases} />
-      <Route path="/group-select" component={GroupSelect} />
-      <Route path="/guides" component={Guides} />
-      <Route path="/signin" component={Signin} />
-      <Route path="/signup" component={Signup} />
+      <Route
+        component={(props: any) => {
+          const navigator = useNavigate();
+          initNavigation(navigator);
+
+          return props.children;
+        }}
+      >
+        <Route path="/" component={Index} />
+        <Route path="/projects" component={Projects} />
+        <Route path="/databases" component={Databases} />
+        <Route path="/group-select" component={GroupSelect} />
+        <Route path="/guides" component={Guides} />
+        <Route path="/signin" component={Signin} />
+        <Route path="/signup" component={Signup} />
+      </Route>
     </Router>
   );
 };

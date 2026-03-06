@@ -1,4 +1,5 @@
 import { createEffect, createSignal } from "solid-js";
+import { go } from "./navigation";
 
 const selectedGroupStorageKey = "selectedGroupId";
 
@@ -15,7 +16,7 @@ export const currentGroupId = () => {
   if (groupId) return groupId;
 
   if (window.location.pathname !== "/group-select" && !isAuthPage) {
-    window.location.assign("/group-select");
+    go("/group-select");
   }
 
   return "";
