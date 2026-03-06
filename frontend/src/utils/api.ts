@@ -22,7 +22,7 @@ export async function fetchApi<T = any>(
   if (body) body = JSON.stringify(body);
 
   let fetchPath = `/api${path}`;
-  if (query) fetchPath = `${path}?${new URLSearchParams(query).toString()}`;
+  if (query) fetchPath = `/api${path}?${new URLSearchParams(query).toString()}`;
 
   if (!currentAccessToken() && isAuthorized()) await refreshSession();
 
