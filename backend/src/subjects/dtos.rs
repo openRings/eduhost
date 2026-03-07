@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::subjects::queries::SubjectModel;
@@ -27,12 +27,6 @@ pub struct GetSubjectResponse {
     pub name: String,
     pub teacher: TeacherResponse,
     pub disk_usage: SubjectDiskUsageResponse,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSubjectsQuery {
-    pub group_id: Option<String>,
 }
 
 impl GetSubjectResponse {

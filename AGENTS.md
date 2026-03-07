@@ -147,12 +147,13 @@ Current backend structure is explicit and should be preserved:
 - per-domain submodules: `dtos`, `queries`, `commands`, `service`
 - service layer contains business logic
 - query/command objects encapsulate SQL actions with `execute(...)`
-- shared cross-cutting modules in `backend/src` (`error`, `session`, `service`, `normalize`, `crypto`, `database`)
+- shared cross-cutting modules in `backend/src` (`error`, `session`, `group_id`, `service`, `normalize`, `crypto`, `database`)
 
 ### 3.3 Route/handler style
 
 - Keep route registration centralized in `routes()`.
 - Use typed extractors (`WithService<T>`, `Session<...>`, `NormalizedJson<T>`).
+- For group-scoped GET endpoints, prefer shared `GroupId` extractor over manual `groupId` parsing in handlers.
 - Return `EndpointResult<impl IntoResponse>` where this pattern is used.
 - Keep handlers thin; delegate business logic to service layer.
 
@@ -211,6 +212,10 @@ impl ProfileQuery {
 - Declare structs/enums first.
 - Then place inherent `impl` blocks.
 - Place `impl Trait for Type` blocks after inherent `impl` blocks.
+- In every Rust file, keep imports ordered by source:
+  1) external imports (`std`, `core`, `anyhow`, `axum`, `eduhost`, `sqlx`, etc.)
+  2) one empty line
+  3) local imports from this package (`crate::...`, `self::...`).
 
 ## 4) AGENTS.md Maintenance Policy
 

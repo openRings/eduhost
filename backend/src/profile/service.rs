@@ -1,13 +1,11 @@
 use anyhow::Context;
 use axum::http::StatusCode;
-use eduhost::error::EndpointError;
 use eduhost::error::EndpointResult;
 use eduhost::service::Service;
 use eduhost::session::AccessLevel;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::groups::queries::IsGroupAvailableForUserQuery;
 use crate::profile::dtos::{GetAccountMetricsResponse, GetProfileResponse};
 use crate::profile::queries::{AccountMetricsQuery, ProfileQuery};
 
@@ -35,22 +33,6 @@ impl ProfileService {
         user_id: Uuid,
         group_id: Uuid,
     ) -> EndpointResult<GetAccountMetricsResponse> {
-        let has_group = IsGroupAvailableForUserQuery { user_id, group_id }
-            .execute(&self.pool)
-            .await
-            .with_context(|| {
-                format!(
-                    "failed to check group availability, user id: {user_id}, group id: {group_id}"
-                )
-            })?;
-
-        if !has_group {
-            return Err(EndpointError::bad_request_with_error(
-                "Группа не найдена или недоступна для студента",
-                "MissingGroup",
-            ));
-        }
-
         let model = AccountMetricsQuery { user_id, group_id }
             .execute(&self.pool)
             .await

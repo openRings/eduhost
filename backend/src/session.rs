@@ -1,4 +1,3 @@
-use crate::error::EndpointError;
 use anyhow::Context;
 use axum::extract::FromRequestParts;
 use axum::http::StatusCode;
@@ -9,6 +8,8 @@ use sqlx::FromRow;
 use sqlx::PgPool;
 use std::marker::PhantomData;
 use uuid::Uuid;
+
+use crate::error::EndpointError;
 
 pub trait AccessLevelMarker {}
 
