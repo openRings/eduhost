@@ -16,6 +16,7 @@ import Signin from "./pages/signin";
 import Signup from "./pages/signup";
 import Index from "./pages/index";
 import Projects from "./pages/projects";
+import Project from "./pages/project";
 import Databases from "./pages/databases";
 import GroupSelect from "./pages/groupSelect";
 import Guides from "./pages/guides";
@@ -68,6 +69,7 @@ const App = () => {
       >
         <Route path="/" component={Index} />
         <Route path="/projects" component={Projects} />
+        <Route path="/projects/:id" component={Project} />
         <Route path="/databases" component={Databases} />
         <Route path="/group-select" component={GroupSelect} />
         <Route path="/guides" component={Guides} />

@@ -1,5 +1,6 @@
 import { Book, Database, ExternalLink, FileIcon, Plus } from "lucide-solid";
 import { For, Show } from "solid-js";
+import { A } from "@solidjs/router";
 import type { SubjectProjects } from "../entities/projects";
 import { Block } from "../shared/Block";
 import { Section } from "../shared/Section";
@@ -100,29 +101,32 @@ export function ProjectsSubjectsSection(props: ProjectsSubjectsSectionProps) {
                 </Button>
                 <For each={subject.projects}>
                   {(project) => (
-                    <Block
-                      label={
-                        <div class="gap-sm flex flex-col">
-                          {project.name}
-                          <span class="text-neutral-500 underline">
-                            {project.alias}
-                          </span>
+                    <A href={`/projects/${project.id}`}>
+                      <Block
+                        class="h-full"
+                        label={
+                          <div class="gap-sm flex flex-col">
+                            {project.name}
+                            <span class="text-neutral-500 underline">
+                              {project.alias}
+                            </span>
+                          </div>
+                        }
+                        icon={<ExternalLink />}
+                      >
+                        <div class="gap-md flex">
+                          <div class="gap-xs flex">
+                            <FileIcon class="text-neutral-500" />
+                            <Volume bytes={project.diskUsage.fileBytes} />
+                          </div>
+                          <span class="text-neutral-500">|</span>
+                          <div class="gap-xs flex">
+                            <Database class="text-neutral-500" />
+                            <Volume bytes={project.diskUsage.databaseBytes} />
+                          </div>
                         </div>
-                      }
-                      icon={<ExternalLink />}
-                    >
-                      <div class="gap-md flex">
-                        <div class="gap-xs flex">
-                          <FileIcon class="text-neutral-500" />
-                          <Volume bytes={project.diskUsage.fileBytes} />
-                        </div>
-                        <span class="text-neutral-500">|</span>
-                        <div class="gap-xs flex">
-                          <Database class="text-neutral-500" />
-                          <Volume bytes={project.diskUsage.databaseBytes} />
-                        </div>
-                      </div>
-                    </Block>
+                      </Block>
+                    </A>
                   )}
                 </For>
               </div>

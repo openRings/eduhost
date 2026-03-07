@@ -219,14 +219,18 @@ type HeaderLinkProps = {
 function NavLink(props: HeaderLinkProps) {
   const location = useLocation();
 
+  const isActive = createMemo(() => {
+    if (props.href == "/") return location.pathname == "/";
+
+    return location.pathname.startsWith(props.href);
+  });
+
   return (
     <Button
       href={props.href}
       variant="transparent"
       class="hover:text-neutral-700"
-      classList={{
-        "text-primary-300!": location.pathname == props.href,
-      }}
+      classList={{ "text-primary-300!": isActive() }}
     >
       {props.children}
     </Button>
