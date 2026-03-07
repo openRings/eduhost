@@ -6,7 +6,7 @@ export type FooterProps = {};
 
 export function Footer(_props: FooterProps) {
   return (
-    <Section class="pb-24!">
+    <Section class="grow pb-24!">
       <footer class="grid grid-cols-3">
         <div class="py-md pl-2xl gap-xl flex flex-col items-start border-l border-neutral-300">
           <span class="mb-xl font-normal">Навигация</span>
