@@ -21,13 +21,20 @@ impl ProjectsService {
         &self,
         user_id: Uuid,
         group_id: Uuid,
+        query: Option<String>,
+        subject_id: Option<Uuid>,
     ) -> EndpointResult<Vec<SubjectProjectsResponse>> {
-        let models = SubjectProjectsByUserQuery { user_id, group_id }
-            .execute(&self.pool)
-            .await
-            .with_context(|| {
-                format!("failed to fetch projects, user id: {user_id}, group id: {group_id}")
-            })?;
+        let models = SubjectProjectsByUserQuery {
+            user_id,
+            group_id,
+            query,
+            subject_id,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| {
+            format!("failed to fetch projects, user id: {user_id}, group id: {group_id}")
+        })?;
 
         Ok(SubjectProjectsResponse::from_models(models))
     }

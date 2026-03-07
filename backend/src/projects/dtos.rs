@@ -55,6 +55,13 @@ pub struct CreateProjectRequest {
     pub subject_id: Uuid,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetProjectsQuery {
+    pub query: Option<String>,
+    pub subject_id: Option<Uuid>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateProjectResponse {

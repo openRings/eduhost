@@ -1,3 +1,4 @@
+use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
@@ -9,7 +10,7 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
-use crate::projects::dtos::CreateProjectRequest;
+use crate::projects::dtos::{CreateProjectRequest, GetProjectsQuery};
 use crate::projects::service::ProjectsService;
 
 mod commands;
@@ -26,11 +27,16 @@ pub fn routes() -> Router<PgPool> {
 async fn get_projects(
     WithService(projects_service): WithService<ProjectsService>,
     group_id: GroupId,
+    Query(query): Query<GetProjectsQuery>,
 ) -> EndpointResult<impl IntoResponse> {
     let user_id = group_id.session().user_id();
     let group_id = group_id.group_id();
+    let query_value = query.query;
+    let subject_id = query.subject_id;
 
-    let response = projects_service.get_projects(user_id, group_id).await?;
+    let response = projects_service
+        .get_projects(user_id, group_id, query_value, subject_id)
+        .await?;
 
     Ok(Json(response))
 }

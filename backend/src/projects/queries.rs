@@ -21,6 +21,8 @@ pub struct SubjectProjectModel {
 pub struct SubjectProjectsByUserQuery {
     pub user_id: Uuid,
     pub group_id: Uuid,
+    pub query: Option<String>,
+    pub subject_id: Option<Uuid>,
 }
 
 pub struct IsGroupAvailableForUserQuery {
@@ -63,11 +65,22 @@ impl SubjectProjectsByUserQuery {
             LEFT JOIN projects p ON p.subject_id = s.id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
             LEFT JOIN databases d ON d.id = p.database_id
-            WHERE gu.user_id = $1 AND gu.group_id = $2
+            WHERE gu.user_id = $1
+            AND gu.group_id = $2
+            AND ($3::UUID IS NULL OR s.id = $3)
+            AND (
+                $4::TEXT IS NULL
+                OR s.name ILIKE '%' || $4 || '%'
+                OR p.name ILIKE '%' || $4 || '%'
+                OR p.alias ILIKE '%' || $4 || '%'
+                OR concat_ws(' ', u.last_name, u.first_name, u.patronymic) ILIKE '%' || $4 || '%'
+            )
             ORDER BY s.created_at DESC, p.created_at DESC",
         )
         .bind(self.user_id)
         .bind(self.group_id)
+        .bind(self.subject_id)
+        .bind(self.query)
         .fetch_all(conn)
         .await
         .context("failed to fetch")
