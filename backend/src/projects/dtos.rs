@@ -1,4 +1,5 @@
-use serde::Serialize;
+use eduhost::normalize::Normalize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::projects::queries::SubjectProjectModel;
@@ -43,6 +44,21 @@ pub struct SubjectProjectsResponse {
     pub teacher: TeacherResponse,
     pub disk_usage: SubjectDiskUsageResponse,
     pub projects: Vec<ProjectResponse>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateProjectRequest {
+    pub name: String,
+    pub alias: String,
+    pub group_id: Uuid,
+    pub subject_id: Uuid,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateProjectResponse {
+    pub id: Uuid,
 }
 
 impl SubjectProjectsResponse {
@@ -111,5 +127,31 @@ impl SubjectProjectsResponse {
         }
 
         subjects
+    }
+}
+
+impl Normalize for CreateProjectRequest {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.name = self.name.trim().to_string();
+        self.alias = self.alias.trim().to_string();
+        self.alias.make_ascii_lowercase();
+
+        if self.name.is_empty() {
+            return Err("Название проекта обязательно".to_string());
+        }
+
+        if self.alias.is_empty() {
+            return Err("Алиас проекта обязателен".to_string());
+        }
+
+        let is_alias_valid = self.alias.chars().all(|char| {
+            char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-' || char == '_'
+        });
+
+        if !is_alias_valid {
+            return Err("Алиас проекта должен содержать только символы a-z, 0-9, -, _".to_string());
+        }
+
+        Ok(self)
     }
 }

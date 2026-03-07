@@ -23,6 +23,20 @@ pub struct SubjectProjectsByUserQuery {
     pub group_id: Uuid,
 }
 
+pub struct IsGroupAvailableForUserQuery {
+    pub user_id: Uuid,
+    pub group_id: Uuid,
+}
+
+pub struct IsSubjectAvailableForGroupQuery {
+    pub subject_id: Uuid,
+    pub group_id: Uuid,
+}
+
+pub struct IsProjectAliasExistsQuery<'a> {
+    pub alias: &'a str,
+}
+
 impl SubjectProjectsByUserQuery {
     pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Vec<SubjectProjectModel>>
     where
@@ -57,5 +71,59 @@ impl SubjectProjectsByUserQuery {
         .fetch_all(conn)
         .await
         .context("failed to fetch")
+    }
+}
+
+impl IsGroupAvailableForUserQuery {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<bool>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_scalar(
+            "SELECT EXISTS(
+                SELECT 1
+                FROM groups g
+                JOIN group_users gu ON gu.group_id = g.id
+                WHERE g.id = $1 AND gu.user_id = $2
+            )",
+        )
+        .bind(self.group_id)
+        .bind(self.user_id)
+        .fetch_one(conn)
+        .await
+        .context("failed to check is group available for user")
+    }
+}
+
+impl IsSubjectAvailableForGroupQuery {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<bool>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_scalar(
+            "SELECT EXISTS(
+                SELECT 1
+                FROM subject_groups sg
+                WHERE sg.subject_id = $1 AND sg.group_id = $2
+            )",
+        )
+        .bind(self.subject_id)
+        .bind(self.group_id)
+        .fetch_one(conn)
+        .await
+        .context("failed to check is subject available for group")
+    }
+}
+
+impl<'a> IsProjectAliasExistsQuery<'a> {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<bool>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM projects WHERE alias = $1)")
+            .bind(self.alias)
+            .fetch_one(conn)
+            .await
+            .context("failed to check is project alias exists")
     }
 }

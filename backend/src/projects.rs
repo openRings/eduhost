@@ -1,19 +1,26 @@
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::routing::get;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use eduhost::error::EndpointResult;
 use eduhost::group_id::GroupId;
+use eduhost::normalize::NormalizedJson;
 use eduhost::service::WithService;
+use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
+use crate::projects::dtos::CreateProjectRequest;
 use crate::projects::service::ProjectsService;
 
+mod commands;
 mod dtos;
 mod queries;
 mod service;
 
 pub fn routes() -> Router<PgPool> {
-    Router::new().route("/", get(get_projects))
+    Router::new()
+        .route("/", get(get_projects))
+        .route("/", post(create_project))
 }
 
 async fn get_projects(
@@ -26,4 +33,16 @@ async fn get_projects(
     let response = projects_service.get_projects(user_id, group_id).await?;
 
     Ok(Json(response))
+}
+
+async fn create_project(
+    WithService(projects_service): WithService<ProjectsService>,
+    session: Session<Student>,
+    NormalizedJson(body): NormalizedJson<CreateProjectRequest>,
+) -> EndpointResult<impl IntoResponse> {
+    let user_id = session.user_id();
+
+    let response = projects_service.create_project(user_id, body).await?;
+
+    Ok((StatusCode::CREATED, Json(response)))
 }

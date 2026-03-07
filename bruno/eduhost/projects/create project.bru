@@ -1,0 +1,25 @@
+meta {
+  name: create project
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost/api/projects
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Новый проект",
+    "alias": "new-project2",
+    "groupId": "4c56e6cd-9db1-44f6-a4cd-dece2ed427bb",
+    "subjectId": "96396d7f-a80c-4e14-931f-5e811d0437b3"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
