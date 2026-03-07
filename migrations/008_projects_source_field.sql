@@ -1,0 +1,2 @@
+ALTER TABLE projects
+    ALTER COLUMN source_id DROP NOT NULL;

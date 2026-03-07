@@ -17,6 +17,7 @@ use tracing_subscriber::util::SubscriberInitExt;
 mod auth;
 mod groups;
 mod profile;
+mod projects;
 mod subjects;
 
 #[tokio::main]
@@ -44,6 +45,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/metrics", get(|| async move { metric_handle.render() }))
         .nest("/auth", auth::routes())
         .nest("/groups", groups::routes())
+        .nest("/projects", projects::routes())
         .nest("/subjects", subjects::routes())
         .nest("/profile", profile::routes())
         .layer(middleware::from_fn(error_middleware))
