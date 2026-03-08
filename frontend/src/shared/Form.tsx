@@ -1,6 +1,7 @@
 import {
   Accessor,
   createContext,
+  createEffect,
   createSignal,
   JSX,
   onMount,
@@ -12,7 +13,11 @@ import { FieldProps, Field as UIKitField } from "./Field";
 import { z, ZodObject } from "zod";
 import { Button, ButtonProps } from "./uikit/Button";
 import { BrushCleaning } from "lucide-solid";
-import { HTMLArkProps } from "@ark-ui/solid";
+import { Field as ArkField, type HTMLArkProps } from "@ark-ui/solid";
+import { Select, SelectOption, SelectProps } from "./uikit/Select";
+
+const selectFieldRootClass =
+  "flex w-full flex-col gap-md pl-md border-l border-neutral-300 items-stretch";
 
 export function createForm<S extends ZodObject<any>>(
   schema: S,
@@ -151,6 +156,42 @@ export function createForm<S extends ZodObject<any>>(
     );
   }
 
+  function SelectField<K extends keyof FormData>(
+    props: Omit<SelectProps, "value" | "defaultValue" | "onselect"> & {
+      name: K;
+      items: SelectOption[];
+      icon?: JSX.Element;
+    },
+  ) {
+    const [_, attrs] = splitProps(props, ["name", "label", "icon"]);
+
+    const form = useFormContext();
+
+    const value = () => form.values[props.name];
+    const error = () => form.errors[props.name];
+
+    return (
+      <ArkField.Root class={selectFieldRootClass} invalid={!!error()}>
+        <ArkField.Label class="gap-xs flex text-neutral-500">
+          {props.icon}
+          {props.label}
+        </ArkField.Label>
+        <Select
+          {...attrs}
+          class="w-full"
+          containerClass="w-full"
+          value={value() as string | undefined}
+          onselect={(nextValue) =>
+            form.setFieldValue(props.name, nextValue as FormData[K])
+          }
+        />
+        <ArkField.ErrorText class="text-error-300">
+          {error()}
+        </ArkField.ErrorText>
+      </ArkField.Root>
+    );
+  }
+
   function ClearButton(props: ButtonProps) {
     const [_, attrs] = splitProps(props, ["onclick"]);
 
@@ -188,6 +229,7 @@ export function createForm<S extends ZodObject<any>>(
   }
 
   Form.Field = Field;
+  Form.Select = SelectField;
   Form.Clear = ClearButton;
   Form.Submit = SubmitButton;
 

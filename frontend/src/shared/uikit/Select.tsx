@@ -79,6 +79,7 @@ export function Select(props: SelectProps) {
     "placeholder",
     "value",
     "defaultValue",
+    "onselect",
     "size",
     "autosize",
     "class",
@@ -244,7 +245,7 @@ export function Select(props: SelectProps) {
               </ArkSelect.Control>
               <Portal>
                 <ArkSelect.Positioner
-                  class="z-[9999]"
+                  class="z-[9999]!"
                   style={positionerStyle()}
                 >
                   <ArkSelect.Content
