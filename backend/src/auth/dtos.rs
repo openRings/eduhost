@@ -43,8 +43,24 @@ pub struct NewSessionResponse {
 }
 
 impl Normalize for SignupRequest {
-    fn normalize(self) -> Result<Self, String> {
-        if !(4..=12).contains(&self.username.len()) {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.username = self.username.trim().to_string();
+        self.username.make_ascii_lowercase();
+        self.first_name = self.first_name.trim().to_string();
+        self.last_name = self.last_name.trim().to_string();
+        self.patronymic = self
+            .patronymic
+            .map(|patronymic| patronymic.trim().to_string());
+
+        if self
+            .patronymic
+            .as_ref()
+            .is_some_and(|patronymic| patronymic.is_empty())
+        {
+            self.patronymic = None;
+        }
+
+        if !(4..=12).contains(&self.username.chars().count()) {
             return Err("Юзернейм должен быть длиной от 4 до 12 символов".to_string());
         }
 
@@ -61,16 +77,16 @@ impl Normalize for SignupRequest {
             return Err("Юзернейм не может начинаться с цифры".to_string());
         }
 
-        if !(2..=30).contains(&self.first_name.len()) {
+        if !(2..=30).contains(&self.first_name.chars().count()) {
             return Err("Имя должно быть длиной от 2 до 30 символов".to_string());
         }
 
-        if !(4..=30).contains(&self.last_name.len()) {
+        if !(4..=30).contains(&self.last_name.chars().count()) {
             return Err("Фамилия должна быть длиной от 4 до 30 символов".to_string());
         }
 
         if let Some(patronymic) = self.patronymic.as_ref()
-            && !(4..=30).contains(&patronymic.len())
+            && !(4..=30).contains(&patronymic.chars().count())
         {
             return Err("Отчество должно быть длиной от 4 до 30 символов".to_string());
         }
@@ -115,7 +131,12 @@ impl Normalize for SignupRequest {
 
 impl Normalize for SigninRequest {
     fn normalize(mut self) -> Result<Self, String> {
+        self.username = self.username.trim().to_string();
         self.username.make_ascii_lowercase();
+
+        if self.username.is_empty() {
+            return Err("Юзернейм обязателен".to_string());
+        }
 
         Ok(self)
     }
@@ -123,7 +144,12 @@ impl Normalize for SigninRequest {
 
 impl Normalize for IsUsernameAvailableRequest {
     fn normalize(mut self) -> Result<Self, String> {
+        self.username = self.username.trim().to_string();
         self.username.make_ascii_lowercase();
+
+        if self.username.is_empty() {
+            return Err("Юзернейм обязателен".to_string());
+        }
 
         Ok(self)
     }

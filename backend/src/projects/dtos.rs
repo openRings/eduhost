@@ -141,22 +141,21 @@ impl Normalize for CreateProjectRequest {
     fn normalize(mut self) -> Result<Self, String> {
         self.name = self.name.trim().to_string();
         self.alias = self.alias.trim().to_string();
-        self.alias.make_ascii_lowercase();
 
-        if self.name.is_empty() {
-            return Err("Название проекта обязательно".to_string());
+        if !(4..=50).contains(&self.name.chars().count()) {
+            return Err("Название проекта должно быть длиной от 4 до 50 символов".to_string());
         }
 
-        if self.alias.is_empty() {
-            return Err("Алиас проекта обязателен".to_string());
+        if !(3..=12).contains(&self.alias.chars().count()) {
+            return Err("Алиас проекта должен быть длиной от 3 до 12 символов".to_string());
         }
 
         let is_alias_valid = self.alias.chars().all(|char| {
-            char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-' || char == '_'
+            char.is_ascii_lowercase() || char.is_ascii_uppercase() || char == '-' || char == '_'
         });
 
         if !is_alias_valid {
-            return Err("Алиас проекта должен содержать только символы a-z, 0-9, -, _".to_string());
+            return Err("Алиас проекта должен содержать только символы a-z, A-Z, -, _".to_string());
         }
 
         Ok(self)
