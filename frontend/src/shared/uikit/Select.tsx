@@ -55,11 +55,13 @@ const sizeItemClass = {
 
 export type SelectProps = Omit<
   SelectRootProps<SelectOption>,
-  "collection" | "onselect"
+  "collection" | "onselect" | "value" | "defaultValue"
 > & {
   items: SelectOption[];
   label?: string;
   placeholder?: string;
+  value?: string;
+  defaultValue?: string;
   onselect?: (value: string) => void;
   size?: keyof typeof sizeControlClass;
   autosize?: boolean;
@@ -75,6 +77,8 @@ export function Select(props: SelectProps) {
     "items",
     "label",
     "placeholder",
+    "value",
+    "defaultValue",
     "size",
     "autosize",
     "class",
@@ -151,12 +155,19 @@ export function Select(props: SelectProps) {
         }
       : { width: selectWidth(), "min-width": selectWidth() };
 
+  const selectedValue = () =>
+    props.value === undefined ? undefined : props.value ? [props.value] : [];
+  const defaultSelectedValue = () =>
+    props.defaultValue ? [props.defaultValue] : undefined;
+
   return (
     <ArkSelect.Root
       {...rootProps}
       collection={collection()}
+      value={selectedValue()}
+      defaultValue={defaultSelectedValue()}
       class={rootClasses()}
-      onValueChange={(e) => (props.onselect as CallableFunction)(e.value[0])}
+      onValueChange={(e) => props.onselect?.(e.value[0])}
       positioning={{ placement: "bottom-start", gutter: 0 }}
     >
       <ArkSelect.Context>

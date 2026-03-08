@@ -35,9 +35,7 @@ export function ProjectsFiltersSection(props: ProjectsFiltersSectionProps) {
           items={props.subjectItems}
           placeholder="Выберите предмет"
           onselect={props.onSubjectSelect}
-          value={
-            props.selectedSubjectId ? [props.selectedSubjectId] : undefined
-          }
+          value={props.selectedSubjectId}
           autosize={false}
           class="w-56"
         />
