@@ -1,7 +1,8 @@
 import { Book, Database, ExternalLink, FileIcon, Plus } from "lucide-solid";
-import { For, Show } from "solid-js";
-import { A } from "@solidjs/router";
+import { createSignal, For, Show } from "solid-js";
+import { A, useLocation, useNavigate } from "@solidjs/router";
 import type { SubjectProjects } from "../entities/projects";
+import { ProjectsCreateModal } from "./ProjectsCreateModal";
 import { Block } from "../shared/Block";
 import { Section } from "../shared/Section";
 import { Skeleton } from "../shared/Skeleton";
@@ -43,6 +44,40 @@ const sectionSkeleton = () => (
 );
 
 export function ProjectsSubjectsSection(props: ProjectsSubjectsSectionProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [activeSubjectId, setActiveSubjectId] = createSignal("");
+
+  const searchParams = () => new URLSearchParams(location.search);
+
+  const isCreateModalOpen = () =>
+    searchParams().get("projectCreate") === "open";
+
+  const openCreateModal = (subjectId: string) => {
+    setActiveSubjectId(subjectId);
+    const params = searchParams();
+    params.set("projectCreate", "open");
+
+    navigate(`${location.pathname}?${params.toString()}`, {
+      replace: true,
+    });
+  };
+
+  const closeCreateModal = () => {
+    setActiveSubjectId("");
+    const params = searchParams();
+    params.delete("projectCreate");
+
+    const nextSearch = params.toString();
+
+    navigate(
+      nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname,
+      {
+        replace: true,
+      },
+    );
+  };
+
   return (
     <Show
       when={!props.isLoading}
@@ -96,7 +131,12 @@ export function ProjectsSubjectsSection(props: ProjectsSubjectsSectionProps) {
                 </div>
               </div>
               <div class="gap-md grid grid-cols-4">
-                <Button variant="lined" iconStart={<Plus />} class="h-32">
+                <Button
+                  variant="lined"
+                  iconStart={<Plus />}
+                  class="h-32"
+                  onclick={() => openCreateModal(subject.id)}
+                >
                   Создать новый проект
                 </Button>
                 <For each={subject.projects}>
@@ -133,6 +173,13 @@ export function ProjectsSubjectsSection(props: ProjectsSubjectsSectionProps) {
             </Section>
           )}
         </For>
+      </Show>
+      <Show when={isCreateModalOpen()}>
+        <ProjectsCreateModal
+          isOpen={true}
+          selectedSubjectId={activeSubjectId()}
+          onclose={closeCreateModal}
+        />
       </Show>
     </Show>
   );
