@@ -1,3 +1,4 @@
+use axum::extract::Path;
 use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -9,6 +10,7 @@ use eduhost::normalize::NormalizedJson;
 use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 use crate::projects::dtos::{
     CreateProjectRequest, GetProjectsQuery, IsProjectAliasAvailableRequest,
@@ -24,6 +26,7 @@ pub fn routes() -> Router<PgPool> {
     Router::new()
         .route("/", get(get_projects))
         .route("/", post(create_project))
+        .route("/{project_id}", get(get_project))
         .route("/alias/available", post(is_project_alias_available))
 }
 
@@ -54,6 +57,18 @@ async fn create_project(
     let response = projects_service.create_project(user_id, body).await?;
 
     Ok((StatusCode::CREATED, Json(response)))
+}
+
+async fn get_project(
+    WithService(projects_service): WithService<ProjectsService>,
+    session: Session<Student>,
+    Path(project_id): Path<Uuid>,
+) -> EndpointResult<impl IntoResponse> {
+    let user_id = session.user_id();
+
+    let response = projects_service.get_project(user_id, project_id).await?;
+
+    Ok(Json(response))
 }
 
 async fn is_project_alias_available(

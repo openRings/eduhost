@@ -68,6 +68,66 @@ pub struct CreateProjectResponse {
     pub id: Uuid,
 }
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectUserResponse {
+    pub id: Uuid,
+    pub first_name: String,
+    pub last_name: String,
+    pub patronymic: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectSubjectResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub teacher: TeacherResponse,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectSourceResponse {
+    #[serde(rename = "type")]
+    pub source_type: String,
+    pub link: String,
+    pub branch: String,
+    pub root_dir: Option<String>,
+    pub size_bytes: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectDatabaseResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub password: String,
+    pub disk_usage_bytes: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectDetailsDiskUsageResponse {
+    pub avaliable_bytes: i64,
+    pub files_bytes: i64,
+    pub database_bytes: i64,
+    pub other_projects_bytes: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectDetailsResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub label: String,
+    pub subject: ProjectSubjectResponse,
+    pub owner: ProjectUserResponse,
+    pub users: Vec<ProjectUserResponse>,
+    pub source: Option<ProjectSourceResponse>,
+    pub database: Option<ProjectDatabaseResponse>,
+    pub disk_usage: ProjectDetailsDiskUsageResponse,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IsProjectAliasAvailableRequest {

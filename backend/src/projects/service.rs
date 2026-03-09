@@ -1,4 +1,5 @@
 use anyhow::Context;
+use axum::http::StatusCode;
 use eduhost::error::EndpointError;
 use eduhost::error::EndpointResult;
 use eduhost::service::Service;
@@ -8,11 +9,13 @@ use uuid::Uuid;
 use crate::projects::commands::ProjectCreateCommand;
 use crate::projects::dtos::{
     CreateProjectRequest, CreateProjectResponse, IsProjectAliasAvailableRequest,
-    IsProjectAliasAvailableResponse, SubjectProjectsResponse,
+    IsProjectAliasAvailableResponse, ProjectDatabaseResponse, ProjectDetailsDiskUsageResponse,
+    ProjectDetailsResponse, ProjectSourceResponse, ProjectSubjectResponse, ProjectUserResponse,
+    SubjectProjectsResponse, TeacherResponse,
 };
 use crate::projects::queries::{
     IsGroupAvailableForUserQuery, IsProjectAliasExistsQuery, IsSubjectAvailableForGroupQuery,
-    SubjectProjectsByUserQuery,
+    ProjectDetailsByUserQuery, ProjectUsersByProjectQuery, SubjectProjectsByUserQuery,
 };
 
 pub struct ProjectsService {
@@ -56,6 +59,98 @@ impl ProjectsService {
         })?;
 
         Ok(SubjectProjectsResponse::from_models(models))
+    }
+
+    pub async fn get_project(
+        &self,
+        user_id: Uuid,
+        project_id: Uuid,
+    ) -> EndpointResult<ProjectDetailsResponse> {
+        let details = ProjectDetailsByUserQuery {
+            user_id,
+            project_id,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| format!("failed to fetch project details, project id: {project_id}"))?
+        .ok_or(EndpointError::Other(StatusCode::NOT_FOUND))?;
+
+        let mut users = ProjectUsersByProjectQuery { project_id }
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("failed to fetch project users, project id: {project_id}"))?
+            .into_iter()
+            .map(|user| ProjectUserResponse {
+                id: user.id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                patronymic: user.patronymic,
+            })
+            .collect::<Vec<_>>();
+
+        if users.iter().all(|user| user.id != details.owner_id) {
+            users.insert(
+                0,
+                ProjectUserResponse {
+                    id: details.owner_id,
+                    first_name: details.owner_first_name.clone(),
+                    last_name: details.owner_last_name.clone(),
+                    patronymic: details.owner_patronymic.clone(),
+                },
+            );
+        }
+
+        let source = details
+            .source_link
+            .as_ref()
+            .zip(details.source_branch.as_ref())
+            .map(|(link, branch)| ProjectSourceResponse {
+                source_type: "git".to_string(),
+                link: link.clone(),
+                branch: branch.clone(),
+                root_dir: details.source_root_dir,
+                size_bytes: details.source_size_bytes,
+            });
+
+        let database = details
+            .database_id
+            .map(|database_id| ProjectDatabaseResponse {
+                id: database_id,
+                name: details.database_name.unwrap_or_default(),
+                password: details.database_password.unwrap_or_default(),
+                disk_usage_bytes: details.database_disk_usage_bytes,
+            });
+
+        Ok(ProjectDetailsResponse {
+            id: details.project_id,
+            name: details.project_name,
+            label: details.project_alias,
+            subject: ProjectSubjectResponse {
+                id: details.subject_id,
+                name: details.subject_name,
+                teacher: TeacherResponse {
+                    id: details.teacher_id,
+                    first_name: details.teacher_first_name,
+                    last_name: details.teacher_last_name,
+                    patronymic: details.teacher_patronymic,
+                },
+            },
+            owner: ProjectUserResponse {
+                id: details.owner_id,
+                first_name: details.owner_first_name,
+                last_name: details.owner_last_name,
+                patronymic: details.owner_patronymic,
+            },
+            users,
+            source,
+            database,
+            disk_usage: ProjectDetailsDiskUsageResponse {
+                avaliable_bytes: details.subject_reserved_disk_bytes,
+                files_bytes: details.source_size_bytes,
+                database_bytes: details.database_disk_usage_bytes,
+                other_projects_bytes: details.other_projects_bytes,
+            },
+        })
     }
 
     pub async fn create_project(

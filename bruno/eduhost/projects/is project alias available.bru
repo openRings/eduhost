@@ -1,0 +1,22 @@
+meta {
+  name: is project alias available
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost/api/projects/alias/available
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "alias": "new-project"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
