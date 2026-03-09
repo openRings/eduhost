@@ -32,6 +32,21 @@ export type FetchProjectsQuery = {
   subjectId?: string;
 };
 
+export type IsProjectAliasAvailableResponse = {
+  isAvailable: boolean;
+};
+
+export type CreateProjectBody = {
+  name: string;
+  alias: string;
+  groupId: string;
+  subjectId: string;
+};
+
+export type CreateProjectResponse = {
+  id: string;
+};
+
 export async function fetchProjects(query: FetchProjectsQuery) {
   const { body } = await fetchApi<SubjectProjects[]>("/projects", {
     query: Object.fromEntries(
@@ -40,4 +55,25 @@ export async function fetchProjects(query: FetchProjectsQuery) {
   });
 
   return body;
+}
+
+export async function checkProjectAliasAvailability(alias: string) {
+  const { status, body } = await fetchApi<IsProjectAliasAvailableResponse>(
+    "/projects/alias/available",
+    {
+      method: "POST",
+      body: { alias },
+    },
+  );
+
+  if (status != 200) return false;
+
+  return body.isAvailable;
+}
+
+export async function createProject(body: CreateProjectBody) {
+  return fetchApi<CreateProjectResponse>("/projects", {
+    method: "POST",
+    body,
+  });
 }

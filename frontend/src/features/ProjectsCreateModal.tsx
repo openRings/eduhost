@@ -1,16 +1,35 @@
 import { Book, Plus, Tag } from "lucide-solid";
 import { createMemo, createResource, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import {
+  checkProjectAliasAvailability,
+  createProject,
+} from "../entities/projects";
 import { fetchSubjects } from "../entities/subjects";
 import z from "zod";
 import { createForm } from "../shared/Form";
 import Modal from "../shared/Modal";
 import { Skeleton } from "../shared/Skeleton";
 import { currentGroupId } from "../utils/group";
+import { success } from "../utils/notifications";
 
 const CreateProjectFormData = z.object({
-  name: z.string().min(1, "Введите название"),
-  label: z.string().min(1, "Введите лейбл"),
-  subjectId: z.string().min(1, "Выберите предмет"),
+  name: z
+    .string()
+    .trim()
+    .min(4, "Длина должна быть от 4 до 50 символов")
+    .max(50, "Длина должна быть от 4 до 50 символов"),
+  alias: z
+    .string()
+    .trim()
+    .min(3, "Длина должна быть от 3 до 12 символов")
+    .max(12, "Длина должна быть от 3 до 12 символов")
+    .regex(/^[a-zA-Z_-]+$/, "Допустимы только символы a-z, A-Z, -, _")
+    .refine(
+      async (alias) => await checkProjectAliasAvailability(alias),
+      "Уже занято",
+    ),
+  subjectId: z.string().min(1, "Выберите значение"),
 });
 
 export type ProjectsCreateModalProps = {
@@ -20,6 +39,7 @@ export type ProjectsCreateModalProps = {
 };
 
 export function ProjectsCreateModal(props: ProjectsCreateModalProps) {
+  const navigate = useNavigate();
   const { Form } = createForm(CreateProjectFormData, {
     subjectId: props.selectedSubjectId ?? "",
   });
@@ -41,8 +61,20 @@ export function ProjectsCreateModal(props: ProjectsCreateModalProps) {
       label: subject.name,
     }));
 
-  const createProject = async () => {
-    props.onclose();
+  const submitProject = async (data: z.infer<typeof CreateProjectFormData>) => {
+    const groupId = currentGroupId();
+
+    const { status, body } = await createProject({
+      name: data.name,
+      alias: data.alias,
+      groupId,
+      subjectId: data.subjectId,
+    });
+
+    if (status != 201) return;
+
+    success("Проект успешно создан");
+    navigate(`/projects/${body.id}`);
   };
 
   return (
@@ -52,7 +84,7 @@ export function ProjectsCreateModal(props: ProjectsCreateModalProps) {
       class="h-96 w-104"
       onclose={props.onclose}
     >
-      <Form class="gap-md flex h-full flex-col" onsubmit={createProject}>
+      <Form class="gap-md flex h-full flex-col" onsubmit={submitProject}>
         <Form.Field
           name="name"
           label="Название"
@@ -60,7 +92,7 @@ export function ProjectsCreateModal(props: ProjectsCreateModalProps) {
           placeholder="Введите название проекта"
         />
         <Form.Field
-          name="label"
+          name="alias"
           label="Лейбл"
           icon={<Tag />}
           placeholder="Введите лейбл проекта"
