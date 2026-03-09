@@ -10,7 +10,9 @@ use eduhost::service::WithService;
 use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
-use crate::projects::dtos::{CreateProjectRequest, GetProjectsQuery};
+use crate::projects::dtos::{
+    CreateProjectRequest, GetProjectsQuery, IsProjectAliasAvailableRequest,
+};
 use crate::projects::service::ProjectsService;
 
 mod commands;
@@ -22,6 +24,7 @@ pub fn routes() -> Router<PgPool> {
     Router::new()
         .route("/", get(get_projects))
         .route("/", post(create_project))
+        .route("/alias/available", post(is_project_alias_available))
 }
 
 async fn get_projects(
@@ -51,4 +54,13 @@ async fn create_project(
     let response = projects_service.create_project(user_id, body).await?;
 
     Ok((StatusCode::CREATED, Json(response)))
+}
+
+async fn is_project_alias_available(
+    WithService(projects_service): WithService<ProjectsService>,
+    NormalizedJson(body): NormalizedJson<IsProjectAliasAvailableRequest>,
+) -> EndpointResult<impl IntoResponse> {
+    let response = projects_service.is_project_alias_available(body).await?;
+
+    Ok(Json(response))
 }

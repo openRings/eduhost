@@ -68,6 +68,18 @@ pub struct CreateProjectResponse {
     pub id: Uuid,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IsProjectAliasAvailableRequest {
+    pub alias: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IsProjectAliasAvailableResponse {
+    pub is_available: bool,
+}
+
 impl SubjectProjectsResponse {
     pub fn from_models(models: Vec<SubjectProjectModel>) -> Vec<Self> {
         let mut subjects: Vec<Self> = Vec::new();
@@ -156,6 +168,18 @@ impl Normalize for CreateProjectRequest {
 
         if !is_alias_valid {
             return Err("Алиас проекта должен содержать только символы a-z, A-Z, -, _".to_string());
+        }
+
+        Ok(self)
+    }
+}
+
+impl Normalize for IsProjectAliasAvailableRequest {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.alias = self.alias.trim().to_string();
+
+        if self.alias.is_empty() {
+            return Err("Алиас проекта обязателен".to_string());
         }
 
         Ok(self)

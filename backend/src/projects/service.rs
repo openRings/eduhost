@@ -6,7 +6,10 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::projects::commands::ProjectCreateCommand;
-use crate::projects::dtos::{CreateProjectRequest, CreateProjectResponse, SubjectProjectsResponse};
+use crate::projects::dtos::{
+    CreateProjectRequest, CreateProjectResponse, IsProjectAliasAvailableRequest,
+    IsProjectAliasAvailableResponse, SubjectProjectsResponse,
+};
 use crate::projects::queries::{
     IsGroupAvailableForUserQuery, IsProjectAliasExistsQuery, IsSubjectAvailableForGroupQuery,
     SubjectProjectsByUserQuery,
@@ -17,6 +20,22 @@ pub struct ProjectsService {
 }
 
 impl ProjectsService {
+    pub async fn is_project_alias_available(
+        &self,
+        body: IsProjectAliasAvailableRequest,
+    ) -> EndpointResult<IsProjectAliasAvailableResponse> {
+        let IsProjectAliasAvailableRequest { alias } = body;
+
+        let is_alias_exists = IsProjectAliasExistsQuery { alias: &alias }
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("failed to check project alias exists: {alias}"))?;
+
+        Ok(IsProjectAliasAvailableResponse {
+            is_available: !is_alias_exists,
+        })
+    }
+
     pub async fn get_projects(
         &self,
         user_id: Uuid,
