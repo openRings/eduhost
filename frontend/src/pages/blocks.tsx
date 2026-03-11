@@ -105,12 +105,24 @@ export default function () {
         <Notification id="123" level="error" message="Уведомление об ошибке" />
       </Section>
       <Section labelIcon={<RectangleEllipsis />} label="Поля">
-        <Field
-          label="Юзернейм"
-          icon={<Contact />}
-          placeholder="Введите ваш юзернейм"
-          class="w-120"
-        />
+        <div class="gap-md flex flex-col">
+          <Field class="w-120">
+            <Field.Label icon={<Contact />}>Юзернейм</Field.Label>
+            <Field.Input placeholder="Введите ваш юзернейм" />
+            <Field.Error />
+          </Field>
+          <Field class="w-120">
+            <Field.Label icon={<Contact />}>Предмет</Field.Label>
+            <Field.Select
+              placeholder="Выберите предмет"
+              items={[
+                { label: "Проектирование и разработка", value: "1" },
+                { label: "Оптимизация приложений", value: "2" },
+              ]}
+            />
+            <Field.Error />
+          </Field>
+        </div>
       </Section>
     </>
   );

@@ -1,7 +1,6 @@
 import {
   Accessor,
   createContext,
-  createEffect,
   createSignal,
   JSX,
   onMount,
@@ -9,11 +8,11 @@ import {
   useContext,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { FieldProps, Field as UIKitField } from "./Field";
 import { z, ZodObject } from "zod";
 import { Button, ButtonProps } from "./uikit/Button";
 import { BrushCleaning } from "lucide-solid";
 import { Field as ArkField, type HTMLArkProps } from "@ark-ui/solid";
+import { Field as UIKitField, FieldInputProps } from "./Field";
 import { Select, SelectOption, SelectProps } from "./uikit/Select";
 
 const selectFieldRootClass =
@@ -127,9 +126,15 @@ export function createForm<S extends ZodObject<any>>(
   }
 
   function Field<K extends keyof FormData>(
-    props: FieldProps & { name: K; label: string },
+    props: FieldInputProps & {
+      name: K;
+      label: string;
+      icon?: JSX.Element;
+      containerClass?: string;
+      copyable?: boolean;
+    },
   ) {
-    const [_, attrs] = splitProps(props, ["name", "value", "error", "oninput"]);
+    const [_, attrs] = splitProps(props, ["name", "value", "oninput", "icon"]);
 
     const form = useFormContext();
 
@@ -146,13 +151,17 @@ export function createForm<S extends ZodObject<any>>(
     };
 
     return (
-      <UIKitField
-        {...attrs}
-        value={value() as any}
-        error={error()}
-        oninput={oninput}
-        onchange={onchange}
-      />
+      <UIKitField invalid={!!error()} containerClass={props.containerClass}>
+        <UIKitField.Label icon={props.icon}>{props.label}</UIKitField.Label>
+        <UIKitField.Input
+          {...attrs}
+          value={value() as any}
+          copyable={props.copyable}
+          oninput={oninput}
+          onchange={onchange}
+        />
+        <UIKitField.Error>{error()}</UIKitField.Error>
+      </UIKitField>
     );
   }
 
