@@ -111,6 +111,7 @@ function FieldSelect(props: FieldSelectProps) {
   return (
     <FieldControl>
       <Select
+        autosize={false}
         {...attrs}
         class={twMerge(clsx("w-full", props.class))}
         containerClass={twMerge(clsx("w-full", props.containerClass))}
