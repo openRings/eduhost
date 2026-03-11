@@ -109,7 +109,7 @@ export default function () {
                 { label: "GitHub репозиторий", value: "GitHub" },
                 { label: "ZIP архив", value: "Zip" },
               ]}
-              value="GitHub"
+              defaultValue="GitHub"
             />
           </Field>
           <Field>
@@ -119,7 +119,7 @@ export default function () {
                 { label: "master", value: "master" },
                 { label: "feature/cart", value: "feature/cart" },
               ]}
-              value="master"
+              defaultValue="master"
             />
           </Field>
           <ReadonlyField
@@ -145,7 +145,7 @@ export default function () {
                 { label: "/profile", value: "/profile" },
                 { label: "/auth", value: "/auth" },
               ]}
-              value="/"
+              defaultValue="/"
             />
           </Field>
         </div>
@@ -163,7 +163,7 @@ export default function () {
             <Field.Label icon={<DatabaseZap />}>Тип базы данных</Field.Label>
             <Field.Select
               items={[{ label: "MySQL", value: "MySql" }]}
-              value="MySql"
+              defaultValue="MySql"
             />
           </Field>
           <Field>

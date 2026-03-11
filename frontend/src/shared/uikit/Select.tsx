@@ -60,7 +60,7 @@ const sizeTriggerClass = {
 } as const;
 
 const baseContentClass =
-  "w-full min-w-full rounded-md ring-1 ring-inset ring-neutral-300 bg-white shadow-sm";
+  "w-full min-w-full rounded-md ring-1 ring-inset ring-neutral-400 bg-white shadow-sm";
 
 const baseListClass = "w-full min-w-full max-h-60 overflow-auto p-xs";
 
