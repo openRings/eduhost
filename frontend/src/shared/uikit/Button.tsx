@@ -6,6 +6,25 @@ import { JSX, splitProps, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { twMerge } from "tailwind-merge";
 
+export type BaseButtonProps = {
+  variant?:
+    | "default"
+    | "lined"
+    | "transparent"
+    | "accent"
+    | "primary"
+    | "danger";
+  size?: "icon-sm" | "icon-md" | "sm" | "md";
+  isPending?: boolean;
+  pendingText?: string;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
+};
+
+export type ButtonProps =
+  | (HTMLArkProps<"button"> & BaseButtonProps)
+  | (AnchorProps & BaseButtonProps & { href: string });
+
 const baseClass =
   "inline-flex items-center gap-xs rounded-sm transition-colors duration-150 justify-center cursor-pointer disabled:cursor-not-allowed group";
 
@@ -22,27 +41,14 @@ const variantClass = {
     "ring-1 ring-inset ring-primary-200 bg-primary-300 text-white hover:bg-primary-400 hover:ring-primary-300 active:bg-primary-500 active:ring-primary-400 disabled:bg-primary-300 disabled:ring-primary-200 disabled:text-white/60",
   danger:
     "ring-1 ring-inset ring-error-200 bg-error-300 text-white hover:bg-error-400 hover:ring-error-300 active:bg-error-500 active:ring-error-400 disabled:ring-error-200 disabled:bg-error-300 disabled:text-white/60",
-};
+} as const;
 
 const sizeClass = {
   "icon-sm": "size-6",
   "icon-md": "size-8",
   sm: "px-md h-6",
   md: "px-lg h-8",
-};
-
-export type BaseButtonProps = {
-  variant?: keyof typeof variantClass;
-  size?: keyof typeof sizeClass;
-  isPending?: boolean;
-  pendingText?: string;
-  iconStart?: JSX.Element;
-  iconEnd?: JSX.Element;
-};
-
-export type ButtonProps =
-  | (HTMLArkProps<"button"> & BaseButtonProps)
-  | (AnchorProps & BaseButtonProps & { href: string });
+} as const;
 
 export function Button(props: ButtonProps) {
   const [_, attrs] = splitProps(props, [

@@ -1,8 +1,13 @@
 import { ark, HTMLArkProps } from "@ark-ui/solid";
 import { clsx } from "clsx";
-import { X } from "lucide-solid";
-import { createUniqueId, JSX, Show, splitProps } from "solid-js";
+import { createUniqueId, JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
+
+export type InputProps = HTMLArkProps<"input"> & {
+  size?: "sm" | "md";
+  icon?: JSX.Element;
+  containerClass?: string;
+};
 
 const baseClass =
   "transition-colors duration-150 grow outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:placeholder:text-neutral-400";
@@ -13,19 +18,11 @@ const baseContainerClass =
 const sizeContainerClass = {
   sm: "px-sm h-6 gap-xs",
   md: "px-md h-8 gap-sm",
-};
-
-export type InputProps = HTMLArkProps<"input"> & {
-  size?: keyof typeof sizeContainerClass;
-  onclear?: () => void;
-  icon?: JSX.Element;
-  containerClass?: string;
-};
+} as const;
 
 export function Input(props: InputProps) {
   const [_, attrs] = splitProps(props, [
     "size",
-    "onclear",
     "icon",
     "class",
     "containerClass",
@@ -50,18 +47,6 @@ export function Input(props: InputProps) {
       <ark.input id={inputId} {...attrs} class={classes()}>
         {props.children}
       </ark.input>
-      <Show when={!!props.onclear}>
-        <button
-          title="Очистить"
-          onclick={() => props.onclear!()}
-          class={clsx(
-            "hover:text-error-300 absolute right-0 flex cursor-pointer items-center justify-center text-neutral-400 transition-colors",
-            sizeContainerClass[props.size ?? "md"],
-          )}
-        >
-          <X />
-        </button>
-      </Show>
     </label>
   );
 }

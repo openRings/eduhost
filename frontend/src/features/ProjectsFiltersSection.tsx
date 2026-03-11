@@ -25,7 +25,6 @@ export function ProjectsFiltersSection(props: ProjectsFiltersSectionProps) {
         placeholder="Найти.."
         value={props.query}
         oninput={(e) => props.onQueryInput(e.target.value)}
-        onclear={() => props.onQueryInput("")}
       />
       <Show
         when={!props.isSubjectsLoading}

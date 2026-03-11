@@ -3,9 +3,6 @@ import { clsx } from "clsx";
 import { splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-const baseClass = "inline-flex items-baseline";
-const unitBaseClass = "text-[10px] text-neutral-500";
-
 const units = ["Б", "КБ", "МБ", "ГБ", "ТБ"];
 
 const formatBytes = (bytes: number) => {
@@ -41,6 +38,9 @@ export type VolumeProps = Omit<HTMLArkProps<"span">, "children"> & {
   unitClass?: string;
   valueClass?: string;
 };
+
+const baseClass = "inline-flex items-baseline";
+const unitBaseClass = "text-[10px] text-neutral-500";
 
 export function Volume(props: VolumeProps) {
   const [_, attrs] = splitProps(props, [

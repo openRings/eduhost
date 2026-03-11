@@ -3,13 +3,13 @@ import clsx from "clsx";
 import { JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-const baseClass =
-  "p-2xl group gap-2xl hover:ring-primary-300 flex cursor-pointer flex-col justify-between rounded-md bg-gradient-to-t from-neutral-100 to-white ring-1 ring-neutral-300 transition ring-inset hover:from-neutral-200 hover:to-neutral-100";
-
 export type BlockProps = HTMLArkProps<"div"> & {
   label?: JSX.Element;
   icon?: JSX.Element;
 };
+
+const baseClass =
+  "p-2xl group gap-2xl hover:ring-primary-300 flex cursor-pointer flex-col justify-between rounded-md bg-gradient-to-t from-neutral-100 to-white ring-1 ring-neutral-300 transition ring-inset hover:from-neutral-200 hover:to-neutral-100";
 
 export function Block(props: BlockProps) {
   const [_, attrs] = splitProps(props, ["label", "icon", "class"]);

@@ -10,13 +10,11 @@ import {
 import { createStore } from "solid-js/store";
 import { z, ZodObject } from "zod";
 import { Button, ButtonProps } from "./uikit/Button";
-import { BrushCleaning } from "lucide-solid";
+import { BrushCleaning, Clipboard, Eye } from "lucide-solid";
 import { Field as ArkField, type HTMLArkProps } from "@ark-ui/solid";
 import { Field as UIKitField, FieldInputProps } from "./Field";
 import { Select, SelectOption, SelectProps } from "./uikit/Select";
-
-const selectFieldRootClass =
-  "flex w-full flex-col gap-md pl-md border-l border-neutral-300 items-stretch";
+import { copyToClipboard } from "../utils/clipboard";
 
 export function createForm<S extends ZodObject<any>>(
   schema: S,
@@ -134,9 +132,17 @@ export function createForm<S extends ZodObject<any>>(
       copyable?: boolean;
     },
   ) {
-    const [_, attrs] = splitProps(props, ["name", "value", "oninput", "icon"]);
+    const [_, attrs] = splitProps(props, [
+      "name",
+      "value",
+      "oninput",
+      "icon",
+      "copyable",
+      "type",
+    ]);
 
     const form = useFormContext();
+    const [isHide, setIsHide] = createSignal(true);
 
     const value = () => form.values[props.name];
     const error = () => form.errors[props.name];
@@ -153,17 +159,38 @@ export function createForm<S extends ZodObject<any>>(
     return (
       <UIKitField invalid={!!error()} containerClass={props.containerClass}>
         <UIKitField.Label icon={props.icon}>{props.label}</UIKitField.Label>
-        <UIKitField.Input
-          {...attrs}
-          value={value() as any}
-          copyable={props.copyable}
-          oninput={oninput}
-          onchange={onchange}
-        />
+        <UIKitField.Control>
+          <UIKitField.Input
+            {...attrs}
+            value={value() as any}
+            type={isHide() ? props.type : "text"}
+            oninput={oninput}
+            onchange={onchange}
+          />
+          {props.copyable && (
+            <UIKitField.Button
+              title="Скопировать"
+              onclick={() => copyToClipboard(String(value() ?? ""))}
+              iconStart={<Clipboard />}
+            />
+          )}
+          {props.type === "password" && (
+            <UIKitField.Button
+              title="Показать"
+              onmousedown={() => setIsHide(false)}
+              onmouseup={() => setIsHide(true)}
+              onmouseleave={() => setIsHide(true)}
+              iconStart={<Eye />}
+            />
+          )}
+        </UIKitField.Control>
         <UIKitField.Error>{error()}</UIKitField.Error>
       </UIKitField>
     );
   }
+
+  const selectFieldRootClass =
+    "flex w-full flex-col gap-md pl-md border-l border-neutral-300 items-stretch";
 
   function SelectField<K extends keyof FormData>(
     props: Omit<SelectProps, "value" | "defaultValue" | "onselect"> & {

@@ -4,14 +4,14 @@ import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 import { Label } from "./uikit/Label";
 
-const baseClass = "p-6xl gap-3xl flex flex-col rounded-md bg-neutral-100";
-
 export type SectionProps = Omit<HTMLArkProps<"section">, "title"> & {
   label?: JSX.Element;
   labelIcon?: JSX.Element;
   subLabel?: JSX.Element;
   description?: JSX.Element;
 };
+
+const baseClass = "p-6xl gap-3xl flex flex-col rounded-md bg-neutral-100";
 
 export function Section(props: SectionProps) {
   const [_, attrs] = splitProps(props, [

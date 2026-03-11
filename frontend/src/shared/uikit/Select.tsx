@@ -22,6 +22,25 @@ export type SelectOption = {
   disabled?: boolean;
 };
 
+export type SelectProps = Omit<
+  SelectRootProps<SelectOption>,
+  "collection" | "onselect" | "value" | "defaultValue"
+> & {
+  items: SelectOption[];
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  defaultValue?: string;
+  onselect?: (value: string) => void;
+  size?: "sm" | "md";
+  autosize?: boolean;
+  containerClass?: string;
+  triggerClass?: string;
+  contentClass?: string;
+  listClass?: string;
+  itemClass?: string;
+};
+
 const baseRootClass = "relative flex flex-col gap-xs";
 
 const baseControlClass =
@@ -33,12 +52,12 @@ const baseTriggerClass =
 const sizeControlClass = {
   sm: "h-6 gap-xs text-xs",
   md: "h-8 gap-sm text-sm",
-};
+} as const;
 
 const sizeTriggerClass = {
   sm: "px-sm",
   md: "px-md",
-};
+} as const;
 
 const baseContentClass =
   "w-full min-w-full rounded-md ring-1 ring-inset ring-neutral-300 bg-white shadow-sm";
@@ -51,26 +70,7 @@ const baseItemClass =
 const sizeItemClass = {
   sm: "px-xxs h-6 text-xs",
   md: "px-xs h-8 text-sm",
-};
-
-export type SelectProps = Omit<
-  SelectRootProps<SelectOption>,
-  "collection" | "onselect" | "value" | "defaultValue"
-> & {
-  items: SelectOption[];
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  defaultValue?: string;
-  onselect?: (value: string) => void;
-  size?: keyof typeof sizeControlClass;
-  autosize?: boolean;
-  containerClass?: string;
-  triggerClass?: string;
-  contentClass?: string;
-  listClass?: string;
-  itemClass?: string;
-};
+} as const;
 
 export function Select(props: SelectProps) {
   const [_, rootProps] = splitProps(props, [

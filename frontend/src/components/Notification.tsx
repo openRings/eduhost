@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { CircleCheck, Info, OctagonAlert, TriangleAlert } from "lucide-solid";
 import { Motion, Presence } from "solid-motionone";
 
+export type NotificationProps = NotificationType;
+
 const baseContainerClass =
   "ring-1 ring-inset px-2xl py-xl flex items-center gap-md rounded-md shadow-md w-fit max-w-[480px]";
 
@@ -16,8 +18,6 @@ const levelContainerClass: Record<NotificationLevel, string> = {
   warning: "bg-warning-300 ring-warning-400 text-white",
   error: "bg-error-300 ring-error-400 text-white",
 };
-
-export type NotificationProps = NotificationType;
 
 export function Notification(props: NotificationProps) {
   const containerClasses = () =>

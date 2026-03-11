@@ -3,16 +3,16 @@ import { clsx } from "clsx";
 import { splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
+export type SkeletonProps = HTMLArkProps<"div"> & {
+  radius?: "sm" | "md";
+};
+
 const baseClass = "animate-pulse bg-neutral-300";
 
 const radiusClass = {
   sm: "rounded-sm",
   md: "rounded-md",
-};
-
-export type SkeletonProps = HTMLArkProps<"div"> & {
-  radius?: keyof typeof radiusClass;
-};
+} as const;
 
 export function Skeleton(props: SkeletonProps) {
   const [_, attrs] = splitProps(props, ["radius", "class"]);

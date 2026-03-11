@@ -8,8 +8,10 @@ Main principle: follow existing project style and architecture, do not invent a 
 ### 1.1 Scope
 
 - This repository has two main code areas:
+
 1. `frontend` (SolidJS + TypeScript)
 2. `backend` (Rust + Axum + sqlx)
+
 - Agent decisions must respect layer boundaries in each area.
 
 ### 1.2 Global rules
@@ -61,6 +63,7 @@ Use the established pattern:
 - `splitProps` with `const [_, attrs] = ...`
 - class composition with `twMerge(clsx(...))`
 - Ark/HTML props typing with `HTMLArkProps<...>`
+- Keep class constants close to the component/helper that uses them, but outside the component body; prefer placing them immediately above the related component/helper instead of collecting them at the top of the file.
 
 ```tsx
 import { ark, HTMLArkProps } from "@ark-ui/solid";
@@ -119,6 +122,8 @@ export type ButtonProps =
 
 - Use `shared/Form.tsx` + `createForm` + `zod` schema.
 - Prefer `Form.Field`, `Form.Clear`, `Form.Submit` composition.
+- Keep `shared/uikit/Input` visually simple: no embedded action buttons inside `Input`.
+- For field-level actions (copy, show password, clear next to field, etc.), compose them at `shared/Field` level with `Field.Control` + `Field.Button`.
 - Keep form submit logic in page/feature level, transport in `utils/api.ts`, domain-level data functions in `entities`.
 
 ### 2.7 UI styling conventions
@@ -213,9 +218,9 @@ impl ProfileQuery {
 - Then place inherent `impl` blocks.
 - Place `impl Trait for Type` blocks after inherent `impl` blocks.
 - In every Rust file, keep imports ordered by source:
-  1) external imports (`std`, `core`, `anyhow`, `axum`, `eduhost`, `sqlx`, etc.)
-  2) one empty line
-  3) local imports from this package (`crate::...`, `self::...`).
+  1. external imports (`std`, `core`, `anyhow`, `axum`, `eduhost`, `sqlx`, etc.)
+  2. one empty line
+  3. local imports from this package (`crate::...`, `self::...`).
 
 ## 4) AGENTS.md Maintenance Policy
 

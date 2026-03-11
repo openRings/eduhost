@@ -21,15 +21,6 @@ export type ModalProps = Omit<HTMLArkProps<"div">, "title"> & {
   onclose?: () => void;
 };
 
-const baseOverlayClass =
-  "fixed inset-0 flex items-center justify-center bg-black/25 p-md backdrop-blur-xs pb-24";
-const baseContentClass =
-  "p-2xl gap-2xl flex w-full max-w-[640px] flex-col rounded-md bg-gradient-to-t from-neutral-100 to-white ring-1 ring-neutral-400 ring-inset";
-const titleClass = "text-neutral-700";
-const titleActionsClass = "gap-sm flex items-center";
-const actionButtonClass =
-  "cursor-pointer text-neutral-500 hover:text-neutral-700 transition-colors";
-
 const openedStack: string[] = [];
 
 function lockScroll() {
@@ -45,6 +36,15 @@ function unlockScroll() {
   document.body.classList.remove("overflow-hidden!");
   document.documentElement.style.paddingRight = "";
 }
+
+const baseOverlayClass =
+  "fixed inset-0 flex items-center justify-center bg-black/25 p-md backdrop-blur-xs pb-24";
+const baseContentClass =
+  "p-2xl gap-2xl flex w-full max-w-[640px] flex-col rounded-md bg-gradient-to-t from-neutral-100 to-white ring-1 ring-neutral-400 ring-inset";
+const titleClass = "text-neutral-700";
+const titleActionsClass = "gap-sm flex items-center";
+const actionButtonClass =
+  "cursor-pointer text-neutral-500 hover:text-neutral-700 transition-colors";
 
 export default function Modal(props: ModalProps) {
   const [_, attrs] = splitProps(props, [
