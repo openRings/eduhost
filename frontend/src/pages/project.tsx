@@ -1,3 +1,4 @@
+import { useParams } from "@solidjs/router";
 import { Section } from "../shared/Section";
 import {
   ArrowRightLeft,
@@ -8,20 +9,16 @@ import {
   CodeXml,
   Database,
   DatabaseZap,
-  Diameter,
   Dices,
   EthernetPort,
   ExternalLink,
   Eye,
-  FileIcon,
-  FileUp,
   FolderSearch,
   FolderSymlink,
   FolderTree,
   GitBranch,
   Github,
   Globe,
-  HardDrive,
   IdCard,
   Info,
   KeyRound,
@@ -36,13 +33,18 @@ import {
   Users,
   UserStar,
 } from "lucide-solid";
+import { createResource } from "solid-js";
+import { fetchProject } from "../entities/projects";
 import { Button } from "../shared/uikit/Button";
 import { ReadonlyField } from "../components/ReadonlyField";
-import { VolumeCategoryCard } from "../components/VolumeCategoryCard";
+import { DiskUsageSection } from "../features/DiskUsageSection";
 import { Field } from "../shared/Field";
 import { Input } from "../shared/uikit/Input";
 
 export default function () {
+  const params = useParams();
+  const [project] = createResource(() => params.id, fetchProject);
+
   return (
     <>
       <Section class="flex flex-row items-center justify-between">
@@ -221,53 +223,7 @@ export default function () {
           </div>
         </div>
       </Section>
-      <Section label="Использование диска" labelIcon={<HardDrive />}>
-        <p class="max-w-1/2 leading-[150%] text-neutral-500">
-          Статистика использования диска в текущем проекте относительно всего
-          выделенного пространства на проекты от предмета
-        </p>
-        <div class="flex h-5 w-full rounded-sm bg-neutral-200 ring-1 ring-neutral-300">
-          <div class="h-full w-[15%] rounded-sm bg-blue-500" />
-          <div class="h-full w-[3%] rounded-sm bg-green-500" />
-          <div class="h-full w-[67%] rounded-sm [background-image:repeating-linear-gradient(-45deg,transparent,transparent_2.5px,currentColor_1.5px,currentColor_4px)] text-neutral-400 ring-1 ring-neutral-400 ring-inset" />
-        </div>
-        <div class="gap-md flex">
-          <VolumeCategoryCard
-            labelIcon={<Diameter />}
-            label="Доступно"
-            bytes={1024}
-            percentLabel="100%"
-          />
-          <VolumeCategoryCard
-            labelIcon={<FileIcon />}
-            label="Файлы проекта"
-            badgeClass="bg-blue-500/10 text-blue-500 ring-0"
-            bytes={714}
-            percentLabel="11.5%"
-          />
-          <VolumeCategoryCard
-            labelIcon={<Database />}
-            label="База данных проекта"
-            badgeClass="bg-green-500/10 text-green-500 ring-0"
-            bytes={116}
-            percentLabel="0.7%"
-          />
-          <VolumeCategoryCard
-            labelIcon={<PanelsTopLeft class="text-neutral-700" />}
-            label={<span class="text-neutral-700">Другие проекты</span>}
-            badgeClass="[background-image:repeating-linear-gradient(-45deg,transparent,transparent_2.5px,currentColor_1.5px,currentColor_4px)] ring-neutral-400 text-neutral-400/40"
-            bytes={116}
-            percentLabel="66.5%"
-          />
-          <VolumeCategoryCard
-            labelIcon={<FileUp />}
-            label="Свободно"
-            badgeClass="bg-transparent ring-0 p-0"
-            bytes={445}
-            percentLabel="25.8%"
-          />
-        </div>
-      </Section>
+      <DiskUsageSection diskUsage={() => project()?.diskUsage} />
       <Section labelIcon={<Users />} label="Совместный доступ">
         <p class="max-w-1/2 leading-[150%] text-neutral-500">
           Совместный доступ к проекту для группы студентов

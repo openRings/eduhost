@@ -47,12 +47,68 @@ export type CreateProjectResponse = {
   id: string;
 };
 
+export type ProjectUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  patronymic?: string;
+};
+
+export type ProjectSubject = {
+  id: string;
+  name: string;
+  teacher: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    patronymic?: string;
+  };
+};
+
+export type ProjectSource = {
+  sourceType: string;
+  link: string;
+  branch: string;
+  rootDir?: string;
+  sizeBytes: number;
+};
+
+export type ProjectDatabase = {
+  id: string;
+  name: string;
+  password: string;
+  diskUsageBytes: number;
+};
+
+export type ProjectDetails = {
+  id: string;
+  name: string;
+  label: string;
+  subject: ProjectSubject;
+  owner: ProjectUser;
+  users: ProjectUser[];
+  source?: ProjectSource;
+  database?: ProjectDatabase;
+  diskUsage: {
+    avaliableBytes: number;
+    filesBytes: number;
+    databaseBytes: number;
+    otherProjectsBytes: number;
+  };
+};
+
 export async function fetchProjects(query: FetchProjectsQuery) {
   const { body } = await fetchApi<SubjectProjects[]>("/projects", {
     query: Object.fromEntries(
       Object.entries(query).filter(([_key, value]) => !!value),
     ) as Record<string, string>,
   });
+
+  return body;
+}
+
+export async function fetchProject(projectId: string) {
+  const { body } = await fetchApi<ProjectDetails>(`/projects/${projectId}`);
 
   return body;
 }
