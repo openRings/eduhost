@@ -15,6 +15,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
 mod auth;
+mod databases;
 mod groups;
 mod profile;
 mod projects;
@@ -45,6 +46,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/metrics", get(|| async move { metric_handle.render() }))
         .nest("/auth", auth::routes())
         .nest("/groups", groups::routes())
+        .nest("/databases", databases::routes())
         .nest("/projects", projects::routes())
         .nest("/subjects", subjects::routes())
         .nest("/profile", profile::routes())

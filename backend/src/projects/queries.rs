@@ -122,7 +122,7 @@ impl SubjectProjectsByUserQuery {
             JOIN users u ON u.id = s.owner_id
             LEFT JOIN projects p ON p.subject_id = s.id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
-            LEFT JOIN databases d ON d.id = p.database_id
+            LEFT JOIN databases d ON d.project_id = p.id
             WHERE gu.user_id = $1
             AND gu.group_id = $2
             AND ($3::UUID IS NULL OR s.id = $3)
@@ -234,7 +234,7 @@ impl ProjectDetailsByUserQuery {
                     SELECT SUM(COALESCE(ps2.size_bytes, 0) + COALESCE(d2.disk_usage_bytes, 0))::BIGINT
                     FROM projects p2
                     LEFT JOIN project_sources ps2 ON ps2.id = p2.source_id
-                    LEFT JOIN databases d2 ON d2.id = p2.database_id
+                    LEFT JOIN databases d2 ON d2.project_id = p2.id
                     WHERE p2.subject_id = p.subject_id AND p2.id != p.id
                 ), 0) AS other_projects_bytes
             FROM projects p
@@ -245,7 +245,7 @@ impl ProjectDetailsByUserQuery {
             JOIN group_users gu ON gu.group_id = sg.group_id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
             LEFT JOIN git_branches gb ON gb.id = ps.git_branch_id
-            LEFT JOIN databases d ON d.id = p.database_id
+            LEFT JOIN databases d ON d.project_id = p.id
             WHERE p.id = $1 AND gu.user_id = $2
             LIMIT 1",
         )

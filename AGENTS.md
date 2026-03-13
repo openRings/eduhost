@@ -205,6 +205,7 @@ impl ProfileQuery {
 - Use `serde` DTOs with `#[serde(rename_all = "camelCase")]` where applicable.
 - Keep validation/normalization in `Normalize` implementations for request DTOs.
 - Keep response mapping in DTO constructors (`from_model(...)`) when pattern exists.
+- For database list responses, return `createdAt` as Unix timestamp seconds (`i64`) instead of serializing `OffsetDateTime` directly.
 
 ### 3.7 Error and auth/session conventions
 

@@ -18,15 +18,14 @@ impl<'a> ProjectCreateCommand<'a> {
     {
         sqlx::query(
             "INSERT INTO projects
-            (id, name, alias, owner_id, subject_id, database_id, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            (id, name, alias, owner_id, subject_id, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6)",
         )
         .bind(self.project_id)
         .bind(self.name)
         .bind(self.alias)
         .bind(self.owner_id)
         .bind(self.subject_id)
-        .bind(Option::<Uuid>::None)
         .bind(OffsetDateTime::now_utc())
         .execute(conn)
         .await

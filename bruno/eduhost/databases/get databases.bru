@@ -1,0 +1,20 @@
+meta {
+  name: get databases
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost/api/databases?groupId=4c56e6cd-9db1-44f6-a4cd-dece2ed427bb
+  body: none
+  auth: inherit
+}
+
+params:query {
+  groupId: 4c56e6cd-9db1-44f6-a4cd-dece2ed427bb
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
