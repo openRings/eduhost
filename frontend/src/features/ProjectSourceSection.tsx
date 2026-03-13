@@ -2,6 +2,7 @@ import {
   CloudDownload,
   CloudSync,
   CodeXml,
+  Link,
   ExternalLink,
   FolderSearch,
   FolderSymlink,
@@ -9,9 +10,10 @@ import {
   GitBranch,
   Github,
 } from "lucide-solid";
-import type { JSX } from "solid-js";
+import { Show, type JSX } from "solid-js";
 import type { ProjectDetails } from "../entities/projects";
 import { ReadonlyField } from "../components/ReadonlyField";
+import { Block } from "../shared/Block";
 import { Field } from "../shared/Field";
 import { Section } from "../shared/Section";
 import { Skeleton } from "../shared/Skeleton";
@@ -61,78 +63,124 @@ function selectedBranchValue(project?: ProjectDetails) {
   return source.selectedBranch || source.branch || "";
 }
 
-export function ProjectSourceSection(props: ProjectSourceSectionProps) {
+function SourcePlaceholderSizing() {
   return (
-    <Section label="Исходный код" labelIcon={<CodeXml />}>
-      <p class="text-neutral-500">
-        Настройки источника исходных файлов проекта
-      </p>
-      <div class="gap-x-3xl gap-y-xl grid grid-cols-3">
-        {props.isLoading ? (
-          <FieldSkeleton
-            icon={<FolderSymlink />}
-            label="Источник файлов сайта"
-          />
-        ) : (
-          <Field>
-            <Field.Label icon={<FolderSymlink />}>
-              Источник файлов сайта
-            </Field.Label>
-            <Field.Select
-              items={[
-                {
-                  label: sourceTypeLabel(props.project?.source?.sourceType),
-                  value: props.project?.source?.sourceType ?? "",
-                },
-              ]}
-              value={props.project?.source?.sourceType ?? ""}
-            />
-          </Field>
-        )}
-        {props.isLoading ? (
-          <FieldSkeleton icon={<GitBranch />} label="Ветка репозитория" />
-        ) : (
-          <Field>
-            <Field.Label icon={<GitBranch />}>Ветка репозитория</Field.Label>
-            <Field.Select
-              items={sourceBranchItems(props.project)}
-              defaultValue={selectedBranchValue(props.project)}
-            />
-          </Field>
-        )}
-        <ReadonlyField
-          label="Последняя синхронизация файлов"
+    <>
+      <div class="gap-x-3xl gap-y-xl invisible grid grid-cols-3">
+        <FieldSkeleton icon={<FolderSymlink />} label="Источник файлов сайта" />
+        <FieldSkeleton icon={<GitBranch />} label="Ветка репозитория" />
+        <FieldSkeleton
           icon={<CloudSync />}
-          value=""
-          isLoading={props.isLoading}
+          label="Последняя синхронизация файлов"
         />
-        <ReadonlyField
-          label="Github репозиторий"
-          icon={<Github />}
-          value={props.project?.source?.link}
-          isLoading={props.isLoading}
-        />
-        {props.isLoading ? (
-          <FieldSkeleton icon={<FolderTree />} label="Корневая директория" />
-        ) : (
-          <Field>
-            <Field.Label icon={<FolderTree />}>Корневая директория</Field.Label>
-            <Field.Control>
-              <Field.Input
-                value={props.project?.source?.rootDir ?? "/"}
-                readonly
-              />
-            </Field.Control>
-          </Field>
-        )}
+        <FieldSkeleton icon={<Github />} label="Github репозиторий" />
+        <FieldSkeleton icon={<FolderTree />} label="Корневая директория" />
       </div>
-      <div class="gap-md flex">
+      <div class="gap-md mt-xl invisible flex">
         <Button iconStart={<CloudDownload />} variant="primary">
           Синхронизировать файлы
         </Button>
         <Button iconStart={<FolderSearch />}>Посмотреть файлы</Button>
         <Button iconStart={<ExternalLink />}>Открыть репозиторий</Button>
       </div>
+    </>
+  );
+}
+
+export function ProjectSourceSection(props: ProjectSourceSectionProps) {
+  return (
+    <Section label="Исходный код" labelIcon={<CodeXml />}>
+      <p class="text-neutral-500">
+        Настройки источника исходных файлов проекта
+      </p>
+      <Show
+        when={props.isLoading || props.project?.source}
+        fallback={
+          <div class="relative">
+            <SourcePlaceholderSizing />
+            <Block
+              variant="lined"
+              class="gap-xl absolute inset-0 flex flex-col justify-center"
+            >
+              <p class="max-w-160 text-center text-neutral-500">
+                Укажите источник исходного кода для сайта
+              </p>
+              <Button variant="primary" iconStart={<Link />}>
+                Указать источник
+              </Button>
+            </Block>
+          </div>
+        }
+      >
+        <div class="gap-x-3xl gap-y-xl grid grid-cols-3">
+          {props.isLoading ? (
+            <FieldSkeleton
+              icon={<FolderSymlink />}
+              label="Источник файлов сайта"
+            />
+          ) : (
+            <Field>
+              <Field.Label icon={<FolderSymlink />}>
+                Источник файлов сайта
+              </Field.Label>
+              <Field.Select
+                items={[
+                  {
+                    label: sourceTypeLabel(props.project?.source?.sourceType),
+                    value: props.project?.source?.sourceType ?? "",
+                  },
+                ]}
+                value={props.project?.source?.sourceType ?? ""}
+              />
+            </Field>
+          )}
+          {props.isLoading ? (
+            <FieldSkeleton icon={<GitBranch />} label="Ветка репозитория" />
+          ) : (
+            <Field>
+              <Field.Label icon={<GitBranch />}>Ветка репозитория</Field.Label>
+              <Field.Select
+                items={sourceBranchItems(props.project)}
+                defaultValue={selectedBranchValue(props.project)}
+              />
+            </Field>
+          )}
+          <ReadonlyField
+            label="Последняя синхронизация файлов"
+            icon={<CloudSync />}
+            value=""
+            isLoading={props.isLoading}
+          />
+          <ReadonlyField
+            label="Github репозиторий"
+            icon={<Github />}
+            value={props.project?.source?.link}
+            isLoading={props.isLoading}
+          />
+          {props.isLoading ? (
+            <FieldSkeleton icon={<FolderTree />} label="Корневая директория" />
+          ) : (
+            <Field>
+              <Field.Label icon={<FolderTree />}>
+                Корневая директория
+              </Field.Label>
+              <Field.Control>
+                <Field.Input
+                  value={props.project?.source?.rootDir ?? "/"}
+                  readonly
+                />
+              </Field.Control>
+            </Field>
+          )}
+        </div>
+        <div class="gap-md flex">
+          <Button iconStart={<CloudDownload />} variant="primary">
+            Синхронизировать файлы
+          </Button>
+          <Button iconStart={<FolderSearch />}>Посмотреть файлы</Button>
+          <Button iconStart={<ExternalLink />}>Открыть репозиторий</Button>
+        </div>
+      </Show>
     </Section>
   );
 }

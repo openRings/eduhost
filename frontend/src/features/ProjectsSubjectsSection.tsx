@@ -141,32 +141,31 @@ export function ProjectsSubjectsSection(props: ProjectsSubjectsSectionProps) {
                 </Button>
                 <For each={subject.projects}>
                   {(project) => (
-                    <A href={`/projects/${project.id}`}>
-                      <Block
-                        class="h-full"
-                        label={
-                          <div class="gap-sm flex flex-col">
-                            {project.name}
-                            <span class="text-neutral-500 underline">
-                              {project.alias}
-                            </span>
-                          </div>
-                        }
-                        icon={<ExternalLink />}
-                      >
-                        <div class="gap-md flex">
-                          <div class="gap-xs flex">
-                            <FileIcon class="text-neutral-500" />
-                            <Volume bytes={project.diskUsage.fileBytes} />
-                          </div>
-                          <span class="text-neutral-500">|</span>
-                          <div class="gap-xs flex">
-                            <Database class="text-neutral-500" />
-                            <Volume bytes={project.diskUsage.databaseBytes} />
-                          </div>
+                    <Block
+                      class="h-full"
+                      href={`/projects/${project.id}`}
+                      label={
+                        <div class="gap-sm flex flex-col">
+                          {project.name}
+                          <span class="text-neutral-500 underline">
+                            {project.alias}
+                          </span>
                         </div>
-                      </Block>
-                    </A>
+                      }
+                      icon={<ExternalLink />}
+                    >
+                      <div class="gap-md flex">
+                        <div class="gap-xs flex">
+                          <FileIcon class="text-neutral-500" />
+                          <Volume bytes={project.diskUsage.fileBytes} />
+                        </div>
+                        <span class="text-neutral-500">|</span>
+                        <div class="gap-xs flex">
+                          <Database class="text-neutral-500" />
+                          <Volume bytes={project.diskUsage.databaseBytes} />
+                        </div>
+                      </div>
+                    </Block>
                   )}
                 </For>
               </div>
