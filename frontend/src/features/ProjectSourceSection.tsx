@@ -63,30 +63,6 @@ function selectedBranchValue(project?: ProjectDetails) {
   return source.selectedBranch || source.branch || "";
 }
 
-function SourcePlaceholderSizing() {
-  return (
-    <>
-      <div class="gap-x-3xl gap-y-xl invisible grid grid-cols-3">
-        <FieldSkeleton icon={<FolderSymlink />} label="Источник файлов сайта" />
-        <FieldSkeleton icon={<GitBranch />} label="Ветка репозитория" />
-        <FieldSkeleton
-          icon={<CloudSync />}
-          label="Последняя синхронизация файлов"
-        />
-        <FieldSkeleton icon={<Github />} label="Github репозиторий" />
-        <FieldSkeleton icon={<FolderTree />} label="Корневая директория" />
-      </div>
-      <div class="gap-md mt-xl invisible flex">
-        <Button iconStart={<CloudDownload />} variant="primary">
-          Синхронизировать файлы
-        </Button>
-        <Button iconStart={<FolderSearch />}>Посмотреть файлы</Button>
-        <Button iconStart={<ExternalLink />}>Открыть репозиторий</Button>
-      </div>
-    </>
-  );
-}
-
 export function ProjectSourceSection(props: ProjectSourceSectionProps) {
   return (
     <Section label="Исходный код" labelIcon={<CodeXml />}>
@@ -96,20 +72,17 @@ export function ProjectSourceSection(props: ProjectSourceSectionProps) {
       <Show
         when={props.isLoading || props.project?.source}
         fallback={
-          <div class="relative">
-            <SourcePlaceholderSizing />
-            <Block
-              variant="lined"
-              class="gap-xl absolute inset-0 flex flex-col justify-center"
-            >
-              <p class="max-w-160 text-center text-neutral-500">
-                Укажите источник исходного кода для сайта
-              </p>
-              <Button variant="primary" iconStart={<Link />}>
-                Указать источник
-              </Button>
-            </Block>
-          </div>
+          <Block
+            variant="lined"
+            class="gap-xl flex h-48 flex-col justify-center"
+          >
+            <p class="max-w-160 text-center text-neutral-500">
+              Укажите источник исходного кода для сайта
+            </p>
+            <Button variant="primary" iconStart={<Link />}>
+              Указать источник
+            </Button>
+          </Block>
         }
       >
         <div class="gap-x-3xl gap-y-xl grid grid-cols-3">
