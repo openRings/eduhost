@@ -10,12 +10,13 @@ use crate::projects::commands::ProjectCreateCommand;
 use crate::projects::dtos::{
     CreateProjectRequest, CreateProjectResponse, IsProjectAliasAvailableRequest,
     IsProjectAliasAvailableResponse, ProjectDatabaseResponse, ProjectDetailsDiskUsageResponse,
-    ProjectDetailsResponse, ProjectSourceResponse, ProjectSubjectResponse, ProjectUserResponse,
-    SubjectProjectsResponse, TeacherResponse,
+    ProjectDetailsResponse, ProjectSourceBranchResponse, ProjectSourceResponse,
+    ProjectSubjectResponse, ProjectUserResponse, SubjectProjectsResponse, TeacherResponse,
 };
 use crate::projects::queries::{
     IsGroupAvailableForUserQuery, IsProjectAliasExistsQuery, IsSubjectAvailableForGroupQuery,
-    ProjectDetailsByUserQuery, ProjectUsersByProjectQuery, SubjectProjectsByUserQuery,
+    ProjectDetailsByUserQuery, ProjectGitBranchesBySourceQuery, ProjectUsersByProjectQuery,
+    SubjectProjectsByUserQuery,
 };
 
 pub struct ProjectsService {
@@ -100,6 +101,22 @@ impl ProjectsService {
             );
         }
 
+        let source_branches =
+            if let Some((source_id, selected_branch_id)) = details.source_id.zip(details.source_branch_id)
+        {
+            ProjectGitBranchesBySourceQuery {
+                source_id,
+                selected_branch_id,
+            }
+                .execute(&self.pool)
+                .await
+                .with_context(|| {
+                    format!("failed to fetch project source branches, source id: {source_id}")
+                })?
+        } else {
+            Vec::new()
+        };
+
         let source = details
             .source_link
             .as_ref()
@@ -108,6 +125,15 @@ impl ProjectsService {
                 source_type: "git".to_string(),
                 link: link.clone(),
                 branch: branch.clone(),
+                selected_branch: branch.clone(),
+                branches: source_branches
+                    .iter()
+                    .map(|source_branch| ProjectSourceBranchResponse {
+                        id: source_branch.id,
+                        name: source_branch.name.clone(),
+                        is_exists: source_branch.is_exists,
+                    })
+                    .collect(),
                 root_dir: details.source_root_dir,
                 size_bytes: details.source_size_bytes,
             });

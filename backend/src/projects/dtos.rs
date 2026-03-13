@@ -87,11 +87,21 @@ pub struct ProjectSubjectResponse {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ProjectSourceBranchResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub is_exists: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ProjectSourceResponse {
     #[serde(rename = "type")]
     pub source_type: String,
     pub link: String,
     pub branch: String,
+    pub selected_branch: String,
+    pub branches: Vec<ProjectSourceBranchResponse>,
     pub root_dir: Option<String>,
     pub size_bytes: i64,
 }

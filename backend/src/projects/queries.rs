@@ -55,6 +55,8 @@ pub struct ProjectDetailsModel {
     pub teacher_first_name: String,
     pub teacher_last_name: String,
     pub teacher_patronymic: Option<String>,
+    pub source_id: Option<Uuid>,
+    pub source_branch_id: Option<Uuid>,
     pub source_link: Option<String>,
     pub source_branch: Option<String>,
     pub source_root_dir: Option<String>,
@@ -74,6 +76,13 @@ pub struct ProjectUserModel {
     pub patronymic: Option<String>,
 }
 
+#[derive(Debug, Clone, FromRow)]
+pub struct ProjectGitBranchModel {
+    pub id: Uuid,
+    pub name: String,
+    pub is_exists: bool,
+}
+
 pub struct ProjectDetailsByUserQuery {
     pub user_id: Uuid,
     pub project_id: Uuid,
@@ -81,6 +90,11 @@ pub struct ProjectDetailsByUserQuery {
 
 pub struct ProjectUsersByProjectQuery {
     pub project_id: Uuid,
+}
+
+pub struct ProjectGitBranchesBySourceQuery {
+    pub source_id: Uuid,
+    pub selected_branch_id: Uuid,
 }
 
 impl SubjectProjectsByUserQuery {
@@ -206,6 +220,8 @@ impl ProjectDetailsByUserQuery {
                 teacher.first_name AS teacher_first_name,
                 teacher.last_name AS teacher_last_name,
                 teacher.patronymic AS teacher_patronymic,
+                p.source_id AS source_id,
+                ps.git_branch_id AS source_branch_id,
                 ps.repository_url AS source_link,
                 gb.name AS source_branch,
                 ps.root_dir AS source_root_dir,
@@ -257,5 +273,25 @@ impl ProjectUsersByProjectQuery {
         .fetch_all(conn)
         .await
         .context("failed to fetch project users")
+    }
+}
+
+impl ProjectGitBranchesBySourceQuery {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Vec<ProjectGitBranchModel>>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_as::<_, ProjectGitBranchModel>(
+            "SELECT id, name, is_exists
+            FROM git_branches
+            WHERE project_source_id = $1
+            AND (is_exists = TRUE OR id = $2)
+            ORDER BY name",
+        )
+        .bind(self.source_id)
+        .bind(self.selected_branch_id)
+        .fetch_all(conn)
+        .await
+        .context("failed to fetch project source branches")
     }
 }

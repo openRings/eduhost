@@ -5,9 +5,45 @@ meta {
 }
 
 get {
-  url: http://localhost/api/projects/019cd28b-5abb-7dd0-b537-7dc3efa0ef29
+  url: http://localhost/api/projects/019cc941-d2a9-7dd1-92b1-fd4a293c3c9d
   body: none
   auth: inherit
+}
+
+script:post-response {
+  const body = typeof res.body === "string" ? JSON.parse(res.body) : res.body;
+  const source = body?.source;
+  
+  if (!source) {
+    console.warn("project has no source");
+    return;
+  }
+  
+  if (!Array.isArray(source.branches)) {
+    throw new Error("source.branches must be an array");
+  }
+  
+  if (typeof source.selectedBranch !== "string" || !source.selectedBranch.length) {
+    throw new Error("source.selectedBranch must be a non-empty string");
+  }
+  
+  const hasSelected = source.branches.some(
+    (branch) => branch.name === source.selectedBranch,
+  );
+  
+  if (!hasSelected) {
+    throw new Error("source.selectedBranch is missing in source.branches");
+  }
+  
+  const invalidBranch = source.branches.find(
+    (branch) => !branch.isExists && branch.name !== source.selectedBranch,
+  );
+  
+  if (invalidBranch) {
+    throw new Error(
+      `branch '${invalidBranch.name}' must be filtered out (isExists=false and not selected)`,
+    );
+  }
 }
 
 settings {
