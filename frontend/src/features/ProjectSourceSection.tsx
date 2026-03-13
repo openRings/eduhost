@@ -51,16 +51,16 @@ function sourceBranchItems(project?: ProjectDetails) {
     }));
   }
 
-  if (!source.branch) return [];
+  if (!source.currentBranch) return [];
 
-  return [{ label: source.branch, value: source.branch }];
+  return [{ label: source.currentBranch, value: source.currentBranch }];
 }
 
 function selectedBranchValue(project?: ProjectDetails) {
   const source = project?.source;
   if (!source) return "";
 
-  return source.selectedBranch || source.branch || "";
+  return source.currentBranch || "";
 }
 
 export function ProjectSourceSection(props: ProjectSourceSectionProps) {

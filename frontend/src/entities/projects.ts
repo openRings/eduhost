@@ -68,8 +68,7 @@ export type ProjectSubject = {
 export type ProjectSource = {
   sourceType: string;
   link: string;
-  branch: string;
-  selectedBranch: string;
+  currentBranch: string;
   branches: {
     id: string;
     name: string;

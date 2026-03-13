@@ -127,8 +127,7 @@ impl ProjectsService {
                 |(((link, branch), root_dir), size_bytes)| ProjectSourceResponse {
                     source_type: "git".to_string(),
                     link: link.clone(),
-                    branch: branch.clone(),
-                    selected_branch: branch.clone(),
+                    current_branch: branch.clone(),
                     branches: source_branches
                         .iter()
                         .map(|source_branch| ProjectSourceBranchResponse {

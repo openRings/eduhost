@@ -99,8 +99,7 @@ pub struct ProjectSourceResponse {
     #[serde(rename = "type")]
     pub source_type: String,
     pub link: String,
-    pub branch: String,
-    pub selected_branch: String,
+    pub current_branch: String,
     pub branches: Vec<ProjectSourceBranchResponse>,
     pub root_dir: String,
     pub size_bytes: i64,

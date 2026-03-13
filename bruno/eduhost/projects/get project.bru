@@ -23,20 +23,20 @@ script:post-response {
     throw new Error("source.branches must be an array");
   }
   
-  if (typeof source.selectedBranch !== "string" || !source.selectedBranch.length) {
-    throw new Error("source.selectedBranch must be a non-empty string");
+  if (typeof source.currentBranch !== "string" || !source.currentBranch.length) {
+    throw new Error("source.currentBranch must be a non-empty string");
   }
   
-  const hasSelected = source.branches.some(
-    (branch) => branch.name === source.selectedBranch,
+  const hasCurrent = source.branches.some(
+    (branch) => branch.name === source.currentBranch,
   );
   
-  if (!hasSelected) {
-    throw new Error("source.selectedBranch is missing in source.branches");
+  if (!hasCurrent) {
+    throw new Error("source.currentBranch is missing in source.branches");
   }
   
   const invalidBranch = source.branches.find(
-    (branch) => !branch.isExists && branch.name !== source.selectedBranch,
+    (branch) => !branch.isExists && branch.name !== source.currentBranch,
   );
   
   if (invalidBranch) {
