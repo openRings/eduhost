@@ -206,8 +206,8 @@ impl ProjectDetailsByUserQuery {
                 teacher.first_name AS teacher_first_name,
                 teacher.last_name AS teacher_last_name,
                 teacher.patronymic AS teacher_patronymic,
-                ps.link AS source_link,
-                ps.branch AS source_branch,
+                ps.repository_url AS source_link,
+                gb.name AS source_branch,
                 ps.root_dir AS source_root_dir,
                 COALESCE(ps.size_bytes, 0) AS source_size_bytes,
                 d.id AS database_id,
@@ -228,6 +228,7 @@ impl ProjectDetailsByUserQuery {
             JOIN subject_groups sg ON sg.subject_id = s.id
             JOIN group_users gu ON gu.group_id = sg.group_id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
+            LEFT JOIN git_branches gb ON gb.id = ps.git_branch_id
             LEFT JOIN databases d ON d.id = p.database_id
             WHERE p.id = $1 AND gu.user_id = $2
             LIMIT 1",
