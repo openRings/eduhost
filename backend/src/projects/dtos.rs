@@ -102,7 +102,7 @@ pub struct ProjectSourceResponse {
     pub branch: String,
     pub selected_branch: String,
     pub branches: Vec<ProjectSourceBranchResponse>,
-    pub root_dir: Option<String>,
+    pub root_dir: String,
     pub size_bytes: i64,
 }
 

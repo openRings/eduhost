@@ -101,18 +101,18 @@ impl ProjectsService {
             );
         }
 
-        let source_branches =
-            if let Some((source_id, selected_branch_id)) = details.source_id.zip(details.source_branch_id)
+        let source_branches = if let Some((source_id, selected_branch_id)) =
+            details.source_id.zip(details.source_branch_id)
         {
             ProjectGitBranchesBySourceQuery {
                 source_id,
                 selected_branch_id,
             }
-                .execute(&self.pool)
-                .await
-                .with_context(|| {
-                    format!("failed to fetch project source branches, source id: {source_id}")
-                })?
+            .execute(&self.pool)
+            .await
+            .with_context(|| {
+                format!("failed to fetch project source branches, source id: {source_id}")
+            })?
         } else {
             Vec::new()
         };
@@ -121,22 +121,26 @@ impl ProjectsService {
             .source_link
             .as_ref()
             .zip(details.source_branch.as_ref())
-            .map(|(link, branch)| ProjectSourceResponse {
-                source_type: "git".to_string(),
-                link: link.clone(),
-                branch: branch.clone(),
-                selected_branch: branch.clone(),
-                branches: source_branches
-                    .iter()
-                    .map(|source_branch| ProjectSourceBranchResponse {
-                        id: source_branch.id,
-                        name: source_branch.name.clone(),
-                        is_exists: source_branch.is_exists,
-                    })
-                    .collect(),
-                root_dir: details.source_root_dir,
-                size_bytes: details.source_size_bytes,
-            });
+            .zip(details.source_root_dir.as_ref())
+            .zip(details.source_size_bytes)
+            .map(
+                |(((link, branch), root_dir), size_bytes)| ProjectSourceResponse {
+                    source_type: "git".to_string(),
+                    link: link.clone(),
+                    branch: branch.clone(),
+                    selected_branch: branch.clone(),
+                    branches: source_branches
+                        .iter()
+                        .map(|source_branch| ProjectSourceBranchResponse {
+                            id: source_branch.id,
+                            name: source_branch.name.clone(),
+                            is_exists: source_branch.is_exists,
+                        })
+                        .collect(),
+                    root_dir: root_dir.clone(),
+                    size_bytes,
+                },
+            );
 
         let database = details
             .database_id
@@ -172,7 +176,7 @@ impl ProjectsService {
             database,
             disk_usage: ProjectDetailsDiskUsageResponse {
                 avaliable_bytes: details.subject_reserved_disk_bytes,
-                files_bytes: details.source_size_bytes,
+                files_bytes: details.source_size_bytes.unwrap_or_default(),
                 database_bytes: details.database_disk_usage_bytes,
                 other_projects_bytes: details.other_projects_bytes,
             },

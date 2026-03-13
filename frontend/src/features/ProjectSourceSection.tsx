@@ -119,7 +119,7 @@ export function ProjectSourceSection(props: ProjectSourceSectionProps) {
             <Field.Label icon={<FolderTree />}>Корневая директория</Field.Label>
             <Field.Control>
               <Field.Input
-                value={props.project?.source?.rootDir ?? ""}
+                value={props.project?.source?.rootDir ?? "/"}
                 readonly
               />
             </Field.Control>

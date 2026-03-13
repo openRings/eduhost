@@ -75,7 +75,7 @@ export type ProjectSource = {
     name: string;
     isExists: boolean;
   }[];
-  rootDir?: string;
+  rootDir: string;
   sizeBytes: number;
 };
 
