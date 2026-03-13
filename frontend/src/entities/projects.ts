@@ -69,6 +69,12 @@ export type ProjectSource = {
   sourceType: string;
   link: string;
   branch: string;
+  selectedBranch: string;
+  branches: {
+    id: string;
+    name: string;
+    isExists: boolean;
+  }[];
   rootDir?: string;
   sizeBytes: number;
 };

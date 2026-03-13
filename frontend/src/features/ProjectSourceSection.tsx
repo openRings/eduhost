@@ -38,6 +38,29 @@ function sourceTypeLabel(sourceType?: string) {
   return sourceType ?? "";
 }
 
+function sourceBranchItems(project?: ProjectDetails) {
+  const source = project?.source;
+  if (!source) return [];
+
+  if (source.branches.length > 0) {
+    return source.branches.map((branch) => ({
+      label: branch.name,
+      value: branch.name,
+    }));
+  }
+
+  if (!source.branch) return [];
+
+  return [{ label: source.branch, value: source.branch }];
+}
+
+function selectedBranchValue(project?: ProjectDetails) {
+  const source = project?.source;
+  if (!source) return "";
+
+  return source.selectedBranch || source.branch || "";
+}
+
 export function ProjectSourceSection(props: ProjectSourceSectionProps) {
   return (
     <Section label="Исходный код" labelIcon={<CodeXml />}>
@@ -72,13 +95,8 @@ export function ProjectSourceSection(props: ProjectSourceSectionProps) {
           <Field>
             <Field.Label icon={<GitBranch />}>Ветка репозитория</Field.Label>
             <Field.Select
-              items={[
-                {
-                  label: props.project?.source?.branch ?? "",
-                  value: props.project?.source?.branch ?? "",
-                },
-              ]}
-              value={props.project?.source?.branch ?? ""}
+              items={sourceBranchItems(props.project)}
+              defaultValue={selectedBranchValue(props.project)}
             />
           </Field>
         )}
@@ -99,15 +117,12 @@ export function ProjectSourceSection(props: ProjectSourceSectionProps) {
         ) : (
           <Field>
             <Field.Label icon={<FolderTree />}>Корневая директория</Field.Label>
-            <Field.Select
-              items={[
-                {
-                  label: props.project?.source?.rootDir ?? "",
-                  value: props.project?.source?.rootDir ?? "",
-                },
-              ]}
-              value={props.project?.source?.rootDir ?? ""}
-            />
+            <Field.Control>
+              <Field.Input
+                value={props.project?.source?.rootDir ?? ""}
+                readonly
+              />
+            </Field.Control>
           </Field>
         )}
       </div>
