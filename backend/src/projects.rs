@@ -13,7 +13,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::projects::dtos::{
-    CreateProjectRequest, GetProjectsQuery, IsProjectAliasAvailableRequest,
+    CreateProjectRequest, GetProjectsQuery, IsProjectAliasAvailableRequest, ProjectSourceRequest,
 };
 use crate::projects::service::ProjectsService;
 
@@ -27,6 +27,7 @@ pub fn routes() -> Router<PgPool> {
         .route("/", get(get_projects))
         .route("/", post(create_project))
         .route("/{project_id}", get(get_project))
+        .route("/{project_id}/source", post(set_project_source))
         .route("/alias/available", post(is_project_alias_available))
 }
 
@@ -78,4 +79,19 @@ async fn is_project_alias_available(
     let response = projects_service.is_project_alias_available(body).await?;
 
     Ok(Json(response))
+}
+
+async fn set_project_source(
+    WithService(projects_service): WithService<ProjectsService>,
+    session: Session<Student>,
+    Path(project_id): Path<Uuid>,
+    NormalizedJson(body): NormalizedJson<ProjectSourceRequest>,
+) -> EndpointResult<impl IntoResponse> {
+    let user_id = session.user_id();
+
+    projects_service
+        .set_project_source(user_id, project_id, body)
+        .await?;
+
+    Ok(StatusCode::NO_CONTENT)
 }

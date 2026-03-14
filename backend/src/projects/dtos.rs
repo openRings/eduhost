@@ -143,10 +143,95 @@ pub struct IsProjectAliasAvailableRequest {
     pub alias: String,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectSourceRequest {
+    pub root_dir: String,
+    pub repository_url: String,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IsProjectAliasAvailableResponse {
     pub is_available: bool,
+}
+
+fn is_valid_github_part(value: &str) -> bool {
+    !value.is_empty()
+        && value.chars().all(|char| {
+            char.is_ascii_lowercase()
+                || char.is_ascii_uppercase()
+                || char.is_ascii_digit()
+                || char == '-'
+                || char == '_'
+                || char == '.'
+        })
+}
+
+fn normalize_repository_url(repository_url: &str) -> Result<String, String> {
+    let mut value = repository_url.trim().to_string();
+
+    if value.is_empty() {
+        return Err("Ссылка на репозиторий обязательна".to_string());
+    }
+
+    let is_full_url = value.contains("://") || value.starts_with("github.com/");
+    let had_scheme = value.contains("://");
+
+    if had_scheme {
+        let value_without_scheme = value
+            .strip_prefix("https://")
+            .or_else(|| value.strip_prefix("http://"))
+            .ok_or("Ссылка на репозиторий должна быть с протоколом http или https".to_string())?;
+
+        if !value_without_scheme.starts_with("github.com/") {
+            return Err("Поддерживаются только ссылки на github.com".to_string());
+        }
+    }
+
+    value = value
+        .strip_prefix("https://")
+        .or_else(|| value.strip_prefix("http://"))
+        .unwrap_or(&value)
+        .to_string();
+
+    value = value
+        .strip_prefix("github.com/")
+        .unwrap_or(&value)
+        .to_string();
+
+    value = value.trim_matches('/').to_string();
+
+    if let Some((value_without_query, _)) = value.split_once('?') {
+        value = value_without_query.to_string();
+    }
+
+    if let Some((value_without_hash, _)) = value.split_once('#') {
+        value = value_without_hash.to_string();
+    }
+
+    if let Some(repo_without_suffix) = value.strip_suffix(".git") {
+        value = repo_without_suffix.to_string();
+    }
+
+    let mut parts = value.split('/').filter(|part| !part.is_empty());
+    let username = parts
+        .next()
+        .ok_or("Ссылка на репозиторий должна быть в формате {username}/{repo}".to_string())?;
+    let repo = parts
+        .next()
+        .ok_or("Ссылка на репозиторий должна быть в формате {username}/{repo}".to_string())?;
+    let has_extra_parts = parts.next().is_some();
+
+    if !is_full_url && has_extra_parts {
+        return Err("Ссылка на репозиторий должна быть в формате {username}/{repo}".to_string());
+    }
+
+    if !is_valid_github_part(username) || !is_valid_github_part(repo) {
+        return Err("Некорректная ссылка на репозиторий".to_string());
+    }
+
+    Ok(format!("{username}/{repo}"))
 }
 
 impl SubjectProjectsResponse {
@@ -249,6 +334,23 @@ impl Normalize for IsProjectAliasAvailableRequest {
 
         if self.alias.is_empty() {
             return Err("Алиас проекта обязателен".to_string());
+        }
+
+        Ok(self)
+    }
+}
+
+impl Normalize for ProjectSourceRequest {
+    fn normalize(mut self) -> Result<Self, String> {
+        self.root_dir = self.root_dir.trim().to_string();
+        self.repository_url = normalize_repository_url(&self.repository_url)?;
+
+        if self.root_dir.is_empty() {
+            return Err("Корневая директория обязательна".to_string());
+        }
+
+        if !self.root_dir.starts_with('/') {
+            return Err("Корневая директория должна начинаться с '/'".to_string());
         }
 
         Ok(self)

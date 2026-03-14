@@ -55,8 +55,8 @@ pub struct ProjectDetailsModel {
     pub teacher_first_name: String,
     pub teacher_last_name: String,
     pub teacher_patronymic: Option<String>,
-    pub source_id: Option<Uuid>,
     pub source_branch_id: Option<Uuid>,
+    pub source_repository_full_name: Option<String>,
     pub source_link: Option<String>,
     pub source_branch: Option<String>,
     pub source_root_dir: Option<String>,
@@ -93,8 +93,18 @@ pub struct ProjectUsersByProjectQuery {
 }
 
 pub struct ProjectGitBranchesBySourceQuery {
-    pub source_id: Uuid,
+    pub repository_full_name: String,
     pub selected_branch_id: Uuid,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct ProjectSourceAccessModel {
+    pub source_id: Option<Uuid>,
+}
+
+pub struct ProjectSourceAccessByUserQuery {
+    pub user_id: Uuid,
+    pub project_id: Uuid,
 }
 
 impl SubjectProjectsByUserQuery {
@@ -122,7 +132,7 @@ impl SubjectProjectsByUserQuery {
             JOIN users u ON u.id = s.owner_id
             LEFT JOIN projects p ON p.subject_id = s.id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
-            LEFT JOIN databases d ON d.project_id = p.id
+            LEFT JOIN databases d ON d.id = p.database_id
             WHERE gu.user_id = $1
             AND gu.group_id = $2
             AND ($3::UUID IS NULL OR s.id = $3)
@@ -220,9 +230,12 @@ impl ProjectDetailsByUserQuery {
                 teacher.first_name AS teacher_first_name,
                 teacher.last_name AS teacher_last_name,
                 teacher.patronymic AS teacher_patronymic,
-                p.source_id AS source_id,
-                ps.git_branch_id AS source_branch_id,
-                ps.repository_url AS source_link,
+                ps.branch_id AS source_branch_id,
+                ps.repository_full_name AS source_repository_full_name,
+                CASE
+                    WHEN ps.repository_full_name IS NULL THEN NULL
+                    ELSE 'https://github.com/' || ps.repository_full_name
+                END AS source_link,
                 gb.name AS source_branch,
                 ps.root_dir AS source_root_dir,
                 ps.size_bytes AS source_size_bytes,
@@ -234,7 +247,7 @@ impl ProjectDetailsByUserQuery {
                     SELECT SUM(COALESCE(ps2.size_bytes, 0) + COALESCE(d2.disk_usage_bytes, 0))::BIGINT
                     FROM projects p2
                     LEFT JOIN project_sources ps2 ON ps2.id = p2.source_id
-                    LEFT JOIN databases d2 ON d2.project_id = p2.id
+                    LEFT JOIN databases d2 ON d2.id = p2.database_id
                     WHERE p2.subject_id = p.subject_id AND p2.id != p.id
                 ), 0) AS other_projects_bytes
             FROM projects p
@@ -244,8 +257,8 @@ impl ProjectDetailsByUserQuery {
             JOIN subject_groups sg ON sg.subject_id = s.id
             JOIN group_users gu ON gu.group_id = sg.group_id
             LEFT JOIN project_sources ps ON ps.id = p.source_id
-            LEFT JOIN git_branches gb ON gb.id = ps.git_branch_id
-            LEFT JOIN databases d ON d.project_id = p.id
+            LEFT JOIN github_branches gb ON gb.id = ps.branch_id
+            LEFT JOIN databases d ON d.id = p.database_id
             WHERE p.id = $1 AND gu.user_id = $2
             LIMIT 1",
         )
@@ -283,15 +296,41 @@ impl ProjectGitBranchesBySourceQuery {
     {
         sqlx::query_as::<_, ProjectGitBranchModel>(
             "SELECT id, name, is_exists
-            FROM git_branches
-            WHERE project_source_id = $1
+            FROM github_branches
+            WHERE repository_full_name = $1
             AND (is_exists = TRUE OR id = $2)
             ORDER BY name",
         )
-        .bind(self.source_id)
+        .bind(self.repository_full_name)
         .bind(self.selected_branch_id)
         .fetch_all(conn)
         .await
         .context("failed to fetch project source branches")
+    }
+}
+
+impl ProjectSourceAccessByUserQuery {
+    pub async fn execute<'c, E>(self, conn: E) -> anyhow::Result<Option<ProjectSourceAccessModel>>
+    where
+        E: PgExecutor<'c>,
+    {
+        sqlx::query_as::<_, ProjectSourceAccessModel>(
+            "SELECT p.source_id
+            FROM projects p
+            WHERE p.id = $1
+            AND EXISTS(
+                SELECT 1
+                FROM subjects s
+                JOIN subject_groups sg ON sg.subject_id = s.id
+                JOIN group_users gu ON gu.group_id = sg.group_id
+                WHERE s.id = p.subject_id AND gu.user_id = $2
+            )
+            LIMIT 1",
+        )
+        .bind(self.project_id)
+        .bind(self.user_id)
+        .fetch_optional(conn)
+        .await
+        .context("failed to fetch project source access")
     }
 }

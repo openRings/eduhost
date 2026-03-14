@@ -1,0 +1,23 @@
+meta {
+  name: set project source
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost/api/projects/019cc941-d2a9-7dd1-92b1-fd4a293c3c9d/source
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "rootDir": "/",
+    "repositoryUrl": "magwoo/cercis"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -6,17 +6,20 @@ use eduhost::service::Service;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::projects::commands::ProjectCreateCommand;
+use crate::projects::commands::{
+    ProjectCreateCommand, ProjectSourceCreateCommand, ProjectSourceUpdateCommand,
+};
 use crate::projects::dtos::{
     CreateProjectRequest, CreateProjectResponse, IsProjectAliasAvailableRequest,
     IsProjectAliasAvailableResponse, ProjectDatabaseResponse, ProjectDetailsDiskUsageResponse,
-    ProjectDetailsResponse, ProjectSourceBranchResponse, ProjectSourceResponse,
-    ProjectSubjectResponse, ProjectUserResponse, SubjectProjectsResponse, TeacherResponse,
+    ProjectDetailsResponse, ProjectSourceBranchResponse, ProjectSourceRequest,
+    ProjectSourceResponse, ProjectSubjectResponse, ProjectUserResponse, SubjectProjectsResponse,
+    TeacherResponse,
 };
 use crate::projects::queries::{
     IsGroupAvailableForUserQuery, IsProjectAliasExistsQuery, IsSubjectAvailableForGroupQuery,
-    ProjectDetailsByUserQuery, ProjectGitBranchesBySourceQuery, ProjectUsersByProjectQuery,
-    SubjectProjectsByUserQuery,
+    ProjectDetailsByUserQuery, ProjectGitBranchesBySourceQuery, ProjectSourceAccessByUserQuery,
+    ProjectUsersByProjectQuery, SubjectProjectsByUserQuery,
 };
 
 pub struct ProjectsService {
@@ -101,18 +104,18 @@ impl ProjectsService {
             );
         }
 
-        let source_branches = if let Some((source_id, selected_branch_id)) =
-            details.source_id.zip(details.source_branch_id)
+        let source_branches = if let Some((repository_full_name, selected_branch_id)) = details
+            .source_repository_full_name
+            .clone()
+            .zip(details.source_branch_id)
         {
             ProjectGitBranchesBySourceQuery {
-                source_id,
+                repository_full_name,
                 selected_branch_id,
             }
             .execute(&self.pool)
             .await
-            .with_context(|| {
-                format!("failed to fetch project source branches, source id: {source_id}")
-            })?
+            .context("failed to fetch project source branches")?
         } else {
             Vec::new()
         };
@@ -254,6 +257,65 @@ impl ProjectsService {
         })?;
 
         Ok(CreateProjectResponse { id: project_id })
+    }
+
+    pub async fn set_project_source(
+        &self,
+        user_id: Uuid,
+        project_id: Uuid,
+        body: ProjectSourceRequest,
+    ) -> EndpointResult<()> {
+        let ProjectSourceRequest {
+            root_dir,
+            repository_url: repository_full_name,
+        } = body;
+
+        let project = ProjectSourceAccessByUserQuery {
+            user_id,
+            project_id,
+        }
+        .execute(&self.pool)
+        .await
+        .with_context(|| {
+            format!(
+                "failed to check source access by user, user id: {user_id}, project id: {project_id}"
+            )
+        })?
+        .ok_or(EndpointError::Other(StatusCode::NOT_FOUND))?;
+
+        if let Some(source_id) = project.source_id {
+            let branch_id = Uuid::now_v7();
+
+            ProjectSourceUpdateCommand {
+                source_id,
+                branch_id,
+                repository_full_name: &repository_full_name,
+                root_dir: &root_dir,
+            }
+            .execute(&self.pool)
+            .await
+            .with_context(|| {
+                format!("failed to update project source, project id: {project_id}, source id: {source_id}")
+            })?;
+        } else {
+            let source_id = Uuid::now_v7();
+            let branch_id = Uuid::now_v7();
+
+            ProjectSourceCreateCommand {
+                source_id,
+                branch_id,
+                project_id,
+                repository_full_name: &repository_full_name,
+                root_dir: &root_dir,
+            }
+            .execute(&self.pool)
+            .await
+            .with_context(|| {
+                format!("failed to create project source, project id: {project_id}, source id: {source_id}")
+            })?;
+        }
+
+        Ok(())
     }
 }
 
