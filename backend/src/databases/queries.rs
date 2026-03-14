@@ -27,8 +27,8 @@ impl DatabasesByUserQuery {
                 COALESCE(d.disk_usage_bytes, 0) AS disk_usage_bytes,
                 d.created_at,
                 p.id AS project_id
-            FROM projects p
-            JOIN databases d ON d.id = p.database_id
+            FROM databases d
+            JOIN projects p ON p.id = d.project_id
             JOIN subjects s ON s.id = p.subject_id
             JOIN subject_groups sg ON sg.subject_id = s.id
             JOIN group_users gu ON gu.group_id = sg.group_id
