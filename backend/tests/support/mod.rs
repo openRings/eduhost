@@ -120,6 +120,24 @@ pub fn signin_body(username: &str, password: &str) -> Value {
     })
 }
 
+pub fn extract_refresh_token(set_cookie: &str) -> anyhow::Result<String> {
+    let refresh_cookie = set_cookie
+        .split(';')
+        .find(|cookie| cookie.trim_start().starts_with("refresh-token="))
+        .ok_or_else(|| anyhow!("`refresh-token` cookie is missing in Set-Cookie: {set_cookie}"))?;
+
+    let value =
+        refresh_cookie.trim().split('=').nth(1).ok_or_else(|| {
+            anyhow!("failed to parse refresh-token from Set-Cookie: {set_cookie}")
+        })?;
+
+    if value.is_empty() {
+        bail!("parsed refresh-token is empty in Set-Cookie: {set_cookie}");
+    }
+
+    Ok(value.to_string())
+}
+
 pub async fn assert_status(response: Response, expected: StatusCode) -> anyhow::Result<Response> {
     let actual = response.status();
 

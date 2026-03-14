@@ -362,6 +362,7 @@ mod tests {
     use uuid::Uuid;
 
     use super::*;
+    use crate::projects::queries::SubjectProjectModel;
 
     fn valid_create_project_request() -> CreateProjectRequest {
         CreateProjectRequest {
@@ -444,5 +445,78 @@ mod tests {
         let error = request.normalize().expect_err("expected validation error");
 
         assert_eq!(error, "Корневая директория должна начинаться с '/'");
+    }
+
+    #[test]
+    fn subject_projects_from_models_groups_rows_by_subject_and_collects_projects() {
+        let subject_id = Uuid::now_v7();
+        let teacher_id = Uuid::now_v7();
+        let first_project_id = Uuid::now_v7();
+        let second_project_id = Uuid::now_v7();
+
+        let models = vec![
+            SubjectProjectModel {
+                subject_id,
+                subject_name: "Math".to_string(),
+                subject_reserved_disk_bytes: 100_000,
+                teacher_id,
+                teacher_first_name: "Ivan".to_string(),
+                teacher_last_name: "Petrov".to_string(),
+                teacher_patronymic: None,
+                project_id: Some(first_project_id),
+                project_name: Some("P1".to_string()),
+                project_alias: Some("p1".to_string()),
+                project_file_usage_bytes: 10,
+                project_database_usage_bytes: 20,
+            },
+            SubjectProjectModel {
+                subject_id,
+                subject_name: "Math".to_string(),
+                subject_reserved_disk_bytes: 100_000,
+                teacher_id,
+                teacher_first_name: "Ivan".to_string(),
+                teacher_last_name: "Petrov".to_string(),
+                teacher_patronymic: None,
+                project_id: Some(second_project_id),
+                project_name: Some("P2".to_string()),
+                project_alias: Some("p2".to_string()),
+                project_file_usage_bytes: 30,
+                project_database_usage_bytes: 40,
+            },
+        ];
+
+        let subjects = SubjectProjectsResponse::from_models(models);
+
+        assert_eq!(subjects.len(), 1);
+        assert_eq!(subjects[0].id, subject_id);
+        assert_eq!(subjects[0].projects.len(), 2);
+        assert_eq!(subjects[0].projects[0].id, first_project_id);
+        assert_eq!(subjects[0].projects[1].id, second_project_id);
+    }
+
+    #[test]
+    fn subject_projects_from_models_skips_rows_without_project_fields() {
+        let subject_id = Uuid::now_v7();
+        let teacher_id = Uuid::now_v7();
+
+        let models = vec![SubjectProjectModel {
+            subject_id,
+            subject_name: "Math".to_string(),
+            subject_reserved_disk_bytes: 100_000,
+            teacher_id,
+            teacher_first_name: "Ivan".to_string(),
+            teacher_last_name: "Petrov".to_string(),
+            teacher_patronymic: None,
+            project_id: None,
+            project_name: None,
+            project_alias: None,
+            project_file_usage_bytes: 0,
+            project_database_usage_bytes: 0,
+        }];
+
+        let subjects = SubjectProjectsResponse::from_models(models);
+
+        assert_eq!(subjects.len(), 1);
+        assert_eq!(subjects[0].projects.len(), 0);
     }
 }

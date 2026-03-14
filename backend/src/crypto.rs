@@ -28,3 +28,43 @@ fn argon2<'a>() -> Argon2<'a> {
         Params::new(1024 * 64, 3, 1, None).unwrap(),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hash_password_returns_argon2_hash_and_not_plain_text() {
+        let password = "StrongPassword123";
+
+        let password_hash = hash_password(password);
+
+        assert_ne!(
+            password_hash, password,
+            "hash must not equal plain password"
+        );
+        assert!(
+            password_hash.starts_with("$argon2id$"),
+            "hash must use argon2id format, got: {password_hash}"
+        );
+    }
+
+    #[test]
+    fn verify_password_returns_true_for_matching_password() {
+        let password = "StrongPassword123";
+        let password_hash = hash_password(password);
+
+        let is_valid = verify_password(password, &password_hash);
+
+        assert!(is_valid, "expected password verification to succeed");
+    }
+
+    #[test]
+    fn verify_password_returns_false_for_non_matching_password() {
+        let password_hash = hash_password("StrongPassword123");
+
+        let is_valid = verify_password("WrongPassword123", &password_hash);
+
+        assert!(!is_valid, "expected password verification to fail");
+    }
+}
