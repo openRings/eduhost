@@ -1,4 +1,4 @@
-use eduhost::session::AccessLevel;
+use crate::session::AccessLevel;
 use serde::Serialize;
 
 use crate::profile::queries::{AccountMetricsModel, ProfileModel};

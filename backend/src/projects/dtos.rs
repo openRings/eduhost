@@ -1,4 +1,4 @@
-use eduhost::normalize::Normalize;
+use crate::normalize::Normalize;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -354,5 +354,95 @@ impl Normalize for ProjectSourceRequest {
         }
 
         Ok(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use uuid::Uuid;
+
+    use super::*;
+
+    fn valid_create_project_request() -> CreateProjectRequest {
+        CreateProjectRequest {
+            name: "Новый проект".to_string(),
+            alias: "ProjAlias".to_string(),
+            group_id: Uuid::now_v7(),
+            subject_id: Uuid::now_v7(),
+        }
+    }
+
+    #[test]
+    fn create_project_normalize_trims_fields() {
+        let mut request = valid_create_project_request();
+        request.name = "  Новый проект  ".to_string();
+        request.alias = "  ProjAlias  ".to_string();
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.name, "Новый проект");
+        assert_eq!(normalized.alias, "ProjAlias");
+    }
+
+    #[test]
+    fn create_project_normalize_rejects_alias_with_invalid_chars() {
+        let mut request = valid_create_project_request();
+        request.alias = "bad alias".to_string();
+
+        let error = request.normalize().expect_err("expected validation error");
+
+        assert_eq!(
+            error,
+            "Алиас проекта должен содержать только символы a-z, A-Z, -, _"
+        );
+    }
+
+    #[test]
+    fn project_source_normalize_accepts_github_full_url() {
+        let request = ProjectSourceRequest {
+            root_dir: " /src ".to_string(),
+            repository_url: "https://github.com/openai/openai-cookbook.git".to_string(),
+        };
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.root_dir, "/src");
+        assert_eq!(normalized.repository_url, "openai/openai-cookbook");
+    }
+
+    #[test]
+    fn project_source_normalize_accepts_short_repository_format() {
+        let request = ProjectSourceRequest {
+            root_dir: "/".to_string(),
+            repository_url: "OpenAI/openai-cookbook".to_string(),
+        };
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.repository_url, "OpenAI/openai-cookbook");
+    }
+
+    #[test]
+    fn project_source_normalize_rejects_non_github_full_url() {
+        let request = ProjectSourceRequest {
+            root_dir: "/".to_string(),
+            repository_url: "https://gitlab.com/openai/openai-cookbook".to_string(),
+        };
+
+        let error = request.normalize().expect_err("expected validation error");
+
+        assert_eq!(error, "Поддерживаются только ссылки на github.com");
+    }
+
+    #[test]
+    fn project_source_normalize_rejects_invalid_root_dir() {
+        let request = ProjectSourceRequest {
+            root_dir: "relative/path".to_string(),
+            repository_url: "openai/openai-cookbook".to_string(),
+        };
+
+        let error = request.normalize().expect_err("expected validation error");
+
+        assert_eq!(error, "Корневая директория должна начинаться с '/'");
     }
 }

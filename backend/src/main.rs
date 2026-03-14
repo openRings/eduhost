@@ -1,25 +1,12 @@
 use anyhow::Context;
-use axum::response::IntoResponse;
 use axum::routing::get;
-use axum::{Router, middleware};
-use axum_cookie::CookieLayer;
 use axum_prometheus::PrometheusMetricLayer;
-use eduhost::error::error_middleware;
-use eduhost::session::{Session, Student};
-use serde_json::json;
 use std::process;
 use tokio::net::TcpListener;
 use tracing_loki::url::Url;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
-
-mod auth;
-mod databases;
-mod groups;
-mod profile;
-mod projects;
-mod subjects;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -41,19 +28,9 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("failed to init database pool")?;
 
-    let router = Router::new()
-        .route("/session", get(session))
+    let router = eduhost::app::router(pool)
         .route("/metrics", get(|| async move { metric_handle.render() }))
-        .nest("/auth", auth::routes())
-        .nest("/groups", groups::routes())
-        .nest("/databases", databases::routes())
-        .nest("/projects", projects::routes())
-        .nest("/subjects", subjects::routes())
-        .nest("/profile", profile::routes())
-        .layer(middleware::from_fn(error_middleware))
-        .layer(CookieLayer::strict())
-        .layer(prometheus_layer)
-        .with_state(pool);
+        .layer(prometheus_layer);
 
     let listener = TcpListener::bind("0.0.0.0:80")
         .await
@@ -64,14 +41,4 @@ async fn main() -> anyhow::Result<()> {
         .context("failed to serve")?;
 
     Ok(())
-}
-
-// TODO: remove that
-async fn session(session: Session<Student>) -> impl IntoResponse {
-    json!({
-        "userId": session.user_id(),
-        "sessionId": session.session_id(),
-        "access": session.access()
-    })
-    .to_string()
 }

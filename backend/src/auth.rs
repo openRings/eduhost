@@ -1,13 +1,13 @@
+use crate::error::EndpointResult;
+use crate::normalize::NormalizedJson;
+use crate::service::WithService;
+use crate::session::{Session, Student};
 use axum::Json;
 use axum::Router;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum_cookie::CookieManager;
-use eduhost::error::EndpointResult;
-use eduhost::normalize::NormalizedJson;
-use eduhost::service::WithService;
-use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
 use self::dtos::{IsUsernameAvailableRequest, SigninRequest, SignupRequest};

@@ -1,6 +1,6 @@
+use crate::error::EndpointResult;
+use crate::service::Service;
 use anyhow::Context;
-use eduhost::error::EndpointResult;
-use eduhost::service::Service;
 use sqlx::PgPool;
 use uuid::Uuid;
 

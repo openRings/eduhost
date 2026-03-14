@@ -34,6 +34,13 @@ Main principle: follow existing project style and architecture, do not invent a 
 - Preserve formatting conventions and import ordering style from nearby files.
 - If a file/module has a specific style, continue in that style for edits in that file/module.
 
+### 1.5 Testing principles
+
+- Tests must be deterministic and isolated: no shared mutable state between tests unless explicitly required.
+- Prefer readable tests over clever tests: setup and intent should be obvious from the test body.
+- Every non-trivial assertion should have a clear failure message with enough context to debug quickly.
+- Avoid "magic" test data; use named constants/builders/helpers.
+
 ## 2) Frontend (SolidJS)
 
 ### 2.1 Stack
@@ -222,6 +229,56 @@ impl ProfileQuery {
   1. external imports (`std`, `core`, `anyhow`, `axum`, `eduhost`, `sqlx`, etc.)
   2. one empty line
   3. local imports from this package (`crate::...`, `self::...`).
+
+### 3.9 Integration testing pattern
+
+- Backend integration tests live in `backend/tests`.
+- Shared test helpers should be in `backend/tests/support/mod.rs`.
+- For HTTP integration tests, reuse `eduhost::app::router(...)` and run it on `127.0.0.1:0` via `tokio::net::TcpListener`.
+- For database-backed integration tests, use `testcontainers` PostgreSQL containers and run SQL migrations before test requests.
+- Keep assertions explicit and informative (include status code and response body on mismatch).
+
+### 3.10 Backend test style (mandatory)
+
+- In Rust test files, keep this order at the top:
+  1. `use ...` imports
+  2. one empty line
+  3. local module declarations (`mod support;`)
+  4. one empty line
+  5. imports from local modules (`use support::...`)
+- Keep import grouping strict:
+  1. external imports
+  2. one empty line
+  3. local imports (`crate::...`, `self::...`, test helper modules)
+- Use snake_case test names that describe behavior, for example:
+  `signin_rejects_wrong_password`.
+- Prefer Arrange/Act/Assert flow in each test:
+  setup first, one action under test, then focused assertions.
+- Use helper functions/builders from `backend/tests/support` instead of duplicating request/body setup.
+- For HTTP endpoint tests, assert at least:
+  1. status code
+  2. required response fields or headers
+  3. critical persistence effect (when endpoint changes state)
+- Avoid weak assertions like `status.is_success()` for behavior-specific tests; assert exact status.
+- Do not rely on test execution order.
+- Do not use `tokio::time::sleep` for synchronization if deterministic alternatives exist.
+
+### 3.11 Backend unit test style (mandatory)
+
+- Unit tests for Rust modules must be colocated in the same file under `#[cfg(test)] mod tests`.
+- In unit test modules, keep imports grouped and ordered:
+  1. external imports
+  2. one empty line
+  3. local imports (`super::*`, `crate::...`)
+- Unit test names must encode the expected behavior and condition, for example:
+  `signup_normalize_rejects_username_starting_with_digit`.
+- Each unit test should validate one rule or one tightly-coupled set of rules only.
+- For validation logic, tests must cover both:
+  1. happy path normalization result
+  2. representative failure cases per rule branch
+- Assertions for errors must check exact message when message text is part of API behavior.
+- For string normalization, assert both transformed value and side effects (for example trimming and lowercasing).
+- Avoid giant table-driven tests when they reduce readability; prefer small focused tests with explicit intent.
 
 ## 4) AGENTS.md Maintenance Policy
 

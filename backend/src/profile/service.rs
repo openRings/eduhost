@@ -1,8 +1,8 @@
+use crate::error::EndpointResult;
+use crate::service::Service;
+use crate::session::AccessLevel;
 use anyhow::Context;
 use axum::http::StatusCode;
-use eduhost::error::EndpointResult;
-use eduhost::service::Service;
-use eduhost::session::AccessLevel;
 use sqlx::PgPool;
 use uuid::Uuid;
 

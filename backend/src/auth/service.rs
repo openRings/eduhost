@@ -1,10 +1,10 @@
+use crate::crypto::{hash_password, verify_password};
+use crate::error::{EndpointError, EndpointResult};
+use crate::service::Service;
 use anyhow::Context;
 use axum::http::StatusCode;
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use eduhost::crypto::{hash_password, verify_password};
-use eduhost::error::{EndpointError, EndpointResult};
-use eduhost::service::Service;
 use rand::RngExt;
 use sqlx::PgPool;
 use time::Duration;

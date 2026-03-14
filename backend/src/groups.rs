@@ -1,9 +1,9 @@
+use crate::error::EndpointResult;
+use crate::service::WithService;
+use crate::session::{Session, Student};
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
-use eduhost::error::EndpointResult;
-use eduhost::service::WithService;
-use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 
 use crate::groups::service::GroupsService;

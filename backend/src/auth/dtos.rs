@@ -1,9 +1,9 @@
+use crate::normalize::Normalize;
 use axum::Json;
 use axum::http::HeaderValue;
 use axum::http::header::SET_COOKIE;
 use axum::response::{IntoResponse, Response};
 use axum_cookie::prelude::Cookie;
-use eduhost::normalize::Normalize;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -169,5 +169,136 @@ impl IntoResponse for NewSessionResponse {
         response.headers_mut().insert(SET_COOKIE, header_value);
 
         response
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn normalization_error<T>(result: Result<T, String>) -> String {
+        match result {
+            Ok(_) => panic!("expected validation error"),
+            Err(error) => error,
+        }
+    }
+
+    fn valid_signup() -> SignupRequest {
+        SignupRequest {
+            username: "validuser".to_string(),
+            first_name: "Иван".to_string(),
+            last_name: "Иванов".to_string(),
+            patronymic: Some("Иванович".to_string()),
+            password: "Password123".to_string(),
+            password_repeat: "Password123".to_string(),
+        }
+    }
+
+    #[test]
+    fn signup_normalize_trims_and_lowercases_fields() {
+        let request = SignupRequest {
+            username: "  VaLiDUsEr  ".to_string(),
+            first_name: "  Иван  ".to_string(),
+            last_name: "  Иванов  ".to_string(),
+            patronymic: Some("  Иванович  ".to_string()),
+            password: "Password123".to_string(),
+            password_repeat: "Password123".to_string(),
+        };
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.username, "validuser");
+        assert_eq!(normalized.first_name, "Иван");
+        assert_eq!(normalized.last_name, "Иванов");
+        assert_eq!(normalized.patronymic.as_deref(), Some("Иванович"));
+    }
+
+    #[test]
+    fn signup_normalize_converts_empty_patronymic_to_none() {
+        let mut request = valid_signup();
+        request.patronymic = Some("   ".to_string());
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.patronymic, None);
+    }
+
+    #[test]
+    fn signup_normalize_rejects_username_starting_with_digit() {
+        let mut request = valid_signup();
+        request.username = "1validuser".to_string();
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(error, "Юзернейм не может начинаться с цифры");
+    }
+
+    #[test]
+    fn signup_normalize_rejects_username_with_invalid_chars() {
+        let mut request = valid_signup();
+        request.username = "valid_user".to_string();
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(error, "Юзернейм должен содержать только символы a-z, 0-9");
+    }
+
+    #[test]
+    fn signup_normalize_rejects_when_password_rules_not_satisfied() {
+        let mut request = valid_signup();
+        request.password = "password123".to_string();
+        request.password_repeat = "password123".to_string();
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(
+            error,
+            "Пароль должен содержать верхний регистр, нижний регистр и цифры"
+        );
+    }
+
+    #[test]
+    fn signup_normalize_rejects_when_passwords_do_not_match() {
+        let mut request = valid_signup();
+        request.password_repeat = "Password321".to_string();
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(error, "Пароли не совпадают");
+    }
+
+    #[test]
+    fn signin_normalize_trims_and_lowercases_username() {
+        let request = SigninRequest {
+            username: "  VaLiDUsEr  ".to_string(),
+            password: "any".to_string(),
+        };
+
+        let normalized = request.normalize().expect("expected normalized request");
+
+        assert_eq!(normalized.username, "validuser");
+    }
+
+    #[test]
+    fn signin_normalize_rejects_empty_username() {
+        let request = SigninRequest {
+            username: "   ".to_string(),
+            password: "any".to_string(),
+        };
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(error, "Юзернейм обязателен");
+    }
+
+    #[test]
+    fn username_available_normalize_rejects_empty_username() {
+        let request = IsUsernameAvailableRequest {
+            username: "   ".to_string(),
+        };
+
+        let error = normalization_error(request.normalize());
+
+        assert_eq!(error, "Юзернейм обязателен");
     }
 }

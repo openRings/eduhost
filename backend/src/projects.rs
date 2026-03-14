@@ -1,14 +1,14 @@
+use crate::error::EndpointResult;
+use crate::group_id::GroupId;
+use crate::normalize::NormalizedJson;
+use crate::service::WithService;
+use crate::session::{Session, Student};
 use axum::extract::Path;
 use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use eduhost::error::EndpointResult;
-use eduhost::group_id::GroupId;
-use eduhost::normalize::NormalizedJson;
-use eduhost::service::WithService;
-use eduhost::session::{Session, Student};
 use sqlx::PgPool;
 use uuid::Uuid;
 

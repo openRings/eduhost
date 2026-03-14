@@ -1,8 +1,8 @@
+use crate::error::EndpointError;
+use crate::error::EndpointResult;
+use crate::service::Service;
 use anyhow::Context;
 use axum::http::StatusCode;
-use eduhost::error::EndpointError;
-use eduhost::error::EndpointResult;
-use eduhost::service::Service;
 use sqlx::PgPool;
 use uuid::Uuid;
 
